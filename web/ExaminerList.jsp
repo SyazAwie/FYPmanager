@@ -35,7 +35,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>UiTM FYP System</title>
+        <title>UiTM FYP System - Examiner</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
         <style>
         table {
@@ -78,7 +78,7 @@
     <body>
         <!--SIDEBAR-->
         <jsp:include page="sidebar.jsp" />
-        
+        <div class="main-content">
         <h2>LIST OF EXAMINERS</h2>
 
         <table>
@@ -210,6 +210,6 @@
                 </tr>
             </tbody>
         </table>
-            
+        </div>
     </body>
 </html>
