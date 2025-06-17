@@ -37,6 +37,137 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>UiTM FYP System - CSP600</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
+        <style>
+                /* Container Styles */
+            .main-content {
+                padding: 30px;
+                background-color: #f8f9fa;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                margin: 20px;
+            }
+
+            .page-title {
+                color: #2c3e50;
+                font-size: 28px;
+                font-weight: 600;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #3498db;
+            }
+
+            .table-container {
+                overflow: hidden;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                background: white;
+            }
+
+            /* Table Styles */
+            table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 16px;
+            }
+
+            thead {
+                background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+                color: white;
+            }
+
+            thead th {
+                padding: 18px 15px;
+                text-align: left;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+
+            thead th:first-child {
+                border-top-left-radius: 10px;
+            }
+
+            thead th:last-child {
+                border-top-right-radius: 10px;
+            }
+
+            tbody tr {
+                transition: all 0.3s ease;
+                border-bottom: 1px solid #eaeaea;
+            }
+
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tbody tr:hover {
+                background-color: #f1f8ff;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
+            }
+
+            tbody td {
+                padding: 16px 15px;
+                color: #34495e;
+                border-bottom: 1px solid #eee;
+            }
+
+            /* Action Buttons */
+            .btn-edit, .btn-delete {
+                padding: 10px 18px;
+                border-radius: 6px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.25s ease;
+                border: none;
+                outline: none;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-edit {
+                background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                color: white;
+                margin-right: 8px;
+            }
+
+            .btn-edit:hover {
+                background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+            }
+
+            .btn-delete {
+                background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                color: white;
+            }
+
+            .btn-delete:hover {
+                background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .table-container {
+                    overflow-x: auto;
+                }
+
+                table {
+                    min-width: 600px;
+                }
+
+                .main-content {
+                    padding: 20px 15px;
+                }
+
+                .page-title {
+                    font-size: 24px;
+                }
+            }
+        </style>
     </head>
     <body>
         <!--SIDEBAR-->
