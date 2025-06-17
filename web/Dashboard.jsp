@@ -97,7 +97,7 @@
    <!-- Student Dashboard -->
 <% if ("student".equals(userRole)) { %>
   <div class="main-content">
-    <div class="dashboard-body">
+    <div class="welcome-info">
       <div class="left-panel">
         <div class="welcome">
           Welcome, <strong><%= userName %></strong>
