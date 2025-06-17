@@ -2,6 +2,7 @@ package fyp.model.DB;
 
 import java.sql.*;
 import java.util.*;
+import java.util.List;
 import fyp.model.Student;
 import DBconnection.DatabaseConnection;
 
@@ -27,7 +28,7 @@ public class StudentDB {
     }
 
     // Get all students
-    public List<Student> getAllStudents() {
+    public static List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
         String sql = "SELECT * FROM student";
 

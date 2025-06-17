@@ -143,8 +143,8 @@
                     <div class="form-group">
                         <label for="course">Course</label>
                         <select id="course" name="course" disabled>
-                            <option value="600" <%= "600".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
-                            <option value="650" <%= "650".equals(selectedCourse) ? "selected" : "" %>>CSP650</option>
+                            <option value="600" <%= "1".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
+                            <option value="650" <%= "2".equals(selectedCourse) ? "selected" : "" %>>CSP650</option>
                         </select>
                     </div>
 
