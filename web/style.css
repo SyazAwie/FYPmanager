@@ -1,0 +1,190 @@
+body {
+  display: flex;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #5b3b74;
+  color: white;
+  padding: 20px;
+  height: 100vh;
+}
+
+.sidebar img {
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.sidebar ul li a:hover {
+  background-color: #8e6aa6;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  background: #f7eeee;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ccc;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.header input[type="search"] {
+  padding: 10px;
+  width: 300px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+}
+
+.profile-notifications span {
+  margin-left: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Dashboard Cards */
+.cards {
+  display: flex;
+  gap: 20px;
+  margin: 40px 0 30px 0; /* added more vertical spacing */
+}
+
+.card {
+  flex: 1;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  background: linear-gradient(to bottom right, #f0f0f0, #e0e0e0);
+}
+
+.card:nth-child(1) {
+  background: linear-gradient(to bottom right, #fbd3e9, #bb7fd6);
+}
+
+.card:nth-child(2) {
+  background: linear-gradient(to bottom right, #fdfb8c, #f9e79f);
+}
+
+.card:nth-child(3) {
+  background: linear-gradient(to bottom right, #dcd6f7, #b6b4e0);
+}
+
+.card:nth-child(4) {
+  background: linear-gradient(to bottom right, #c2f0c2, #a3e4d7);
+}
+
+/* Content Layout */
+.content-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px; /* space below content row */
+}
+
+.box {
+  background: white;
+  flex: 1;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px; /* add bottom margin to space stacked boxes */
+}
+
+/* Timetable Table */
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.timetable-table th,
+.timetable-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.timetable-table th {
+  background-color: #5b3b74;
+  color: white;
+}
+
+.timetable-table td {
+  background-color: #f9f9f9;
+}
+
+.timetable-table tr:hover td {
+  background-color: #f0e6ff;
+}
+
+/* Edit Timetable Button */
+.create-btn {
+  display: inline-block;
+  margin-top: 15px;
+  background-color: #5b3b74;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.create-btn:hover {
+  background-color: #7a5a99;
+}
+.btn-submit:active {
+  background-color: #1d4ed8; /* Darker blue when clicked */
+}
+
+.btn-back:active {
+  background-color: #1e3a8a; /* Darker navy when clicked */
+}
+
+.btn-update:active {
+  background-color: #15803d; /* Darker green when clicked */
+}
+
+.btn-delete:active {
+  background-color: #b91c1c; /* Darker red when clicked */
+}
+
+
+/* Reminders Box */
+.reminders {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  margin-bottom: 30px; /* space below reminders */
+}

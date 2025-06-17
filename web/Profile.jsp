@@ -1,0 +1,468 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="fyp.model.User" %>
+<%
+    User user = (User) request.getAttribute("user");
+
+    String role = "";
+    String userAvatar = "", userName = "", email = "", phone = "", userId = "";
+
+    if (user != null) {
+        role = user.getRole();
+        userAvatar = user.getAvatar();
+        userName = user.getName();
+        email = user.getEmail();
+        phone = user.getPhoneNum();
+        userId = String.valueOf(user.getUser_id());
+    } else {
+        out.println("ERROR: 'user' is null. Please login again or check servlet.");
+    }
+%>
+
+<%@ page import="fyp.model.Student" %>
+<%@ page import="fyp.model.Lecturer" %>
+<%@ page import="fyp.model.Supervisor" %>
+<%--
+<%@ page import="fyp.model.Admin" %>
+<%@ page import="fyp.model.Examiner" %>
+--%>
+
+<%
+    Student student = null;
+    Lecturer lecturer = null;
+    Supervisor supervisor = null;
+    /*Admin admin = null;
+    Examiner examiner = null;*/
+
+    if ("student".equals(role)) {
+        student = (Student) request.getAttribute("profile");
+    } else if ("lecturer".equals(role)) {
+        lecturer = (Lecturer) request.getAttribute("profile");
+    } else if ("supervisor".equals(role)) {
+        supervisor = (Supervisor) request.getAttribute("profile");
+    } /*else if ("admin".equals(role)) {
+        admin = (Admin) request.getAttribute("admin");
+    } else if ("examiner".equals(role)) {
+        examiner = (Examiner) request.getAttribute("examiner");
+    }*/
+%>
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>UiTM FYP System</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <style>
+.button-group button {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+/* Edit Profile button - Green */
+#editButton {
+    background-color: #28a745; /* Bootstrap-style green */
+    color: white;
+}
+
+#editButton:hover {
+    background-color: #218838;
+}
+
+/* Save Changes button - Slightly different green */
+#saveButton {
+    background-color: #20c997; /* Teal green */
+    color: white;
+}
+
+#saveButton:hover {
+    background-color: #17a2b8;
+}
+
+/* Cancel button - Red */
+#cancelButton {
+    background-color: #dc3545; /* Bootstrap-style red */
+    color: white;
+}
+
+#cancelButton:hover {
+    background-color: #c82333;
+}
+
+</style>
+
+    </head>
+    
+         <jsp:include page="sidebar.jsp" />
+         
+         <!-- Student Profile Section -->
+    <% if ("student".equals(role)) { %>
+        <div class="profile-container">
+            <div class="profile">
+                <h2>Welcome</h2>
+
+                <!-- Combined Form -->
+                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="user_id" value="<%= userId %>">
+                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+
+                    <!-- Avatar Section -->
+                    <div class="profile-photo">
+                        <img id="profileImg"
+                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                             alt="User Avatar"
+                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+
+                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Info -->
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="student-id">Student ID</label>
+                        <input type="text" id="student-id" name="student-id" value="<%= student.getStudent_id() %>" disabled>
+                    </div>
+
+                    <%  String selectedCourse = String.valueOf(student.getCourse_id());  %>
+                    <div class="form-group">
+                        <label for="course">Course</label>
+                        <select id="course" name="course" disabled>
+                            <option value="600" <%= "600".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
+                            <option value="650" <%= "650".equals(selectedCourse) ? "selected" : "" %>>CSP650</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                    </div>
+
+                    <!-- Password Fields -->
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="button" id="editButton">Edit Profile</button>
+                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>                
+         <!-- Lecturer Profile Section -->
+    <% if ("lecturer".equals(role)) { %>
+        <div class="profile-container">
+            <div class="profile">
+                <h2>Welcome</h2>
+
+                <!-- Combined Form -->
+                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="user_id" value="<%= userId %>">
+                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+
+                    <!-- Avatar Section -->
+                    <div class="profile-photo">
+                        <img id="profileImg"
+                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                             alt="User Avatar"
+                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+
+                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Info -->
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="student-id">Staff ID</label>
+                        <input type="text" id="lecturer-id" name="lecturer-id" value="<%= lecturer.getLecturer_id() %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                    </div>
+
+                    <!-- Password Fields -->
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="button" id="editButton">Edit Profile</button>
+                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+         <!-- Supervisor Profile Section -->
+    <% if ("supervisor".equals(role)) { %>
+        <div class="profile-container">
+            <div class="profile">
+                <h2>Welcome</h2>
+
+                <!-- Combined Form -->
+                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="user_id" value="<%= userId %>">
+                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+
+                    <!-- Avatar Section -->
+                    <div class="profile-photo">
+                        <img id="profileImg"
+                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                             alt="User Avatar"
+                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+
+                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Info -->
+                    <div class="form-group">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="student-id">Staff ID</label>
+                        <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                    </div>
+
+                    <!-- Password Fields -->
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                    </div>
+
+                    <div class="form-group password-field" style="display:none;">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="button" id="editButton">Edit Profile</button>
+                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <% } %>
+
+<script>
+document.getElementById('editButton').addEventListener('click', function () {
+    // Existing edit functionality...
+    document.getElementById('phone').disabled = false;
+    document.getElementById('email').disabled = false;
+    
+    const passwordFields = document.querySelectorAll('.password-field');
+    passwordFields.forEach(field => field.style.display = 'block');
+    
+    document.getElementById('uploadButtonGroup').style.display = 'block';
+    
+    this.style.display = 'none';
+    document.getElementById('saveButton').style.display = 'inline-block';
+    document.getElementById('cancelButton').style.display = 'inline-block';
+});
+
+document.getElementById('cancelButton').addEventListener('click', function () {
+    // Existing cancel functionality...
+    document.getElementById('phone').disabled = true;
+    document.getElementById('email').disabled = true;
+    
+    const passwordFields = document.querySelectorAll('.password-field');
+    passwordFields.forEach(field => field.style.display = 'none');
+    
+    document.getElementById('uploadButtonGroup').style.display = 'none';
+    document.getElementById('profileForm').reset();
+    
+    document.getElementById('editButton').style.display = 'inline-block';
+    document.getElementById('saveButton').style.display = 'none';
+    this.style.display = 'none';
+});
+
+// Save with SweetAlert confirmation
+document.getElementById('saveButton').addEventListener('click', function () {
+    Swal.fire({
+        title: "Save Changes?",
+        text: "Do you want to save your profile changes?",
+        icon: "question",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        denyButtonText: "Don't Save",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#3085d6",
+        denyButtonColor: "#d33",
+        cancelButtonColor: "#7d7d7d"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User clicked "Save"
+            Swal.fire({
+                title: "Saving...",
+                text: "Please wait while we save your changes",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Simulate form saving delay (e.g., 1.5 seconds)
+            setTimeout(() => {
+                Swal.close(); // Close loading alert
+                Swal.fire({
+                    title: "Saved!",
+                    text: "Your changes have been successfully saved.",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#3085d6"
+                }).then(() => {
+                    // Submit the form after confirmation
+                    document.getElementById('profileForm').submit();
+                });
+            }, 1500);
+
+        } else if (result.isDenied) {
+            // User clicked "Don't Save"
+            Swal.fire({
+                title: "Changes Not Saved",
+                text: "Your changes have been discarded",
+                icon: "info",
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            // Reset the form and return to view mode
+            document.getElementById('cancelButton').click();
+        }
+        // If "Cancel" is clicked, do nothing (stay in edit mode)
+    });
+});
+
+
+// NEW: Delete with SweetAlert confirmation
+function confirmDelete() {
+    Swal.fire({
+        title: "Delete Profile Picture?",
+        text: "Are you sure you want to delete your profile picture?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Set delete flag
+            document.getElementById('delete_avatar_flag').value = "true";
+            
+            // Update image preview to default
+            document.getElementById('profileImg').src = "DownloadAvatar?filename=default.png";
+            
+            Swal.fire({
+                title: "Deleted!",
+                text: "Your profile picture has been removed.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    });
+}
+
+// Existing previewPhoto function
+function previewPhoto(event) {
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profileImg').src = e.target.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+</script>
+
+            
+    
+</html>
