@@ -36,18 +36,6 @@
   <title>FYP Student Guideline</title>
   <link rel="stylesheet" href="../css/style.css" />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #e0ecf8, #f8f9fa);
-      margin: 0;
-      padding: 0;
-    }
-
-    .main-content {
-      margin-left: 250px;
-      padding: 50px 30px;
-    }
-
     .guideline-container {
       background-color: #ffffff;
       border-radius: 12px;

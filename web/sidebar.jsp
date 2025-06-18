@@ -119,7 +119,7 @@
                     </li>
 
                     <li>
-                        <a href="StudentProposalIdea.jsp" class="nav-link">
+                        <a href="ProposalIdea.jsp" class="nav-link">
                             <i class="fas fa-lightbulb"></i>
                             <span>Proposal Idea</span>
                         </a>
@@ -134,28 +134,28 @@
                     </li>
                     
                     <li>
-                        <a href="StudentProgressReport.jsp" class="nav-link">
+                        <a href="ProgressReportSubmission.jsp" class="nav-link">
                             <i class="fas fa-tasks"></i>
                             <span>Progress Report</span>
                         </a>
                     </li>
                     
                     <li>
-                        <a href="StudentFinalReports.jsp" class="nav-link">
+                        <a href="SubmitFinalReports.jsp" class="nav-link">
                             <i class="fas fa-file-pdf"></i>
                             <span>Final Reports</span>
                         </a>
                     </li>
                     
                     <li>
-                        <a href="StudentEvaluation.jsp" class="nav-link">
+                        <a href="Evaluation.jsp" class="nav-link">
                             <i class="fas fa-check-circle"></i>
                             <span>Evaluation</span>
                         </a>
                     </li>
                     
                     <li>
-                        <a href="StudentGuideline.jsp" class="nav-link">
+                        <a href="Guideline.jsp" class="nav-link">
                             <i class="fas fa-book"></i>
                             <span>Guideline</span>
                         </a>
@@ -170,7 +170,7 @@
                     
                     <!-- ADDED PAST REPORTS LINK -->
                     <li>
-                        <a href="StudentPastReports.jsp" class="nav-link">
+                        <a href="PastReports.jsp" class="nav-link">
                             <i class="fas fa-archive"></i>
                             <span>Past Reports</span>
                         </a>
@@ -231,12 +231,6 @@
                 <% } %>
                 
                 <!-- Common Settings -->
-                <li>
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
                 
                 <!-- Logout - Common to all -->
                 <li>

@@ -37,12 +37,6 @@
   <title>FYP Project Evaluation Form</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 20px;
-      background-color: #f7f9fc;
-      color: #333;
-    }
     h2 {
       text-align: center;
       color: #2c3e50;
