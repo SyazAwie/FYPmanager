@@ -28,6 +28,127 @@
     <meta charset="UTF-8">
     <title>F1 - Mutual Acceptance Form</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        
+        /* Fieldset Styling */
+        fieldset {
+          border: 1px solid #e0e6ed;
+          border-radius: 10px;
+          padding: 25px;
+          margin-bottom: 25px;
+          background: #f9fbfd;
+          position: relative;
+          transition: all 0.3s ease;
+        }
+
+        fieldset:hover {
+          border-color: #3498db;
+          box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        }
+
+        legend {
+          font-weight: 600;
+          color: #2c3e50;
+          background: #e9f7fe;
+          padding: 10px 20px;
+          border-radius: 30px;
+          border: 1px solid #bde0fe;
+        }
+
+        /* Form Layout */
+        form {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+          form {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          fieldset {
+            grid-column: span 2;
+          }
+
+          fieldset:last-child {
+            grid-column: span 2;
+          }
+        }
+
+        /* Label Styles */
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+          color: #2c3e50;
+        }
+
+        /* Input Styles */
+        input[type="text"],
+        input[type="email"] {
+          width: 100%;
+          padding: 12px 15px;
+          border: 1px solid #d1d8e0;
+          border-radius: 8px;
+          font-size: 16px;
+          transition: all 0.3s ease;
+          background: #ffffff;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+          border-color: #3498db;
+          box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+          outline: none;
+        }
+
+        input[readonly] {
+          background-color: #f5f7fa;
+          color: #6c757d;
+          cursor: not-allowed;
+        }
+
+        /* Agreement Section */
+        fieldset:last-child p {
+          margin-bottom: 20px;
+          color: #495057;
+          line-height: 1.6;
+        }
+
+        fieldset:last-child label {
+          display: inline-block;
+          margin-right: 10px;
+          font-weight: 600;
+        }
+
+        /* Submit Button */
+        input[type="submit"] {
+          background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+          color: white;
+          border: none;
+          padding: 14px 28px;
+          font-size: 18px;
+          font-weight: 600;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: block;
+          margin: 20px auto 0;
+          width: 100%;
+          max-width: 250px;
+        }
+
+        input[type="submit"]:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 7px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Form Group */
+        .form-group {
+          margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 

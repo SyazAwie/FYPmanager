@@ -41,14 +41,6 @@
         <link rel="stylesheet" type="text/css" href="styles.css">
         <style>
                 /* Container Styles */
-            .main-content {
-                padding: 30px;
-                background-color: #f8f9fa;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-                margin: 20px;
-            }
-
             .page-title {
                 color: #2c3e50;
                 font-size: 28px;

@@ -96,7 +96,7 @@
                             <span class="arrow">&#9662;</span>
                         </div>
                         <div class="submenu">
-                            <a href="SupervisorReview.jsp" class="nav-link">Form</a>
+                            <a href="Plagiarism.jsp" class="nav-link">Form</a>
                             <a href="#" class="nav-link">Plagiarism</a>
                         </div>
                     </li>
@@ -210,7 +210,7 @@
                         </div>
                         <div class="submenu">
                             <a href="SupervisorList.jsp" class="nav-link">Supervisors</a>
-                            <a href="LecturerExaminers.jsp" class="nav-link">Examiners</a>
+                            <a href="ExaminerList.jsp" class="nav-link">Examiners</a>
                         </div>
                     </li>
                     

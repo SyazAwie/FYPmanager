@@ -39,6 +39,205 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <style>
+        /* Cards Container */
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        /* Individual Cards - FIXED TEXT CONTRAST */
+        .card {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          color: #2c3e50;
+          border-radius: 15px;
+          padding: 20px;
+          text-align: center;
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          border: 1px solid #dee2e6;
+        }
+
+        .card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(52, 152, 219, 0.05) 0%, rgba(255,255,255,0) 70%);
+          transform: rotate(30deg);
+        }
+
+        .card i {
+          font-size: 2.5rem;
+          margin-bottom: 10px;
+          background: #3498db;
+          color: white;
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .card br {
+          display: block;
+          height: 8px;
+        }
+
+        .card div {
+          font-size: 1.8rem;
+          font-weight: 700;
+          margin: 10px 0;
+          color: #2c3e50;
+        }
+
+        /* Timetable Section */
+        .box.timetable {
+          background: white;
+          border-radius: 15px;
+          padding: 25px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+          margin-bottom: 30px;
+          border: 1px solid #eaeaea;
+        }
+
+        .box.timetable h4 {
+          color: #2c3e50;
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+          border-bottom: 2px solid #f0f4f8;
+          font-size: 1.4rem;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .box.timetable h4 i {
+          color: #3498db;
+          background: #e9f7fe;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .timetable-table {
+          width: 100%;
+          border-collapse: collapse;
+          border-spacing: 0;
+        }
+
+        .timetable-table th {
+          background: #3498db;
+          color: white;
+          text-align: left;
+          padding: 15px 12px;
+          font-weight: 600;
+        }
+
+        .timetable-table td {
+          padding: 12px;
+          border-bottom: 1px solid #f0f4f8;
+        }
+
+        .timetable-table tr:nth-child(even) {
+          background-color: #f9fbfd;
+        }
+
+        .timetable-table tr:hover {
+          background-color: #f0f8ff;
+        }
+
+        .timetable-table th:first-child {
+          border-top-left-radius: 10px;
+        }
+
+        .timetable-table th:last-child {
+          border-top-right-radius: 10px;
+        }
+
+        /* Reminders Section */
+        .reminders {
+          background: white;
+          border-radius: 15px;
+          padding: 25px;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+          border: 1px solid #eaeaea;
+        }
+
+        .reminders h4 {
+          color: #2c3e50;
+          margin-bottom: 20px;
+          font-size: 1.4rem;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .reminders h4 i {
+          color: #e74c3c;
+          background: #fdedec;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .reminders ul {
+          list-style-type: none;
+          padding-left: 0;
+        }
+
+        .reminders li {
+          padding: 15px;
+          border-left: 4px solid #3498db;
+          margin-bottom: 15px;
+          background: #f9fbfd;
+          border-radius: 0 8px 8px 0;
+          position: relative;
+          padding-left: 25px;
+          transition: all 0.3s ease;
+        }
+
+        .reminders li:hover {
+          transform: translateX(5px);
+          background: #f0f8ff;
+          border-left-color: #e74c3c;
+        }
+
+        .reminders li::before {
+          content: '•';
+          position: absolute;
+          left: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #3498db;
+          font-size: 1.5rem;
+        }
+
+        .reminders li strong {
+          color: #e74c3c;
+          background: rgba(231, 76, 60, 0.1);
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
+    </style>
 
    
 </head>
@@ -99,9 +298,10 @@
   <div class="main-content">
     <div class="welcome-info">
       <div class="left-panel">
-        <div class="welcome">
-          Welcome, <strong><%= userName %></strong>
-        </div>
+        <div class="welcome-info">
+    <h2>Welcome, <%= userName %></h2>
+    <p><%= displayRole %></p>
+  </div>
 
         <div class="cards">
           <div class="card purple"><i class="fas fa-user-graduate"></i> 20 Students</div>
