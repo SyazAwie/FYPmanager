@@ -15,25 +15,27 @@ import javax.servlet.annotation.WebServlet;
  *
  * @author syazw
  */
-@WebServlet("/StudentListServlet")
+@WebServlet("/StudentList")
 public class StudentListServlet extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
 
-        // Panggil DAO
+        String course = request.getParameter("course"); // example: "1" for CSP600, "2" for CSP650
+        if (course == null || course.isEmpty()) {
+            course = "1"; // Default to CSP600
+        }
+
         StudentDisplayDAO dao = new StudentDisplayDAO();
-        List<StudentDisplayDTO> studentList = dao.getStudentsByCourse("CSP600");
+        List<StudentDisplayDTO> studentList = dao.getStudentsByCourse(course); // passing course_id directly
 
-
-        // Simpan dalam request
         request.setAttribute("studentList", studentList);
 
-        // Forward ke JSP
-        RequestDispatcher rd = request.getRequestDispatcher("CSP600.jsp");
-        rd.forward(request, response);
-       
+        // Direct to the correct JSP based on course_id
+        if ("2".equals(course)) {
+            request.getRequestDispatcher("CSP650.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("CSP600.jsp").forward(request, response);
+        }
     }
 }
-

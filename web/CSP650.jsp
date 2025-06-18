@@ -1,5 +1,6 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     // Retrieve user information from session
@@ -35,7 +36,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>UiTM FYP System - CSP600</title>
+        <title>UiTM FYP System - CSP650</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
         <style>
                 /* Container Styles */
@@ -178,7 +179,7 @@
     <div class="main-content">
         <h2 class="page-title">List of Student CSP650</h2>
         <div class="table-container">
-            <table class="supervisor-table">
+            <table>
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -189,27 +190,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Nur Aisyah Binti Khalid</td>
-                        <td>2023123456</td>
-                        <td>CS240</td>
-                        <td>Dr. Rahman</td>
-                        <td>
-                            <button class="btn-edit">Edit</button>
-                            <button class="btn-delete" onclick="return confirm('Delete student?');">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Ahmad Faris Bin Zulkifli</td>
-                        <td>2023123477</td>
-                        <td>CS240</td>
-                        <td>Dr. Rahman</td>
-                        <td>
-                            <button class="btn-edit">Edit</button>
-                            <button class="btn-delete" onclick="return confirm('Delete student?');">Delete</button>
-                        </td>
-                    </tr>
-                    <!-- Add more rows as needed -->
+                    <c:forEach var="student" items="${studentList}">
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.studentId}</td>
+                            <td>${student.programme}</td>
+                            <td>${student.supervisorName}</td>
+                            <td>
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-delete" onclick="return confirm('Delete student?');">Delete</button>
+                            </td>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>

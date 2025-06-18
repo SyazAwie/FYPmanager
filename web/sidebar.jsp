@@ -195,8 +195,8 @@
                             <span class="arrow">&#9662;</span>
                         </div>
                         <div class="submenu">
-                            <a href="StudentListServlet" class="nav-link">CSP600</a>
-                            <a href="CSP650.jsp" class="nav-link">CSP650</a>
+                            <a href="StudentList?course=1" class="nav-link">CSP600</a>
+                            <a href="StudentList?course=2" class="nav-link">CSP650</a>
                         </div>
                     </li>
                     
