@@ -31,12 +31,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Proposal Idea</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
     <style>
         /* Add this container to wrap your proposal card */
         .proposal-card-container {
@@ -299,9 +301,22 @@
     </style>
 </head>
 <body>
-    <jsp:include page="sidebar.jsp" />
+    <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
+    
     
     <% if ("student".equals(userRole)) { %>
+    <div class="main-content">
     <div class="proposal-card-container">
     <div class="proposal-card">
         <div class="decoration dec-1"></div>
@@ -342,8 +357,9 @@
         </div>
     </div>
     </div>
+    </div>
     <% } %>
-
+    <jsp:include page="sidebarScript.jsp" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // File upload functionality

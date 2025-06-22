@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UiTM FYP - Reusable Components</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* ==== BASE STYLES ==== */
+        :root {
+            --primary: #4b2e83;
+            --secondary: #6d4ac0;
+            --accent: #b399d4;
+            --light: #f9f7fd;
+            --dark: #1a0d3f;
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 70px;
+            --topbar-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* ==== MAIN CONTENT STYLES ==== */
+        .main-content {
+            padding: 30px;
+            padding-top: calc(var(--topbar-height) + 30px);
+            transition: var(--transition);
+            margin-left: var(--sidebar-width);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(179, 153, 212, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4CAF50;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* ==== SIDEBAR STYLES ==== */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            left: 0;
+            top: 0;
+        }
+
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 15px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            white-space: nowrap;
+        }
+
+        #sidebar.collapsed .user-info {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            margin-left: 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: -15px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            color: var(--primary);
+            font-size: 1.1rem;
+            z-index: 1001;
+            transition: var(--transition);
+        }
+
+        .toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .menu-item:hover::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--accent);
+        }
+
+        .menu-icon {
+            font-size: 1.4rem;
+            width: 30px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .menu-text {
+            margin-left: 15px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+
+        #sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            margin-left: 0;
+        }
+
+        #sidebar.collapsed .menu-item {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        #sidebar.collapsed .menu-item:hover .menu-text {
+            position: absolute;
+            left: calc(var(--sidebar-collapsed) + 10px);
+            background: var(--primary);
+            padding: 8px 15px;
+            border-radius: 4px;
+            opacity: 1;
+            width: auto;
+            height: auto;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add this to your existing CSS */
+        .sidebar-menu .menu-item#logoutBtn {
+            margin-top: auto; /* Pushes logout to bottom */
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-menu .menu-item#logoutBtn:hover {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6b6b;
+        }
+
+        .sidebar-menu .menu-item#logoutBtn:hover::before {
+            background: #ff6b6b;
+        }
+
+        .sidebar-menu .menu-item#logoutBtn .menu-icon {
+            color: #ff6b6b;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px 20px;
+        }
+
+        /* ==== TOPBAR STYLES ==== */
+        #topbar {
+            height: var(--topbar-height);
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 999;
+            transition: var(--transition);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #eee;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(179, 153, 212, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .notification-btn {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent);
+            color: var(--dark);
+            font-size: 0.7rem;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: 0;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .notification-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .notification-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .mark-read {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f9f9f9;
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            background: #f9f7fd;
+        }
+
+        .notification-item.unread {
+            background: rgba(179, 153, 212, 0.1);
+        }
+
+        .notification-icon {
+            background: var(--accent);
+            color: var(--primary);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-text {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .topbar-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .topbar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+            overflow: hidden;
+        }
+
+        .topbar-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .topbar-name {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .mobile-toggle {
+            display: none;
+            margin-right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Topbar container styles */
+        .topbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        /* Mobile toggle button */
+        .mobile-toggle {
+            margin-right: 10px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* Search container */
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        /* Notification button */
+        .notification-btn {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+
+        /* Profile section */
+        .topbar-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .topbar-left {
+                gap: 10px;
+            }
+            
+            .search-container {
+                max-width: 200px;
+            }
+            
+            .topbar-right {
+                gap: 15px;
+            }
+            
+            .topbar-name {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .search-container {
+                max-width: 150px;
+            }
+            
+            .mobile-toggle {
+                margin-right: 5px;
+            }
+        }
+
+        /* ==== OVERLAY STYLES ==== */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ==== RESPONSIVE STYLES ==== */
+        @media (max-width: 1200px) {
+            #sidebar {
+                transform: translateX(0);
+            }
+            
+            #sidebar.collapsed {
+                width: var(--sidebar-collapsed);
+            }
+            
+            .main-content, #topbar {
+                margin-left: var(--sidebar-width);
+            }
+            
+            #sidebar.collapsed ~ .main-content,
+            #sidebar.collapsed ~ #topbar {
+                margin-left: var(--sidebar-collapsed);
+            }
+        }
+
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            
+            #sidebar.active {
+                transform: translateX(0);
+            }
+            
+            #sidebar.collapsed {
+                width: var(--sidebar-width);
+                transform: translateX(-100%);
+            }
+            
+            #sidebar.active.collapsed {
+                width: var(--sidebar-collapsed);
+                transform: translateX(0);
+            }
+            
+            .main-content, #topbar {
+                margin-left: 0 !important;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                max-width: 200px;
+            }
+            
+            .topbar-name {
+                display: none;
+            }
+            
+            .notification-dropdown {
+                width: 300px;
+                right: -20px;
+            }
+            
+            .main-content {
+                padding: 20px;
+                padding-top: calc(var(--topbar-height) + 20px);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #topbar {
+                padding: 0 15px;
+            }
+            
+            .search-container {
+                max-width: 150px;
+            }
+            
+            .notification-dropdown {
+                width: 280px;
+                right: -50px;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Topbar will be inserted here -->
+    <div id="topbar"></div>
+    
+    <!-- Sidebar will be inserted here -->
+    <div id="sidebar"></div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="page-title">
+            <i class="fas fa-home"></i>
+            Dashboard
+        </h1>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">Current Project</div>
+                    <div class="card-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                </div>
+                <div class="card-value">Smart Campus System</div>
+                <div class="card-subtitle">Phase 2: Implementation</div>
+                <div class="card-footer">
+                    <i class="fas fa-check-circle"></i>
+                    On schedule
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">Days to Deadline</div>
+                    <div class="card-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                </div>
+                <div class="card-value">23</div>
+                <div class="card-subtitle">Progress Report Submission</div>
+                <div class="card-footer">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Due: Dec 15, 2023
+                </div>
+            </div>
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">Unread Messages</div>
+                    <div class="card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                </div>
+                <div class="card-value">5</div>
+                <div class="card-subtitle">From Supervisor & Examiner</div>
+                <div class="card-footer">
+                    <i class="fas fa-clock"></i>
+                    2 require response
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">
+            <i class="fas fa-tasks"></i>
+            Recent Activities
+        </h2>
+        
+        <div class="dashboard-card">
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">You submitted Chapter 2 Literature Review</div>
+                    <div class="activity-time">Today, 10:30 AM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-comment-dots"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Dr. Johnson provided feedback on your proposal</div>
+                    <div class="activity-time">Yesterday, 3:45 PM</div>
+                </div>
+            </div>
+            
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-text">Project milestone completed: System Architecture</div>
+                    <div class="activity-time">Dec 1, 2023</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and insert components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Insert topbar
+            document.getElementById('topbar').innerHTML = `
+                <div class="topbar-container">
+                    <div class="topbar-left">
+                        <div class="mobile-toggle" id="mobileToggle">
+                            <i class="fas fa-bars"></i>
+                        </div>
+                        
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" placeholder="Search...">
+                        </div>
+                    </div>
+                    
+                    <div class="topbar-right">
+                        <div class="notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count">3</span>
+                            
+                            <div class="notification-dropdown" id="notificationDropdown">
+                                <div class="notification-header">
+                                    <div class="notification-title">Notifications</div>
+                                    <div class="mark-read">Mark all as read</div>
+                                </div>
+                                <div class="notification-list">
+                                    <div class="notification-item unread">
+                                        <div class="notification-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="notification-content">
+                                            <div class="notification-text">Your project proposal has been approved</div>
+                                            <div class="notification-time">2 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="notification-item unread">
+                                        <div class="notification-icon">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </div>
+                                        <div class="notification-content">
+                                            <div class="notification-text">Deadline approaching: Progress Report due</div>
+                                            <div class="notification-time">5 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="notification-icon">
+                                            <i class="fas fa-comment"></i>
+                                        </div>
+                                        <div class="notification-content">
+                                            <div class="notification-text">Dr. Johnson commented on your document</div>
+                                            <div class="notification-time">Yesterday</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="topbar-profile">
+                            <div class="topbar-img">
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=b399d4&color=4b2e83" alt="Profile">
+                            </div>
+                            <div class="topbar-name">John Doe</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert sidebar
+            document.getElementById('sidebar').innerHTML = `
+                <div class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                
+                <div class="sidebar-header">
+                    <div class="user-profile">
+                        <div class="profile-img">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=b399d4&color=4b2e83" alt="Profile">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">John Doe</div>
+                            <div class="user-role">Student</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-menu">
+                    <a href="dashboard.html" class="menu-item active">
+                        <div class="menu-icon"><i class="fas fa-home"></i></div>
+                        <div class="menu-text">Dashboard</div>
+                    </a>
+                    <a href="ProgressReport.html" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="menu-text">My Projects</div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="menu-text">Schedule</div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="menu-text">Documents</div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-comments"></i></div>
+                        <div class="menu-text">Messages</div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-user-friends"></i></div>
+                        <div class="menu-text">Supervisors</div>
+                    </a>
+                    
+                    <div class="divider"></div>
+                    
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                        <div class="menu-text">Settings</div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                        <div class="menu-text">Help & Support</div>
+                    </a>
+                    
+                    <div class="divider"></div>
+                    
+                    <a href="#" class="menu-item" id="logoutBtn">
+                        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                        <div class="menu-text">Logout</div>
+                    </a>
+                </div>
+            `;
+            
+            // Initialize functionality
+            initComponents();
+        });
+        
+        function initComponents() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const markRead = document.querySelector('.mark-read');
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            const notificationCount = document.querySelector('.notification-count');
+            
+            // Check screen size and set initial sidebar state
+            function checkScreenSize() {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('collapsed');
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    sidebarOverlay.classList.remove('active');
+                }
+            }
+            
+            // Initial check
+            checkScreenSize();
+            
+            // Toggle sidebar collapse/expand
+            toggleSidebar.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                
+                // Rotate the icon
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleSidebar.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                } else {
+                    toggleSidebar.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                }
+            });
+            
+            // Mobile toggle for sidebar
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking overlay
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+            
+            // Notification dropdown toggle
+            notificationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('active');
+            });
+            
+            // Close notification dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notificationBtn.contains(e.target)) {
+                    notificationDropdown.classList.remove('active');
+                }
+            });
+            
+            // Logout functionality with SweetAlert
+            logoutBtn.addEventListener('click', () => {
+                Swal.fire({
+                    title: 'Logout Confirmation',
+                    text: 'Are you sure you want to logout?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4b2e83',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Logout',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Logged Out!',
+                            text: 'You have been successfully logged out.',
+                            icon: 'success',
+                            confirmButtonColor: '#4b2e83',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            // Redirect to login page
+                            window.location.href = 'login.html';
+                        });
+                    }
+                });
+            });
+            
+            // Mark notifications as read
+            if (markRead) {
+                markRead.addEventListener('click', () => {
+                    unreadItems.forEach(item => {
+                        item.classList.remove('unread');
+                    });
+                    notificationCount.textContent = '0';
+                });
+            }
+            
+            // Adjust main content position based on sidebar state
+            function adjustMainContent() {
+                const mainContent = document.querySelector('.main-content');
+                const topbar = document.getElementById('topbar');
+                
+                if (window.innerWidth > 992) {
+                    if (sidebar.classList.contains('collapsed')) {
+                        mainContent.style.marginLeft = '70px';
+                        topbar.style.left = '70px';
+                    } else {
+                        mainContent.style.marginLeft = '250px';
+                        topbar.style.left = '250px';
+                    }
+                } else {
+                    mainContent.style.marginLeft = '0';
+                    topbar.style.left = '0';
+                }
+            }
+            
+            // Initial adjustment
+            adjustMainContent();
+            
+            // Watch for sidebar changes
+            const observer = new MutationObserver(adjustMainContent);
+            observer.observe(sidebar, { attributes: true });
+            
+            // Watch for window resize
+            window.addEventListener('resize', () => {
+                checkScreenSize();
+                adjustMainContent();
+            });
+        }
+    </script>
+</body>
+</html>

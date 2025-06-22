@@ -70,7 +70,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>Login.jsp</welcome-file>
+        <welcome-file>homepage.html</welcome-file>
     </welcome-file-list>
     
 

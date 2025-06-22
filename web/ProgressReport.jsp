@@ -1,5 +1,4 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<jsp:include page="template.jsp" />
 <%
     String userId = String.valueOf(session.getAttribute("userId"));
     String userRole = (String) session.getAttribute("role");
@@ -9,6 +8,15 @@
         return;
     }
 %>
+
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
 
 <style>
     .progress-container {
@@ -126,6 +134,19 @@
     }
 </style>
 
+    <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
+
 <div class="main-content">
     <div class="progress-container">
         <h2>Write Your Progress Here</h2>
@@ -180,3 +201,5 @@
         </form>
     </div>
 </div>
+    
+    <jsp:include page="sidebarScript.jsp" />

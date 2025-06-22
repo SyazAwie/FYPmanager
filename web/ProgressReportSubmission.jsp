@@ -1,183 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student Dashboard (Proposal)</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
   <style>
-   body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #ffffff; /* White background */
-  display: flex;
-}
-
-
-    /* Sidebar */
-    .sidebar {
-      width: 220px;
-      background-color: #6c4978;
-      color: white;
-      height: 100vh;
-      padding: 20px;
-      position: fixed;
+    /* === PROGRESS REPORT CARD === */
+    .main-content .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 2.5rem;
+        max-width: 800px;
+        margin: 0 auto;
+        transition: var(--transition);
+        border: 1px solid rgba(75, 46, 131, 0.1);
     }
 
-    .sidebar img {
-      width: 100%;
-      margin-bottom: 30px;
+    .card h2 {
+        color: var(--primary);
+        margin-bottom: 1.8rem;
+        font-size: 1.75rem;
+        text-align: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(75, 46, 131, 0.15);
+        font-weight: 600;
     }
 
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
+    .card form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
     }
 
-    .sidebar ul li {
-      margin: 10px 0;
+    .card label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 500;
+        color: var(--dark);
+        font-size: 0.95rem;
     }
 
-    .sidebar ul li a {
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 8px;
-      transition: 0.3s;
+    .card input[type="text"] {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: #f9f9f9;
     }
 
-    .sidebar ul li a i {
-      margin-right: 10px;
+    .card input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(179, 153, 212, 0.2);
+        outline: none;
+        background-color: white;
     }
 
-    .sidebar ul li a:hover,
-    .sidebar ul li a.active {
-      background-color: #8e6aa6;
+    /* Full width form elements */
+    .card label[for="topic"],
+    .card label[for="scope"],
+    .card label[for="upload"] {
+        grid-column: span 2;
     }
 
-    /* Main Content */
-    .main-content {
-      margin-left: 220px;
-      padding: 40px;
-      width: 100%;
-    }
-
-    .card {
-      background-color: #f9f9f9;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: auto;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
+    /* Upload Section Styling */
     .upload-section {
-      border: 2px dashed #aaa;
-      padding: 30px;
-      text-align: center;
-      margin-top: 15px;
-      border-radius: 10px;
-      background-color: #f7f7f7;
+        border: 2px dashed var(--accent);
+        border-radius: 10px;
+        padding: 2.5rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        background: rgba(179, 153, 212, 0.05);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+        grid-column: span 2;
+    }
+
+    .upload-section:hover {
+        background: rgba(179, 153, 212, 0.1);
+        border-color: var(--secondary);
     }
 
     .upload-section i {
-      font-size: 40px;
-      margin-bottom: 10px;
-      color: #666;
+        font-size: 2.5rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
     }
 
+    .upload-section p {
+        color: var(--secondary);
+        margin: 0 0 1rem;
+        font-size: 1rem;
+    }
+
+    .upload-section input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Button Styles */
     .buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        grid-column: span 2;
+        gap: 1rem;
+        flex-wrap: wrap;
     }
 
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
+    .buttons > div {
+        display: flex;
+        gap: 1rem;
     }
 
-    .btn-submit {
-      background-color: #3b82f6;
-      color: white;
+    .btn-back, .btn-update, .btn-delete, .btn-submit {
+        padding: 0.8rem 1.8rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
     .btn-back {
-      background-color: #3b3bb4;
-      color: white;
+        background: #f5f5f5;
+        color: var(--dark);
+        border: 1px solid #e0e0e0;
+    }
+
+    .btn-back:hover {
+        background: #eaeaea;
+        transform: translateY(-1px);
     }
 
     .btn-update {
-      background-color: #22c55e;
-      color: white;
+        background: var(--accent);
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .btn-update:hover {
+        background: #a58ac9;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(179, 153, 212, 0.3);
     }
 
     .btn-delete {
-      background-color: #ef4444;
-      color: white;
+        background: #ffebee;
+        color: #d32f2f;
+        font-weight: 600;
     }
-    .btn-submit:active {
-  background-color: #1d4ed8; /* Darker blue when clicked */
-}
 
-.btn-back:active {
-  background-color: #1e3a8a; /* Darker navy when clicked */
-}
+    .btn-delete:hover {
+        background: #ffcdd2;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(255, 205, 210, 0.3);
+    }
 
-.btn-update:active {
-  background-color: #15803d; /* Darker green when clicked */
-}
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 2px 10px rgba(75, 46, 131, 0.2);
+    }
 
-.btn-delete:active {
-  background-color: #b91c1c; /* Darker red when clicked */
-}
+    .btn-submit:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(75, 46, 131, 0.3);
+    }
 
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card form {
+            grid-template-columns: 1fr;
+        }
 
-    input[type="file"] {
-      margin-top: 10px;
+        .card label[for="topic"],
+        .card label[for="scope"],
+        .card label[for="upload"] {
+            grid-column: span 1;
+        }
+
+        .buttons {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+
+        .buttons > div {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .btn-back, .btn-submit {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-content .card {
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+        }
+
+        .buttons > div {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn-update, .btn-delete {
+            width: 100%;
+        }
     }
   </style>
 </head>
 <body>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-     <img src="images/UiTM-Logo.png" alt="UiTM Logo" class="brand-logo">
-    <ul>
-        <li><a href="StudentDashboard.jsp"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="StudentProfile.jsp"><i class="fas fa-user"></i> Profile</a></li>
-        <li><a href="StudentProposalIdea.jsp"><i class="fas fa-file-alt"></i> Proposal Idea</a></li>
-        <li><a href="StudentProgressReport.jsp"><i class="fas fa-folder-open"></i> Progress Report</a></li>
-        <li><a href="StudentFinalReports.jsp"><i class="fas fa-clipboard"></i> Final Reports</a></li>
-        <li><a href="StudentEvaluation.jsp"><i class="fas fa-check-circle"></i> Evaluation</a></li>
-         <li><a href="StudentGuideline.jsp"><i class="fas fa-book"></i> Guideline</a></li>
-        <li><a href="StudentConsultationLog.jsp"><i class="fas fa-comments"></i> Consultation Log</a></li>
-        <li><a href="StudentLogout.jsp"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
-    </ul>
-  </div>
+    
+    <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
 
   <!-- Main Content -->
   <div class="main-content">
@@ -217,6 +294,6 @@
       </form>
     </div>
   </div>
-
+<jsp:include page="sidebarScript.jsp" />
 </body>
 </html>

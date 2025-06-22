@@ -50,11 +50,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>UiTM FYP System</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" type="text/css" href="styles.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="sidebarStyle.css">
+
         <style>
 .button-group button {
     padding: 10px 20px;
@@ -100,234 +104,255 @@
 </style>
 
     </head>
-    
-         <jsp:include page="sidebar.jsp" />
+    <body>
+        
+        <!-- Topbar -->
+        <header id="topbar">
+            <jsp:include page="topbar.jsp" />
+        </header>
+
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <jsp:include page="navbar.jsp" />
+        </aside>
+
+        <!-- Overlay -->
+        <div id="sidebarOverlay"></div>
+
          
-         <!-- Student Profile Section -->
-    <% if ("student".equals(role)) { %>
-        <div class="profile-container">
-            <div class="profile">
-                <h2>Welcome</h2>
+        <!-- Student Profile Section -->
+        <% if ("student".equals(role)) { %>
+        <div class="main-content">
+            <div class="profile-container">
+                <div class="profile">
+                    <h2>Welcome</h2>
 
-                <!-- Combined Form -->
-                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="user_id" value="<%= userId %>">
-                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+                    <!-- Combined Form -->
+                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="user_id" value="<%= userId %>">
+                        <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
 
-                    <!-- Avatar Section -->
-                    <div class="profile-photo">
-                        <img id="profileImg"
-                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
-                             alt="User Avatar"
-                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                        <!-- Avatar Section -->
+                        <div class="profile-photo">
+                            <img id="profileImg"
+                                 src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                                 alt="User Avatar"
+                                 style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
 
-                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
-                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
-                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
-                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                                <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                                <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                                <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Profile Info -->
-                    <div class="form-group">
-                        <label for="full-name">Full Name</label>
-                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
-                    </div>
+                        <!-- Profile Info -->
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="student-id">Student ID</label>
-                        <input type="text" id="student-id" name="student-id" value="<%= student.getStudent_id() %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="student-id">Student ID</label>
+                            <input type="text" id="student-id" name="student-id" value="<%= student.getStudent_id() %>" disabled>
+                        </div>
 
-                    <%  String selectedCourse = String.valueOf(student.getCourse_id());  %>
-                    <div class="form-group">
-                        <label for="course">Course</label>
-                        <select id="course" name="course" disabled>
-                            <option value="600" <%= "1".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
-                            <option value="650" <%= "2".equals(selectedCourse) ? "selected" : "" %>>CSP650</option>
-                        </select>
-                    </div>
+                        <%  String selectedCourse = String.valueOf(student.getCourse_id());  %>
+                        <div class="form-group">
+                            <label for="course">Course</label>
+                            <select id="course" name="course" disabled>
+                                <option value="600" <%= "1".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
+                                <option value="650" <%= "2".equals(selectedCourse) ? "selected" : "" %>>CSP650</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        </div>
 
-                    <!-- Password Fields -->
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
-                    </div>
+                        <!-- Password Fields -->
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="confirm-password">Confirm Password</label>
-                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                        </div>
 
-                    <!-- Action Buttons -->
-                    <div class="button-group">
-                        <button type="button" id="editButton">Edit Profile</button>
-                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
-                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
-                    </div>
-                </form>
+                        <!-- Action Buttons -->
+                        <div class="button-group">
+                            <button type="button" id="editButton">Edit Profile</button>
+                            <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                            <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    <% } %>                
-         <!-- Lecturer Profile Section -->
-    <% if ("lecturer".equals(role)) { %>
-        <div class="profile-container">
-            <div class="profile">
-                <h2>Welcome</h2>
+        <% } %>                
+             <!-- Lecturer Profile Section -->
+        <% if ("lecturer".equals(role)) { %>
+        <div class="main-content">
+            <div class="profile-container">
+                <div class="profile">
+                    <h2>Welcome</h2>
 
-                <!-- Combined Form -->
-                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="user_id" value="<%= userId %>">
-                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+                    <!-- Combined Form -->
+                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="user_id" value="<%= userId %>">
+                        <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
 
-                    <!-- Avatar Section -->
-                    <div class="profile-photo">
-                        <img id="profileImg"
-                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
-                             alt="User Avatar"
-                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                        <!-- Avatar Section -->
+                        <div class="profile-photo">
+                            <img id="profileImg"
+                                 src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                                 alt="User Avatar"
+                                 style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
 
-                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
-                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
-                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
-                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                                <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                                <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                                <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Profile Info -->
-                    <div class="form-group">
-                        <label for="full-name">Full Name</label>
-                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
-                    </div>
+                        <!-- Profile Info -->
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="student-id">Staff ID</label>
-                        <input type="text" id="lecturer-id" name="lecturer-id" value="<%= lecturer.getLecturer_id() %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="student-id">Staff ID</label>
+                            <input type="text" id="lecturer-id" name="lecturer-id" value="<%= lecturer.getLecturer_id() %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        </div>
 
-                    <!-- Password Fields -->
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
-                    </div>
+                        <!-- Password Fields -->
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="confirm-password">Confirm Password</label>
-                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                        </div>
 
-                    <!-- Action Buttons -->
-                    <div class="button-group">
-                        <button type="button" id="editButton">Edit Profile</button>
-                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
-                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
-                    </div>
-                </form>
+                        <!-- Action Buttons -->
+                        <div class="button-group">
+                            <button type="button" id="editButton">Edit Profile</button>
+                            <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                            <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    <% } %>
-         <!-- Supervisor Profile Section -->
-    <% if ("supervisor".equals(role)) { %>
-        <div class="profile-container">
-            <div class="profile">
-                <h2>Welcome</h2>
+        <% } %>
+             <!-- Supervisor Profile Section -->
+        <% if ("supervisor".equals(role)) { %>
+        <div class="main-content">
+            <div class="profile-container">
+                <div class="profile">
+                    <h2>Welcome</h2>
 
-                <!-- Combined Form -->
-                <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="user_id" value="<%= userId %>">
-                    <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+                    <!-- Combined Form -->
+                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="user_id" value="<%= userId %>">
+                        <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
 
-                    <!-- Avatar Section -->
-                    <div class="profile-photo">
-                        <img id="profileImg"
-                             src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
-                             alt="User Avatar"
-                             style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                        <!-- Avatar Section -->
+                        <div class="profile-photo">
+                            <img id="profileImg"
+                                 src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                                 alt="User Avatar"
+                                 style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
 
-                        <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
-                            <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
-                            <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
-                            <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                                <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                                <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                                <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Profile Info -->
-                    <div class="form-group">
-                        <label for="full-name">Full Name</label>
-                        <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
-                    </div>
+                        <!-- Profile Info -->
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="student-id">Staff ID</label>
-                        <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="student-id">Staff ID</label>
+                            <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" value="<%= email %>" disabled>
-                    </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        </div>
 
-                    <!-- Password Fields -->
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
-                    </div>
+                        <!-- Password Fields -->
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                        </div>
 
-                    <div class="form-group password-field" style="display:none;">
-                        <label for="confirm-password">Confirm Password</label>
-                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
-                    </div>
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                        </div>
 
-                    <!-- Action Buttons -->
-                    <div class="button-group">
-                        <button type="button" id="editButton">Edit Profile</button>
-                        <button type="button" id="saveButton" style="display:none;">Save Changes</button>
-                        <button type="button" id="cancelButton" style="display:none;">Cancel</button>
-                    </div>
-                </form>
+                        <!-- Action Buttons -->
+                        <div class="button-group">
+                            <button type="button" id="editButton">Edit Profile</button>
+                            <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                            <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    <% } %>
+        <% } %>
+        
+<jsp:include page="sidebarScript.jsp" />
 
 <script>
 document.getElementById('editButton').addEventListener('click', function () {
@@ -462,7 +487,6 @@ function previewPhoto(event) {
     }
 }
 </script>
-
-            
+    </body>            
     
 </html>
