@@ -298,6 +298,14 @@
                 margin-top: 15px;
             }
         }
+        
+        #fileInfo { display: none; }
+        #fileInfo.active {
+          display: block;
+          background: #f8f9fa;
+          padding: 10px;
+          border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -317,56 +325,56 @@
     
     <% if ("student".equals(userRole)) { %>
     <div class="main-content">
-    <div class="proposal-card-container">
-    <div class="proposal-card">
-        <div class="decoration dec-1"></div>
-        <div class="decoration dec-2"></div>
-        
-        <div class="proposal-title">My Proposal</div>
-        
-        <div class="profile-info">
-            <img src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>" 
-                        alt="Avatar" style="width:35px; height:35px; border-radius:50%; object-fit:cover;" />
-            <div class="profile-text">
-                <div class="student-name"><i class="fas fa-user"></i> <strong><%= userName %></strong></div>
-                <div class="student-role"><%= userRole %>"</div>
+        <div class="proposal-card-container">
+            <div class="proposal-card">
+                <div class="decoration dec-1"></div>
+                <div class="decoration dec-2"></div>
+
+                <div class="proposal-title">My Proposal</div>
+
+                <div class="profile-info">
+                    <img src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>" 
+                                alt="Avatar" style="width:35px; height:35px; border-radius:50%; object-fit:cover;" />
+                    <div class="profile-text">
+                        <div class="student-name"><i class="fas fa-user"></i> <strong><%= userName %></strong></div>
+                        <div class="student-role"><%= userRole %></div>
+                    </div>
+                </div>
+
+                <div class="upload-section">
+                    <label for="fileInput" class="upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div class="upload-text">Upload Proposal PDF</div>
+                        <div class="upload-subtext">Max file size: 10MB</div>
+                    </label>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-name"><i class="fas fa-file-pdf"></i> <span id="fileName"></span></div>
+                        <div class="file-size">Size: <span id="fileSize"></span></div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <a href="#" class="btn btn-view" id="viewBtn">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="#" class="btn btn-submit" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit
+                    </a>
+                </div>
             </div>
         </div>
-        
-        <div class="upload-section">
-            <label for="fileInput" class="upload-label">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <div class="upload-text">Upload Proposal PDF</div>
-                <div class="upload-subtext">Max file size: 10MB</div>
-            </label>
-            <input type="file" id="fileInput" accept=".pdf">
-            
-            <div class="file-info" id="fileInfo">
-                <div class="file-name"><i class="fas fa-file-pdf"></i> <span id="fileName"></span></div>
-                <div class="file-size">Size: <span id="fileSize"></span></div>
-            </div>
-        </div>
-        
-        <div class="btn-group">
-            <a href="#" class="btn btn-view" id="viewBtn">
-                <i class="fas fa-eye"></i> View
-            </a>
-            <a href="#" class="btn btn-submit" id="submitBtn">
-                <i class="fas fa-paper-plane"></i> Submit
-            </a>
-        </div>
-    </div>
-    </div>
     </div>
     <% } %>
     <jsp:include page="sidebarScript.jsp" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+    (function() {
         // File upload functionality
         document.getElementById('fileInput').addEventListener('change', function(e) {
             if (this.files.length > 0) {
                 const file = this.files[0];
-                
+
                 // Validate file type
                 if (file.type !== 'application/pdf') {
                     Swal.fire({
@@ -378,7 +386,7 @@
                     this.value = '';
                     return;
                 }
-                
+
                 // Validate file size (max 10MB)
                 if (file.size > 10 * 1024 * 1024) {
                     Swal.fire({
@@ -390,7 +398,7 @@
                     this.value = '';
                     return;
                 }
-                
+
                 // Show confirmation dialog
                 Swal.fire({
                     title: 'Confirm Upload',
@@ -425,12 +433,13 @@
                                 icon: 'success',
                                 confirmButtonColor: '#2ecc71'
                             });
-                            
+
                             // Update file info display
-                            document.getElementById('fileInfo').classList.add('active');
+                            const fileInfo = document.getElementById('fileInfo');
+                            fileInfo.style.display = 'block';
                             document.getElementById('fileName').textContent = file.name;
                             document.getElementById('fileSize').textContent = formatFileSize(file.size);
-                            
+
                             // Enable view button
                             document.getElementById('viewBtn').href = URL.createObjectURL(file);
                         });
@@ -441,7 +450,7 @@
                 });
             }
         });
-        
+
         // View button functionality
         document.getElementById('viewBtn').addEventListener('click', function(e) {
             if (!this.href || this.href === '#') {
@@ -454,11 +463,11 @@
                 });
             }
         });
-        
+
         // Submit button functionality
         document.getElementById('submitBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             if (!document.getElementById('viewBtn').href || document.getElementById('viewBtn').href === '#') {
                 Swal.fire({
                     title: 'No Proposal Uploaded',
@@ -468,7 +477,7 @@
                 });
                 return;
             }
-            
+
             Swal.fire({
                 title: 'Submit Proposal',
                 html: `
@@ -509,13 +518,14 @@
                 }
             });
         });
-        
+
         // Helper function to format file size
         function formatFileSize(bytes) {
             if (bytes < 1024) return bytes + ' bytes';
             else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
             else return (bytes / 1048576).toFixed(1) + ' MB';
         }
+    })();
     </script>
 </body>
 </html>

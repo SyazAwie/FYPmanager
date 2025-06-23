@@ -48,10 +48,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Form Management</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
     <style>
         table.form-table {
             width: 90%;
@@ -130,60 +134,70 @@
 </head>
 <body>
 
-<!-- ✅ SIDEBAR INCLUDE -->
-<jsp:include page="sidebar.jsp" />
+    <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
 
-<div class="main-content">
-    <h2 style="padding: 20px;">Available Forms</h2>
-    <table class="form-table">
-        <thead>
-            <tr>
-                <th>Form ID</th>
-                <th>Form Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                for (String[] form : forms) {
-                    String formId = form[0];
-                    String formName = form[1];
-                    String filename = formId.toLowerCase() + ".jsp";
+    <div class="main-content">
+        <h2 style="padding: 20px;">Available Forms</h2>
+        <table class="form-table">
+            <thead>
+                <tr>
+                    <th>Form ID</th>
+                    <th>Form Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    for (String[] form : forms) {
+                        String formId = form[0];
+                        String formName = form[1];
+                        String filename = formId.toLowerCase() + ".jsp";
 
-                    boolean canEdit = false;
-                    boolean canSignOnly = false;
+                        boolean canEdit = false;
+                        boolean canSignOnly = false;
 
-                    if ("F1".equals(formId) || "F5".equals(formId)) {
-                        if ("student".equals(userRole)) canEdit = true;
-                        else if ("supervisor".equals(userRole)) canSignOnly = true;
-                    } else if ("F2".equals(formId) || "F3".equals(formId) || "F4".equals(formId) || "F9".equals(formId) || "F13".equals(formId)) {
-                        if ("lecturer".equals(userRole)) canSignOnly = true;
-                    } else if ("F6a".equalsIgnoreCase(formId) || "F6b".equalsIgnoreCase(formId)) {
-                        if ("supervisor".equals(userRole)) canSignOnly = true;
-                    } else if ("F7".equals(formId) || "F8".equals(formId) || "F10".equals(formId) || "F11".equals(formId) || "F12".equals(formId)) {
-                        if ("supervisor".equals(userRole) || "examiner".equals(userRole)) canSignOnly = true;
-                    }
-            %>
-            <tr>
-                <td><%= formId %></td>
-                <td><a class="form-link" href="<%= filename %>?mode=view"><%= formName %></a></td>
-                <td>
-                    <div class="action-icons">
-                        <% if (canEdit || canSignOnly) { %>
-                            <a class="icon-button edit-btn" href="<%= filename %>?mode=edit" title="Edit or Sign Form">
-                                <i class="fas fa-pen"></i>
+                        if ("F1".equals(formId) || "F5".equals(formId)) {
+                            if ("student".equals(userRole)) canEdit = true;
+                            else if ("supervisor".equals(userRole)) canSignOnly = true;
+                        } else if ("F2".equals(formId) || "F3".equals(formId) || "F4".equals(formId) || "F9".equals(formId) || "F13".equals(formId)) {
+                            if ("lecturer".equals(userRole)) canSignOnly = true;
+                        } else if ("F6a".equalsIgnoreCase(formId) || "F6b".equalsIgnoreCase(formId)) {
+                            if ("supervisor".equals(userRole)) canSignOnly = true;
+                        } else if ("F7".equals(formId) || "F8".equals(formId) || "F10".equals(formId) || "F11".equals(formId) || "F12".equals(formId)) {
+                            if ("supervisor".equals(userRole) || "examiner".equals(userRole)) canSignOnly = true;
+                        }
+                %>
+                <tr>
+                    <td><%= formId %></td>
+                    <td><a class="form-link" href="<%= filename %>?mode=view"><%= formName %></a></td>
+                    <td>
+                        <div class="action-icons">
+                            <% if (canEdit || canSignOnly) { %>
+                                <a class="icon-button edit-btn" href="<%= filename %>?mode=edit" title="Edit or Sign Form">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                            <% } %>
+                            <a class="icon-button download-btn" href="DownloadFormServlet?form=<%= formId %>" title="Download PDF">
+                                <i class="fas fa-download"></i>
                             </a>
-                        <% } %>
-                        <a class="icon-button download-btn" href="DownloadFormServlet?form=<%= formId %>" title="Download PDF">
-                            <i class="fas fa-download"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
-</div>
-
+                        </div>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+<jsp:include page="sidebarScript.jsp" />
 </body>
 </html>
