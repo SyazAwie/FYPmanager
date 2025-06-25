@@ -85,7 +85,6 @@
                 <div class="menu-arrow">&#9662;</div>
             </div>
             <div class="submenu">
-                <a href="Plagiarism.jsp" class="submenu-item">Form</a>
                 <a href="#" class="submenu-item">Plagiarism</a>
             </div>
         </div>
