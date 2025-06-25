@@ -1,3 +1,33 @@
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page errorPage="error.jsp" %>
+<%
+    // Retrieve user information from session
+    String userId = String.valueOf(session.getAttribute("userId"));
+    String userRole = (String) session.getAttribute("role");
+    String userName = (String) session.getAttribute("userName");
+    String userAvatar = (String) session.getAttribute("avatar");
+    
+    // Set default values if null
+    if(userName == null || "null".equals(userName)) {
+        userName = "User";
+    }
+    // Check login/session
+    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
+        response.sendRedirect("Login.jsp?error=sessionExpired");
+        return;
+    }
+    
+    Map<String, String> roleNames = new HashMap<String, String>();
+    roleNames.put("supervisor", "Supervisor");
+    roleNames.put("student", "Student");
+    roleNames.put("lecturer", "Lecturer");
+    roleNames.put("admin", "Administrator");
+
+    String displayRole = roleNames.getOrDefault(userRole, "User");
+%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,236 +40,162 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="sidebarStyle.css">
   <style>
-    /* === PROGRESS REPORT CARD === */
-    .main-content .card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        padding: 2.5rem;
-        max-width: 800px;
-        margin: 0 auto;
-        transition: var(--transition);
-        border: 1px solid rgba(75, 46, 131, 0.1);
+  .card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  h2 {
+    color: var(--dark);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+
+  h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.75rem;
+    flex: 1;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .form-group input[type="text"] {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+
+  .form-group input[type="text"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(75, 46, 131, 0.1);
+    outline: none;
+  }
+  
+  .form-group input[readonly] {
+      background-color: rgba(179, 153, 212, 0.1);
+      border-color: var(--accent);
+      color: var(--dark);
+      cursor: not-allowed;
     }
 
-    .card h2 {
-        color: var(--primary);
-        margin-bottom: 1.8rem;
-        font-size: 1.75rem;
-        text-align: center;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(75, 46, 131, 0.15);
-        font-weight: 600;
-    }
+  .upload-section {
+    border: 2px dashed var(--accent);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    background-color: var(--light);
+    transition: var(--transition);
+    margin-top: 0.5rem;
+  }
 
-    .card form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
+  .upload-section:hover {
+    border-color: var(--primary);
+    background-color: rgba(179, 153, 212, 0.1);
+  }
 
-    .card label {
-        display: block;
-        margin-bottom: 0.6rem;
-        font-weight: 500;
-        color: var(--dark);
-        font-size: 0.95rem;
-    }
+  .upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
 
-    .card input[type="text"] {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: var(--transition);
-        background-color: #f9f9f9;
-    }
+  .upload-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+  }
 
-    .card input[type="text"]:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(179, 153, 212, 0.2);
-        outline: none;
-        background-color: white;
-    }
+  .upload-section p {
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
 
-    /* Full width form elements */
-    .card label[for="topic"],
-    .card label[for="scope"],
-    .card label[for="upload"] {
-        grid-column: span 2;
-    }
+  .file-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    display: none;
+  }
 
-    /* Upload Section Styling */
-    .upload-section {
-        border: 2px dashed var(--accent);
-        border-radius: 10px;
-        padding: 2.5rem 1rem;
-        text-align: center;
-        cursor: pointer;
-        transition: var(--transition);
-        background: rgba(179, 153, 212, 0.05);
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 150px;
-        grid-column: span 2;
-    }
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+    gap: 1rem;
+  }
 
-    .upload-section:hover {
-        background: rgba(179, 153, 212, 0.1);
-        border-color: var(--secondary);
-    }
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .readonly-field {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--light);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    color: var(--dark);
+    font-weight: 500;
+    min-height: 52px; /* Match input field height */
+  }
 
-    .upload-section i {
-        font-size: 2.5rem;
-        color: var(--secondary);
-        margin-bottom: 1rem;
-    }
+  .readonly-field i {
+    margin-right: 12px;
+    color: var(--primary);
+    font-size: 1.1rem;
+  }
 
-    .upload-section p {
-        color: var(--secondary);
-        margin: 0 0 1rem;
-        font-size: 1rem;
-    }
+  .readonly-field span {
+    flex: 1;
+  }
 
-    .upload-section input[type="file"] {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
+  /* Make it visually distinct from editable fields */
+  .form-group input[type="text"] {
+    background-color: white;
+    border: 2px solid var(--accent);
+  }
 
-    /* Button Styles */
-    .buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 1.5rem;
-        grid-column: span 2;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .buttons > div {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .btn-back, .btn-update, .btn-delete, .btn-submit {
-        padding: 0.8rem 1.8rem;
-        border-radius: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        border: none;
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .btn-back {
-        background: #f5f5f5;
-        color: var(--dark);
-        border: 1px solid #e0e0e0;
-    }
-
-    .btn-back:hover {
-        background: #eaeaea;
-        transform: translateY(-1px);
-    }
-
-    .btn-update {
-        background: var(--accent);
-        color: var(--primary);
-        font-weight: 600;
-    }
-
-    .btn-update:hover {
-        background: #a58ac9;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(179, 153, 212, 0.3);
-    }
-
-    .btn-delete {
-        background: #ffebee;
-        color: #d32f2f;
-        font-weight: 600;
-    }
-
-    .btn-delete:hover {
-        background: #ffcdd2;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(255, 205, 210, 0.3);
-    }
-
-    .btn-submit {
-        background: var(--primary);
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 2px 10px rgba(75, 46, 131, 0.2);
-    }
-
-    .btn-submit:hover {
-        background: var(--secondary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(75, 46, 131, 0.3);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .card form {
-            grid-template-columns: 1fr;
-        }
-
-        .card label[for="topic"],
-        .card label[for="scope"],
-        .card label[for="upload"] {
-            grid-column: span 1;
-        }
-
-        .buttons {
-            flex-direction: column-reverse;
-            gap: 1rem;
-        }
-
-        .buttons > div {
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        .btn-back, .btn-submit {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .main-content .card {
-            padding: 1.5rem;
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-        }
-
-        .buttons > div {
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .btn-update, .btn-delete {
-            width: 100%;
-        }
-    }
-  </style>
+  .form-group input[type="text"]:focus {
+    background-color: white;
+    border-color: var(--primary);
+  }
+  
+</style>
 </head>
 <body>
     
@@ -261,39 +217,102 @@
     <div class="card">
       <h2>Write your progress report here:</h2>
       <form action="#" method="post" enctype="multipart/form-data">
-        <label for="fullname">Full Name:</label>
-        <input type="text" id="fullname" name="fullname" required>
-
-        <label for="studentid">Student ID:</label>
-        <input type="text" id="studentid" name="studentid" required>
-
-        <label for="semester">Semester:</label>
-        <input type="text" id="semester" name="semester" required>
-
-        <label for="topic">Topic:</label>
-        <input type="text" id="topic" name="topic" required>
-
-        <label for="scope">Scope:</label>
-        <input type="text" id="scope" name="scope" required>
-
-        <label for="upload">Upload File:</label>
-        <div class="upload-section">
-          <i class="fas fa-file-upload"></i>
-          <p>Drop your files here</p>
-          <input type="file" name="proposalFile" id="upload">
+        <!-- Auto-filled Name and ID in one row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name:</label>
+            <div class="readonly-field">
+              <i class="fas fa-user"></i>
+              <input type="text" value="<%= userName %>" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Student ID:</label>
+            <div class="readonly-field">
+              <i class="fas fa-id-card"></i>
+              <input type="text" value="<%= userId %>" readonly>
+            </div>
+          </div>
+        </div>
+            
+        <div class="form-row">
+          <div class="form-group">
+            <label>Semester:</label>
+            <div class="readonly-field">
+              <i class="fas fa-calendar-alt"></i>
+              <input type="text" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Topic:</label>
+            <div class="readonly-field">
+              <i class="fas fa-book"></i>
+              <input type="text" value="" readonly>
+            </div>
+          </div>
         </div>
 
-        <div class="buttons">
-          <button type="button" class="btn-back">Back</button>
-          <div>
-            <button type="submit" class="btn-update">Update</button>
-            <button type="submit" class="btn-delete">Delete</button>
+        <!-- Editable form fields -->
+        <div class="form-group">
+          <label for="scope">Scope:</label>
+          <input type="text" id="scope" name="scope" required>
+        </div>
+
+        <!-- Upload section -->
+        <div class="form-group">
+          <label for="upload">Upload File:</label>
+          <div class="upload-section">
+            <div class="upload-content">
+              <i class="fas fa-cloud-upload-alt upload-icon"></i>
+              <h3>Drag & Drop Files Here</h3>
+              <p>or click to browse (PDF, DOCX, PPTX)</p>
+            </div>
+            <input type="file" name="proposalFile" id="upload">
           </div>
-          <button type="submit" class="btn-submit">Submit</button>
+          <div class="file-info">
+            <div class="file-name">
+              <i class="fas fa-file-alt"></i>
+              <span>No file selected</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form buttons -->
+        <div class="buttons">
+          <button type="button" class="btn btn-back" onclick="showBackAlert()">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <div class="action-buttons">
+            <button type="button" class="btn btn-update" onclick="showUpdateAlert()">
+              <i class="fas fa-sync-alt"></i> Update
+            </button>
+            <button type="button" class="btn btn-delete" onclick="showDeleteAlert()">
+              <i class="fas fa-trash-alt"></i> Delete
+            </button>
+          </div>
+          <button type="submit" class="btn btn-submit btn-lg">
+            <i class="fas fa-check-circle"></i> Submit
+          </button>
         </div>
       </form>
     </div>
   </div>
 <jsp:include page="sidebarScript.jsp" />
+<script>
+  // File upload display logic
+  document.getElementById('upload').addEventListener('change', function(e) {
+    const fileInfo = document.querySelector('.file-info');
+    const fileName = document.querySelector('.file-name span');
+    const file = e.target.files[0];
+    
+    if (file) {
+      fileInfo.style.display = 'block';
+      fileName.textContent = file.name;
+      // You could add file size here too if needed
+    } else {
+      fileInfo.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>

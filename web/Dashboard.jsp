@@ -487,7 +487,7 @@
 
     <!-- Supervisor Dashboard -->
    <% if ("supervisor".equals(userRole)) { %>
-            <div class="dashboard-body">
+            <div class="main-content">
                 <div class="welcome-info">
                     <h2>Welcome, <%= userName %></h2>
                     <p><%= displayRole %></p>
