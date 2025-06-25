@@ -81,7 +81,10 @@
         }
 
         .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
+        margin-right: 10px;  /* Memberi sedikit ruang antara checkbox dan teks */
+        width: 16px;        /* Menetapkan lebar tetap */
+        height: 16px;       /* Menetapkan tinggi tetap */
+        transform: scale(0.8); /* Optional: Untuk mengecilkan sedikit lagi */
         }
 
         .submit-btn {
