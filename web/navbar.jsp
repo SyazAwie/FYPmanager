@@ -73,7 +73,7 @@
             <div class="menu-text">Students</div>
         </a>
 
-        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/form.jsp") ? "active" : "" %>">
+        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Form.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
             <div class="menu-text">Forms</div>
         </a>
@@ -85,10 +85,14 @@
                 <div class="menu-arrow">&#9662;</div>
             </div>
             <div class="submenu">
-                <a href="Plagiarism.jsp" class="submenu-item">Form</a>
                 <a href="#" class="submenu-item">Plagiarism</a>
             </div>
         </div>
+            
+        <a href="Evaluation.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Evaluation.jsp") ? "active" : "" %>">
+            <div class="menu-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="menu-text">Evaluation</div>
+        </a>
 
         <a href="#" class="menu-item">
             <div class="menu-icon"><i class="fas fa-folder-open"></i></div>
@@ -106,37 +110,32 @@
             <div class="menu-text">Proposal Idea</div>
         </a>
 
-        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("form.jsp") ? "active" : "" %>">
+        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Form.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
             <div class="menu-text">Forms</div>
         </a>
 
-        <a href="ProgressReportSubmission.jsp" class="menu-item">
+        <a href="ProgressReportSubmission.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ProgressReportSubmission.jsp") ? "active" : "" %>"">
             <div class="menu-icon"><i class="fas fa-tasks"></i></div>
             <div class="menu-text">Progress Report</div>
         </a>
 
-        <a href="SubmitFinalReports.jsp" class="menu-item">
+        <a href="SubmitFinalReports.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/SubmitFinalReports.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-pdf"></i></div>
             <div class="menu-text">Final Reports</div>
         </a>
 
-        <a href="Evaluation.jsp" class="menu-item">
-            <div class="menu-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="menu-text">Evaluation</div>
-        </a>
-
-        <a href="Guideline.jsp" class="menu-item">
+        <a href="Guideline.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Guideline.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-book"></i></div>
             <div class="menu-text">Guideline</div>
         </a>
 
-        <a href="StudentConsultationLog.jsp" class="menu-item">
+        <a href="StudentConsultationLog.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/StudentConsultationLog.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-comments"></i></div>
             <div class="menu-text">Consultation Log</div>
         </a>
 
-        <a href="PastReports.jsp" class="menu-item">
+        <a href="PastReports.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/PastReports.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-archive"></i></div>
             <div class="menu-text">Past Reports</div>
         </a>
@@ -171,12 +170,12 @@
             </div>
         </div>
 
-        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("form.jsp") ? "active" : "" %>">
+        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Form.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
             <div class="menu-text">Forms</div>
         </a>
 
-        <a href="LecturerReports.jsp" class="menu-item">
+        <a href="LecturerReports.jsp" class="menu-item <%= currentURI.endsWith("/LecturerReports.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-chart-bar"></i></div>
             <div class="menu-text">Reports</div>
         </a>

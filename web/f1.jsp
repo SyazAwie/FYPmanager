@@ -145,7 +145,7 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Student Name</label>
-                        <input type="text" name="studentName" <%= isEditable ? "" : "disabled" %> required>
+                        <input type="text" name="studentName" <&= userName %> <%= isEditable ? "" : "disabled" %> required>
                     </div>
                     <div class="form-group">
                         <label>Student ID</label>
