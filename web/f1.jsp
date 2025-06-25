@@ -1,15 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.*" %>
-
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%
     String userId = String.valueOf(session.getAttribute("userId"));
     String userRole = (String) session.getAttribute("role");
     String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
 
-    if (userName == null || "null".equals(userName)) {
-        userName = "User";
-    }
+    if (userName == null || "null".equals(userName)) userName = "User";
     if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
         response.sendRedirect("Login.jsp?error=sessionExpired");
         return;
@@ -18,196 +16,233 @@
         userAvatar = "default.png";
     }
 
-    String mode = request.getParameter("mode");
-    boolean canEdit = ("student".equals(userRole) || "supervisor".equals(userRole)) && "edit".equals(mode);
+    boolean isEditable = "student".equals(userRole);
 %>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>F1 - Mutual Acceptance Form</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <link rel="stylesheet" href="sidebarStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        
-        /* Fieldset Styling */
-        fieldset {
-          border: 1px solid #e0e6ed;
-          border-radius: 10px;
-          padding: 25px;
-          margin-bottom: 25px;
-          background: #f9fbfd;
-          position: relative;
-          transition: all 0.3s ease;
+        :root {
+            --primary: #4b2e83;
+            --secondary: #6d4ac0;
+            --accent: #b399d4;
+            --light: #f9f7fd;
+            --dark: #1a0d3f;
+            --white: #ffffff;
         }
-
-        fieldset:hover {
-          border-color: #3498db;
-          box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        .tabs {
+            display: flex;
+            border-bottom: 3px solid var(--primary);
+            margin: 0 20px;
         }
-
-        legend {
-          font-weight: 600;
-          color: #2c3e50;
-          background: #e9f7fe;
-          padding: 10px 20px;
-          border-radius: 30px;
-          border: 1px solid #bde0fe;
+        .tab-button {
+            padding: 12px 25px;
+            cursor: pointer;
+            border: none;
+            background: var(--light);
+            color: var(--dark);
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            transition: background 0.3s;
         }
-
-        /* Form Layout */
-        form {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 20px;
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
         }
-
-        @media (min-width: 768px) {
-          form {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          fieldset {
-            grid-column: span 2;
-          }
-
-          fieldset:last-child {
-            grid-column: span 2;
-          }
+        .tab-content {
+            display: none;
+            padding: 25px 30px;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 0 20px 30px;
         }
-
-        /* Label Styles */
-        label {
-          display: block;
-          margin-bottom: 8px;
-          font-weight: 500;
-          color: #2c3e50;
+        .tab-content.active {
+            display: block;
         }
-
-        /* Input Styles */
-        input[type="text"],
-        input[type="email"] {
-          width: 100%;
-          padding: 12px 15px;
-          border: 1px solid #d1d8e0;
-          border-radius: 8px;
-          font-size: 16px;
-          transition: all 0.3s ease;
-          background: #ffffff;
+        .form-section {
+            display: grid;
+            gap: 20px;
+            margin-top: 10px;
         }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus {
-          border-color: #3498db;
-          box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-          outline: none;
-        }
-
-        input[readonly] {
-          background-color: #f5f7fa;
-          color: #6c757d;
-          cursor: not-allowed;
-        }
-
-        /* Agreement Section */
-        fieldset:last-child p {
-          margin-bottom: 20px;
-          color: #495057;
-          line-height: 1.6;
-        }
-
-        fieldset:last-child label {
-          display: inline-block;
-          margin-right: 10px;
-          font-weight: 600;
-        }
-
-        /* Submit Button */
-        input[type="submit"] {
-          background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-          color: white;
-          border: none;
-          padding: 14px 28px;
-          font-size: 18px;
-          font-weight: 600;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: block;
-          margin: 20px auto 0;
-          width: 100%;
-          max-width: 250px;
-        }
-
-        input[type="submit"]:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 7px 15px rgba(52, 152, 219, 0.4);
-        }
-
-        /* Form Group */
         .form-group {
-          margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group input:disabled, .form-group textarea:disabled {
+            background: #f0f0f0;
+            color: #555;
+            cursor: not-allowed;
+        }
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            background: var(--secondary);
         }
     </style>
 </head>
 <body>
+    <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
 
-<jsp:include page="sidebar.jsp" />
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
 
-<div class="main-content" style="padding: 20px;">
-    <h2>F1 – Mutual Acceptance Form</h2>
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
 
-    <form action="SubmitF1Servlet" method="post">
-        <!-- Student Section -->
-        <fieldset>
-            <legend>Student Information</legend>
-            <label>Name:</label>
-            <input type="text" name="studentName" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Student ID:</label>
-            <input type="text" name="studentId" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Program:</label>
-            <input type="text" name="program" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Email:</label>
-            <input type="email" name="studentEmail" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Contact:</label>
-            <input type="text" name="studentPhone" <%= canEdit ? "" : "readonly='readonly'" %> />
-        </fieldset>
+    <div class="main-content">
+        <h2 style="padding: 20px; color: var(--dark); font-weight: bold;">F1 - Mutual Acceptance Form</h2>
 
-        <!-- Supervisor Section -->
-        <fieldset>
-            <legend>Supervisor Information</legend>
-            <label>Name:</label>
-            <input type="text" name="supervisorName" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Faculty:</label>
-            <input type="text" name="supervisorFaculty" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Email:</label>
-            <input type="email" name="supervisorEmail" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Contact:</label>
-            <input type="text" name="supervisorPhone" <%= canEdit ? "" : "readonly='readonly'" %> />
-        </fieldset>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab(event, 'studentTab')">Student Info</button>
+            <button class="tab-button" onclick="showTab(event, 'supervisorTab')">Supervisor Info</button>
+            <button class="tab-button" onclick="showTab(event, 'projectTab')">Project Info</button>
+            <button class="tab-button" onclick="showTab(event, 'agreementTab')">Agreement</button>
+        </div>
 
-        <!-- Project Info -->
-        <fieldset>
-            <legend>Project Information</legend>
-            <label>Project Area:</label>
-            <input type="text" name="projectArea" <%= canEdit ? "" : "readonly='readonly'" %> /><br><br>
-            <label>Project Title:</label>
-            <input type="text" name="projectTitle" <%= canEdit ? "" : "readonly='readonly'" %> />
-        </fieldset>
+        <!-- Tab Contents -->
+        <form action="SubmitF1Servlet" method="post">
+            <!-- Student Tab -->
+            <div class="tab-content active" id="studentTab">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Student Name</label>
+                        <input type="text" name="studentName" <%= isEditable ? "" : "disabled" %> required>
+                    </div>
+                    <div class="form-group">
+                        <label>Student ID</label>
+                        <input type="text" name="studentId" <%= isEditable ? "" : "disabled" %> required>
+                    </div>
+                    <div class="form-group">
+                        <label>Programme</label>
+                        <input type="text" name="programme" <%= isEditable ? "" : "disabled" %>>
+                    </div>
+                    <div class="action-area">
+                        <button type="button" class="action-btn" onclick="showTabById('supervisorTab')">Next</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Agreement Signatures -->
-        <fieldset>
-            <legend>Agreement</legend>
-            <p>I hereby understand the Terms and Conditions of supervision.</p>
-            <label>Student Signature:</label> ______________________ Date: __________<br><br>
-            <label>Supervisor Signature:</label> ___________________ Date: __________
-        </fieldset>
+            <!-- Supervisor Tab -->
+            <div class="tab-content" id="supervisorTab">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Supervisor Name</label>
+                        <input type="text" name="supervisorName" <%= isEditable ? "" : "disabled" %>>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="supervisorEmail" <%= isEditable ? "" : "disabled" %>>
+                    </div>
+                    <div class="action-area">
+                        <button type="button" class="action-btn" onclick="showTabById('projectTab')">Next</button>
+                    </div>
+                </div>
+            </div>
 
-        <% if (canEdit) { %>
-            <br><input type="submit" value="Submit Form" />
-        <% } %>
-    </form>
-</div>
+            <!-- Project Tab -->
+            <div class="tab-content" id="projectTab">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Project Title</label>
+                        <input type="text" name="projectTitle" <%= isEditable ? "" : "disabled" %>>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Description</label>
+                        <textarea name="projectDescription" rows="4" <%= isEditable ? "" : "disabled" %>></textarea>
+                    </div>
+                    <div class="action-area">
+                        <button type="button" class="action-btn" onclick="showTabById('agreementTab')">Next</button>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Agreement Tab -->
+            <div class="tab-content" id="agreementTab">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Agreement Statement</label>
+                        <textarea rows="5" disabled>
+I hereby confirm that I agree to the responsibilities and expectations outlined above for this Final Year Project.
+                        </textarea>
+                    </div>
+                    <% if (isEditable) { %>
+                    <div class="form-group">
+                        <label>Student Signature</label>
+                        <input type="text" name="studentSignature" required>
+                    </div>
+                    <div class="action-area">
+                        <button type="submit" class="action-btn">Submit Form</button>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <jsp:include page="sidebarScript.jsp" />
+
+    <script>
+        function showTab(evt, tabId) {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(btn => btn.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function showTabById(tabId) {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(btn => btn.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            const btn = Array.from(tabs).find(b => b.textContent.includes(tabId.replace('Tab', '')));
+            if (btn) btn.classList.add('active');
+        }
+    </script>
 </body>
 </html>

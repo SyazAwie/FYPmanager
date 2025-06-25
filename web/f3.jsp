@@ -1,193 +1,262 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String userId = String.valueOf(session.getAttribute("userId"));
+    String userRole = (String) session.getAttribute("role");
+    String userName = (String) session.getAttribute("userName");
+
+    if (userName == null || "null".equals(userName)) userName = "User";
+    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
+        response.sendRedirect("Login.jsp?error=sessionExpired");
+        return;
+    }
+
+    boolean isEditable = "lecturer".equals(userRole);
+%>
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Form F3 - Literature Review Evaluation</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    .inline-input {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .inline-input input[type="number"] {
-      width: 100px;
-    }
-    .wide-textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      border: 1px solid #bbb;
-      resize: vertical;
-    }
-  </style>
+    <title>F3 - Literature Review Evaluation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <link rel="stylesheet" href="sidebarStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #4b2e83;
+            --secondary: #6d4ac0;
+            --light: #f9f7fd;
+            --dark: #1a0d3f;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 3px solid var(--primary);
+            margin: 0 20px;
+        }
+
+        .tab-button {
+            padding: 12px 25px;
+            cursor: pointer;
+            border: none;
+            background: var(--light);
+            color: var(--dark);
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px 30px;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin: 0 20px 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            display: grid;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input[readonly], textarea[readonly] {
+            background: #f0f0f0;
+        }
+
+        .next-btn, .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover, .submit-btn:hover {
+            background: var(--secondary);
+        }
+
+        .form-title {
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .criteria-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .criteria-row textarea {
+            flex: 1;
+            height: 80px;
+        }
+
+        .criteria-row input[type="number"] {
+            width: 80px;
+        }
+    </style>
 </head>
 <body>
-  <!-- Mobile Toggle Button -->
-  <div class="mobile-toggle" onclick="showSidebar()">
-    <i class="fas fa-bars"></i>
-  </div>
+<header id="topbar">
+    <jsp:include page="topbar.jsp" />
+</header>
+<aside id="sidebar">
+    <jsp:include page="navbar.jsp" />
+</aside>
+<div id="sidebarOverlay"></div>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="close-sidebar" onclick="hideSidebar()">
-      <i class="fas fa-times"></i>
+<div class="main-content">
+    <h2 class="form-title">F3 - Literature Review Evaluation</h2>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab(event, 'studentTab')">Student Info</button>
+        <button class="tab-button" onclick="showTab(event, 'criteriaTab')">Evaluation Criteria</button>
+        <button class="tab-button" onclick="showTab(event, 'reviewerTab')">Reviewer Info</button>
     </div>
 
-    <div class="logo">
-      <img src="images/UiTM-Logo.png" alt="UiTM Logo">
-      <p>UNIVERSITI TEKNOLOGI MARA</p>
-      <div class="role-badge">Lecturer Dashboard</div>
-    </div>
-
-    <nav>
-      <ul>
-        <li><a href="#" class="nav-link active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-        <li><a href="#" class="nav-link"><i class="fas fa-user"></i><span>Profile</span></a></li>
-
-        <li class="dropdown">
-          <div class="nav-link parent-link">
-            <div>
-              <i class="fas fa-user-graduate"></i>
-              <span>Students</span>
+    <form action="SubmitF3Servlet" method="post">
+        <!-- Student Info -->
+        <div class="tab-content active" id="studentTab">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" name="studentName" <%= isEditable ? "" : "readonly" %> required>
+                </div>
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" name="studentId" <%= isEditable ? "" : "readonly" %> required>
+                </div>
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" name="projectTitle" <%= isEditable ? "" : "readonly" %> required>
+                </div>
+                <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
             </div>
-            <span class="arrow">&#9662;</span>
-          </div>
-          <div class="submenu">
-            <a href="#" class="nav-link">CSP600</a>
-            <a href="#" class="nav-link">CSP650</a>
-          </div>
-        </li>
+        </div>
 
-        <li class="dropdown">
-          <div class="nav-link parent-link">
-            <div>
-              <i class="fas fa-chalkboard-teacher"></i>
-              <span>Supervisors</span>
+        <!-- Evaluation Criteria -->
+        <div class="tab-content" id="criteriaTab">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Literature Reviewed (Relevance & Quality) - 40%</label>
+                    <div class="criteria-row">
+                        <textarea name="literatureComment" <%= isEditable ? "" : "readonly" %>></textarea>
+                        <input type="number" id="score1" min="0" max="10" <%= isEditable ? "" : "readonly" %>>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Critical Analysis - 40%</label>
+                    <div class="criteria-row">
+                        <textarea name="analysisComment" <%= isEditable ? "" : "readonly" %>></textarea>
+                        <input type="number" id="score2" min="0" max="10" <%= isEditable ? "" : "readonly" %>>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Clarity of Review - 20%</label>
+                    <div class="criteria-row">
+                        <textarea name="clarityComment" <%= isEditable ? "" : "readonly" %>></textarea>
+                        <input type="number" id="score3" min="0" max="5" <%= isEditable ? "" : "readonly" %>>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Total Marks (%)</label>
+                    <input type="text" id="totalScore" name="totalScore" readonly>
+                </div>
+                <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
             </div>
-            <span class="arrow">&#9662;</span>
-          </div>
-          <div class="submenu">
-            <a href="#" class="nav-link">Supervisors</a>
-            <a href="#" class="nav-link">Examiners</a>
-          </div>
-        </li>
+        </div>
 
-        <li><a href="#" class="nav-link"><i class="fas fa-file-alt"></i><span>Form</span></a></li>
-        <li><a href="#" class="nav-link"><i class="fas fa-chart-bar"></i><span>Report</span></a></li>
-        <li><a href="#" class="nav-link"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-        <li><a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-      </ul>
-    </nav>
-  </div>
-
-  <div class="main-content">
-    <div class="header">
-      <div class="search-bar">
-        <input type="text" placeholder="Search">
-      </div>
-      <div class="icons">
-        <span class="icon">?</span>
-        <span class="user-avatar">
-          <img src="images/default.png" alt="Avatar"
-            style="width:35px; height:35px; border-radius:50%; object-fit:cover;" />
-        </span>
-      </div>
-    </div>
-
-    <!-- FORM F3 CONTENT -->
-    <div class="dashboard-body">
-      <div class="box">
-        <h2>Form F3 - Literature Review Evaluation</h2>
-        <form oninput="
-          let total = 
-            (parseFloat(document.getElementById('score1').value) || 0) +
-            (parseFloat(document.getElementById('score2').value) || 0) +
-            (parseFloat(document.getElementById('score3').value) || 0);
-          document.getElementById('totalScore').value = total;
-        ">
-          <div class="form-group">
-            <label>Student Name:</label>
-            <input type="text" name="studentName" required />
-          </div>
-
-          <div class="form-group">
-            <label>Student ID:</label>
-            <input type="text" name="studentId" required />
-          </div>
-
-          <div class="form-group">
-            <label>Project Title:</label>
-            <input type="text" name="projectTitle" required />
-          </div>
-
-          <div class="form-group">
-            <label>Literature Reviewed (Relevance & Quality):</label>
-            <div class="inline-input">
-              <textarea name="literature" rows="3" required class="wide-textarea"></textarea>
-              <input type="number" id="score1" min="0" max="10" placeholder="/10" required />
+        <!-- Reviewer Info -->
+        <div class="tab-content" id="reviewerTab">
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Lecturer Name</label>
+                    <input type="text" name="lecturerName" value="<%= userName %>" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Remarks</label>
+                    <textarea name="remarks" rows="4" <%= isEditable ? "" : "readonly" %>></textarea>
+                </div>
+                <% if (isEditable) { %>
+                <button type="submit" class="submit-btn">Submit</button>
+                <% } %>
             </div>
-          </div>
+        </div>
+    </form>
+</div>
 
-          <div class="form-group">
-            <label>Critical Analysis:</label>
-            <div class="inline-input">
-              <textarea name="analysis" rows="3" required class="wide-textarea"></textarea>
-              <input type="number" id="score2" min="0" max="10" placeholder="/10" required />
-            </div>
-          </div>
+<jsp:include page="sidebarScript.jsp" />
 
-          <div class="form-group">
-            <label>Clarity of Review:</label>
-            <div class="inline-input">
-              <textarea name="clarity" rows="3" required class="wide-textarea"></textarea>
-              <input type="number" id="score3" min="0" max="5" placeholder="/5" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Overall Comment:</label>
-            <textarea name="comment" rows="4" class="wide-textarea"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Total Marks (%):</label>
-            <input type="number" id="totalScore" name="marks" readonly />
-          </div>
-
-          <div class="button-group">
-            <button type="submit" class="save-changes">Submit</button>
-            <button type="reset" class="btn">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function showSidebar() {
-      document.querySelector('.sidebar').classList.add('active');
+<script>
+    function showTab(evt, tabId) {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
     }
-    function hideSidebar() {
-      document.querySelector('.sidebar').classList.remove('active');
+
+    function showTabById(tabId) {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        const btn = Array.from(tabs).find(b => b.textContent.replace(/\s/g, '').toLowerCase().includes(tabId.replace('Tab', '').toLowerCase()));
+        if (btn) btn.classList.add('active');
     }
-    document.querySelectorAll('.dropdown').forEach(dropdown => {
-      dropdown.addEventListener('click', function () {
-        this.classList.toggle('active');
-      });
+
+    document.addEventListener("input", function () {
+        const s1 = parseFloat(document.getElementById('score1').value) || 0;
+        const s2 = parseFloat(document.getElementById('score2').value) || 0;
+        const s3 = parseFloat(document.getElementById('score3').value) || 0;
+        const weighted = (s1 * 4 + s2 * 4 + s3 * 4) / 10;
+        document.getElementById('totalScore').value = weighted.toFixed(2);
     });
-    document.addEventListener('click', function (event) {
-      const sidebar = document.querySelector('.sidebar');
-      const mobileToggle = document.querySelector('.mobile-toggle');
-      if (window.innerWidth <= 992 && sidebar.classList.contains('active') &&
-        !sidebar.contains(event.target) &&
-        event.target !== mobileToggle &&
-        !mobileToggle.contains(event.target)) {
-        hideSidebar();
-      }
-    });
-  </script>
+</script>
 </body>
 </html>

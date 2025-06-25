@@ -144,62 +144,44 @@
   <!-- Sidebar Include -->
   <jsp:include page="sidebar.jsp" />
 
-  <!-- Main Content -->
+ <!-- Main Content -->
   <div class="main-content">
     <div class="card">
       <h2>Write your final report here:</h2>
-      <form action="UploadFinalReportServlet" method="post" enctype="multipart/form-data">
-
-        <!-- Full Name -->
+      <form action="#" method="post" enctype="multipart/form-data">
         <label for="fullname">Full Name:</label>
         <input type="text" id="fullname" name="fullname" required>
 
-        <!-- Student ID & Semester -->
-        <div class="row">
-          <div class="input-group">
-            <label for="studentid">Student ID:</label>
-            <input type="text" id="studentid" name="studentid" required>
-          </div>
-          <div class="input-group">
-            <label for="semester">Semester:</label>
-            <input type="text" id="semester" name="semester" required>
-          </div>
-        </div>
+        <label for="studentid">Student ID:</label>
+        <input type="text" id="studentid" name="studentid" required>
 
-        <!-- Topic -->
+        <label for="semester">Semester:</label>
+        <input type="text" id="semester" name="semester" required>
+
         <label for="topic">Topic:</label>
         <input type="text" id="topic" name="topic" required>
 
-        <!-- Scope -->
         <label for="scope">Scope:</label>
         <input type="text" id="scope" name="scope" required>
 
-        <!-- Upload -->
         <label for="upload">Upload File:</label>
         <div class="upload-section">
           <i class="fas fa-file-upload"></i>
-          <p>Drop your file here</p>
-          <input type="file" name="finalReportFile" id="upload" required>
+          <p>Drop your files here</p>
+          <input type="file" name="proposalFile" id="upload">
         </div>
 
-        <!-- Buttons -->
         <div class="buttons">
-          <button type="button" class="btn-back" onclick="goBackToProgress()">Back</button>
+          <button type="button" class="btn-back">Back</button>
           <div>
-            <button type="submit" class="btn-update" formaction="UpdateFinalReportServlet">Update</button>
-            <button type="submit" class="btn-delete" formaction="DeleteFinalReportServlet">Delete</button>
+            <button type="submit" class="btn-update">Update</button>
+            <button type="submit" class="btn-delete">Delete</button>
           </div>
           <button type="submit" class="btn-submit">Submit</button>
         </div>
-
       </form>
     </div>
   </div>
 
-  <script>
-    function goBackToProgress() {
-      window.location.href = "StudentFinalReport.jsp#submission-section";
-    }
-  </script>
 </body>
 </html>
