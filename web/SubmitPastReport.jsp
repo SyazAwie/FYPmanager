@@ -1,26 +1,24 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" session="true" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page errorPage="error.jsp" %>
 <%
     // Retrieve user information from session
     String userId = String.valueOf(session.getAttribute("userId"));
     String userRole = (String) session.getAttribute("role");
     String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
-
+    
+    // Set default values if null
     if(userName == null || "null".equals(userName)) {
         userName = "User";
     }
-
+    // Check login/session
     if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
         response.sendRedirect("Login.jsp?error=sessionExpired");
         return;
     }
-
-    if (userAvatar == null || userAvatar.equals("null") || userAvatar.trim().isEmpty()) {
-        userAvatar = "default.png";
-    }
-
+    
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
     roleNames.put("student", "Student");
@@ -33,11 +31,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student Final Report</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    .main-content {
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
+    <style>
+        
+        
+      .main-content {
       margin-left: 220px;
       padding: 20px;
       width: calc(100% - 220px);

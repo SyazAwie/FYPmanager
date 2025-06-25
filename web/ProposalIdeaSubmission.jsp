@@ -1,66 +1,62 @@
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page errorPage="error.jsp" %>
+<%
+    // Retrieve user information from session
+    String userId = String.valueOf(session.getAttribute("userId"));
+    String userRole = (String) session.getAttribute("role");
+    String userName = (String) session.getAttribute("userName");
+    String userAvatar = (String) session.getAttribute("avatar");
+    
+    // Set default values if null
+    if(userName == null || "null".equals(userName)) {
+        userName = "User";
+    }
+    // Check login/session
+    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
+        response.sendRedirect("Login.jsp?error=sessionExpired");
+        return;
+    }
+    
+    Map<String, String> roleNames = new HashMap<String, String>();
+    roleNames.put("supervisor", "Supervisor");
+    roleNames.put("student", "Student");
+    roleNames.put("lecturer", "Lecturer");
+    roleNames.put("admin", "Administrator");
+
+    String displayRole = roleNames.getOrDefault(userRole, "User");
+%>
+
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sidebarStyle.css">
+    <style><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Student Dashboard (Proposal)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="sidebarStyle.css">
   <style>
-   body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #ffffff; /* White background */
-  display: flex;
-}
-
-
-    /* Sidebar */
-    .sidebar {
-      width: 220px;
-      background-color: #6c4978;
-      color: white;
-      height: 100vh;
-      padding: 20px;
-      position: fixed;
-    }
-
-    .sidebar img {
-      width: 100%;
-      margin-bottom: 30px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .sidebar ul li {
-      margin: 10px 0;
-    }
-
-    .sidebar ul li a {
-      color: white;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 8px;
-      transition: 0.3s;
-    }
-
-    .sidebar ul li a i {
-      margin-right: 10px;
-    }
-
-    .sidebar ul li a:hover,
-    .sidebar ul li a.active {
-      background-color: #8e6aa6;
-    }
-
-    /* Main Content */
     .main-content {
       margin-left: 220px;
       padding: 40px;
-      width: 100%;
+      width: calc(100% - 220px);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
     .card {
@@ -68,8 +64,10 @@
       border-radius: 15px;
       padding: 30px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: auto;
+      width: 100%;
+      max-width: 1200px;
+      min-height: 600px; 
+      box-sizing: border-box;
     }
 
     h2 {
@@ -83,7 +81,18 @@
       font-weight: bold;
     }
 
-    input[type="text"] {
+  
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+      input[type="text"] {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -105,19 +114,30 @@
       margin-bottom: 10px;
       color: #666;
     }
-
     .buttons {
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
       margin-top: 30px;
+      gap: 10px;
     }
 
+    .btn-group-middle {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    a.btn-back,
     button {
       padding: 10px 20px;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn-submit {
@@ -139,47 +159,26 @@
       background-color: #ef4444;
       color: white;
     }
+
     .btn-submit:active {
-  background-color: #1d4ed8; /* Darker blue when clicked */
-}
+      background-color: #1d4ed8;
+    }
 
-.btn-back:active {
-  background-color: #1e3a8a; /* Darker navy when clicked */
-}
+    .btn-back:active {
+      background-color: #1e3a8a;
+    }
 
-.btn-update:active {
-  background-color: #15803d; /* Darker green when clicked */
-}
+    .btn-update:active {
+      background-color: #15803d;
+    }
 
-.btn-delete:active {
-  background-color: #b91c1c; /* Darker red when clicked */
-}
-
-
-    input[type="file"] {
-      margin-top: 10px;
+    .btn-delete:active {
+      background-color: #b91c1c;
     }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-     <img src="images/UiTM-Logo.png" alt="UiTM Logo" class="brand-logo">
-    <ul>
-        <li><a href="StudentDashboard.jsp"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="StudentProfile.jsp"><i class="fas fa-user"></i> Profile</a></li>
-        <li><a href="StudentProposalIdea.jsp"><i class="fas fa-file-alt"></i> Proposal Idea</a></li>
-        <li><a href="StudentProgressReport.jsp"><i class="fas fa-folder-open"></i> Progress Report</a></li>
-        <li><a href="StudentFinalReports.jsp"><i class="fas fa-clipboard"></i> Final Reports</a></li>
-        <li><a href="StudentEvaluation.jsp"><i class="fas fa-check-circle"></i> Evaluation</a></li>
-        <li><a href="StudentGuideline.jsp"><i class="fas fa-book"></i> Guideline</a></li>
-        <li><a href="StudentConsultationLog.jsp"><i class="fas fa-comments"></i> Consultation Log</a></li>
-        <li><a href="StudentLogout.jsp"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
-    </ul>
-  </div>
-
-  <!-- Main Content -->
   <div class="main-content">
     <div class="card">
       <h2>Write your proposal here:</h2>
@@ -187,11 +186,16 @@
         <label for="fullname">Full Name:</label>
         <input type="text" id="fullname" name="fullname" required>
 
-        <label for="studentid">Student ID:</label>
-        <input type="text" id="studentid" name="studentid" required>
-
-        <label for="semester">Semester:</label>
-        <input type="text" id="semester" name="semester" required>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="studentid">Student ID:</label>
+            <input type="text" id="studentid" name="studentid" required>
+          </div>
+          <div class="form-group">
+            <label for="semester">Semester:</label>
+            <input type="text" id="semester" name="semester" required>
+          </div>
+        </div>
 
         <label for="topic">Topic:</label>
         <input type="text" id="topic" name="topic" required>
@@ -207,13 +211,14 @@
         </div>
 
         <div class="buttons">
-          <button type="button" class="btn-back">Back</button>
-          <div>
+          <a href="ProposalIdea.jsp" class="btn-back">Back</a>
+          <div class="btn-group-middle">
             <button type="submit" class="btn-update">Update</button>
             <button type="submit" class="btn-delete">Delete</button>
           </div>
           <button type="submit" class="btn-submit">Submit</button>
         </div>
+
       </form>
     </div>
   </div>
