@@ -42,6 +42,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="sidebarStyle.css">
   <style>
+      
+      :root {
+        --input-focus-shadow: 0 0 0 3px rgba(107, 77, 188, 0.1);
+      }
       .main-content h2 {
         color: var(--primary);
         font-size: 1.75rem;
@@ -236,6 +240,197 @@
         pointer-events: none;
         appearance: none;
       }
+      
+      .evaluation-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 1.5rem 0;
+        background-color: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .evaluation-table th {
+        background-color: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .evaluation-table td {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--gray-light);
+        vertical-align: top;
+      }
+
+      .evaluation-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .evaluation-table strong {
+        color: var(--dark);
+        font-weight: 600;
+      }
+
+      .evaluation-table small {
+        color: var(--gray);
+        font-size: 0.85rem;
+        display: block;
+        margin-top: 0.5rem;
+        line-height: 1.4;
+      }
+
+      .mark-input {
+        width: 70px;
+        padding: 0.75rem;
+        border: 2px solid var(--gray-light);
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        transition: var(--transition);
+        background-color: white;
+        color: var(--dark);
+      }
+
+      .mark-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(75, 46, 131, 0.1);
+        outline: none;
+      }
+
+      .mark-input:hover {
+        border-color: var(--accent);
+      }
+
+      /* Special styling for different score ranges */
+      .mark-input[value="10"],
+      .mark-input[value="9"] {
+        border-color: rgba(46, 125, 50, 0.3);
+        background-color: rgba(46, 125, 50, 0.05);
+      }
+
+      .mark-input[value="8"],
+      .mark-input[value="7"] {
+        border-color: rgba(104, 159, 56, 0.3);
+        background-color: rgba(104, 159, 56, 0.05);
+      }
+
+      .mark-input[value="6"],
+      .mark-input[value="5"] {
+        border-color: rgba(251, 192, 45, 0.3);
+        background-color: rgba(251, 192, 45, 0.05);
+      }
+
+      .mark-input[value="4"],
+      .mark-input[value="3"] {
+        border-color: rgba(255, 143, 0, 0.3);
+        background-color: rgba(255, 143, 0, 0.05);
+      }
+
+      .mark-input[value="2"],
+      .mark-input[value="1"],
+      .mark-input[value="0"] {
+        border-color: rgba(211, 47, 47, 0.3);
+        background-color: rgba(211, 47, 47, 0.05);
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 0.75rem;
+        border: 1px solid var(--gray-light);
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        resize: vertical;
+      }
+
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(107, 77, 188, 0.1);
+        outline: none;
+      }
+
+      /* Label styling */
+      .label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        min-width: 80px;
+        padding-left: 0.5rem;
+        border: 2px solid var(--gray-light); /* Thicker border */
+        border-radius: var(--border-radius);
+      }
+
+      .label[data-score="10"],
+      .label[data-score="9"] {
+        color: #2e7d32; /* Excellent */
+      }
+
+      .label[data-score="8"],
+      .label[data-score="7"] {
+        color: #689f38; /* Good */
+      }
+
+      .label[data-score="6"],
+      .label[data-score="5"] {
+        color: #fbc02d; /* Average */
+      }
+
+      .label[data-score="4"],
+      .label[data-score="3"] {
+        color: #ff8f00; /* Weak */
+      }
+
+      .label[data-score="2"],
+      .label[data-score="1"],
+      .label[data-score="0"] {
+        color: #d32f2f; /* Poor */
+      }
+      
+    .mark-input {
+        width: 70px;
+        padding: 0.75rem;
+        border: 2px solid #333; /* lebih gelap dan nipis */
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        transition: var(--transition);
+        background-color: #f9f9f9; /* beza dari putih */
+        color: var(--dark);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* lebih ketara */
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .mark-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(107, 77, 188, 0.25);
+        outline: none;
+    }
+
+    .mark-input:hover {
+        border-color: var(--accent);
+    }
+
+
+    /* Remove spinner arrows in some browsers */
+    .mark-input::-webkit-outer-spin-button,
+    .mark-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    .mark-input[type=number] {
+        -moz-appearance: textfield;
+    }
 
       /* Responsive adjustments */
       @media (max-width: 768px) {
@@ -308,7 +503,7 @@
   <input type="text" name="evaluatorName" value="<%= displayRole %>" readonly>
 </div>
 
-  <table>
+  <table class="evaluation-table">
     <tr>
       <th>Section</th>
       <th>Marks ( /10 )</th>
@@ -317,35 +512,35 @@
     </tr>
     <tr>
       <td><strong>Proposal Evaluation</strong><br><small>Problem statement, objectives, scope & background study</small></td>
-      <td><input type="number" min="0" max="10" oninput="setLabel(this.value, 'label1')"></td>
+      <td><input type="number" class="mark-input" min="0" max="10" step="1" oninput="setLabel(this.value, 'label1')"></td>
       <td class="label" id="label1"></td>
       <td><textarea placeholder="Comment on proposal quality..."></textarea></td>
     </tr>
     <tr>
       <td><strong>Progress Evaluation</strong><br><small>Tasks completed according to Gantt chart, consultation</small></td>
-      <td><input type="number" min="0" max="10" oninput="setLabel(this.value, 'label2')"></td>
+      <td><input type="number" class="mark-input" min="0" max="10" step="1" oninput="setLabel(this.value, 'label2')"></td>
       <td class="label" id="label2"></td>
       <td><textarea placeholder="Comment on progress and effort..."></textarea></td>
     </tr>
     <tr>
       <td><strong>System Functionality</strong><br><small>Working modules, interface design, logic, usability</small></td>
-      <td><input type="number" min="0" max="10" oninput="setLabel(this.value, 'label3')"></td>
+      <td><input type="number" class="mark-input" min="0" max="10" step="1" oninput="setLabel(this.value, 'label3')"></td>
       <td class="label" id="label3"></td>
       <td><textarea placeholder="Comment on system functions..."></textarea></td>
     </tr>
     <tr>
       <td><strong>Final Report</strong><br><small>Structure, content clarity, formatting, references</small></td>
-      <td><input type="number" min="0" max="10" oninput="setLabel(this.value, 'label4')"></td>
+      <td><input type="number" class="mark-input" min="0" max="10" step="1" oninput="setLabel(this.value, 'label4')"></td>
       <td class="label" id="label4"></td>
       <td><textarea placeholder="Comment on report quality..."></textarea></td>
     </tr>
     <tr>
       <td><strong>Presentation & Delivery</strong><br><small>Confident, clear communication, visual aid</small></td>
-      <td><input type="number" min="0" max="10" oninput="setLabel(this.value, 'label5')"></td>
+      <td><input type="number" class="mark-input" min="0" max="10" step="1" oninput="setLabel(this.value, 'label5')"></td>
       <td class="label" id="label5"></td>
       <td><textarea placeholder="Comment on presentation..."></textarea></td>
     </tr>
-  </table>
+</table>
 
   <button class="submit-btn">Submit Evaluation</button>
 </div> 
@@ -357,10 +552,10 @@ function setLabel(value, labelId) {
   let label = "";
   const score = parseInt(value);
   if (!isNaN(score)) {
-    if (score >= 9) label = "Excellent";
-    else if (score >= 7) label = "Very Good";
-    else if (score >= 5) label = "Satisfactory";
-    else if (score >= 3) label = "Weak";
+    if (score >= 9 && score <= 10) label = "Excellent";
+    else if (score >= 7 && score <= 8) label = "Very Good";
+    else if (score >= 5 && score <= 6) label = "Satisfactory";
+    else if (score >= 3 && score <= 4) label = "Weak";
     else label = "Poor";
   }
   document.getElementById(labelId).textContent = label;
