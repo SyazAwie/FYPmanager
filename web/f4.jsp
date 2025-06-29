@@ -64,11 +64,18 @@
         }
         .form-group input[readonly], textarea[readonly] { background: #f0f0f0; }
         .next-btn, .submit-btn {
-            background: var(--primary); color: white; padding: 10px 20px;
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-            float: right;
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
         }
-        .next-btn:hover, .submit-btn:hover { background: var(--secondary); }
+
+        .next-btn:hover, .submit-btn:hover {
+        background: var(--secondary);
+        }
         .inline-input { display: flex; gap: 10px; align-items: center; }
         .inline-input textarea { flex: 1; height: 80px; }
         .inline-input input[type="number"] { width: 100px; }
@@ -111,8 +118,10 @@
                     <label>Project Title</label>
                     <input type="text" name="projectTitle" <%= readOnly %> required>
                 </div>
+                <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
-            </div>
+                </div>
+                </div>
         </div>
 
         <!-- Evaluation Criteria -->
@@ -143,8 +152,10 @@
                     <label>Total Marks (out of 100)</label>
                     <input type="number" id="totalScore" name="totalScore" readonly>
                 </div>
+                    <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
-            </div>
+                    </div>
+                    </div>
         </div>
 
         <!-- Supervisor Info -->
@@ -159,7 +170,9 @@
                     <input type="date" name="dateScored" <%= readOnly %> required>
                 </div>
                 <% if (isSupervisor) { %>
+                <div class="submit-area">
                 <button type="submit" class="submit-btn">Submit</button>
+                </div>
                 <% } %>
             </div>
         </div>

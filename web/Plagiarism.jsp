@@ -17,6 +17,7 @@
     <jsp:include page="sidebar.jsp" />
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <title>Supervisor - Plagiarism Reports</title>
     <style>
         /* General styles (Copied from previous templates) */

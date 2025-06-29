@@ -36,209 +36,288 @@
     <title>UiTM FYP System</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="sidebarStyle.css">
     <style>
-        /* Cards Container */
-        .cards {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 20px;
-          margin-bottom: 30px;
-        }
+     
+/* UNIVERSAL WRAPPER (JIKA MAHU ROLE BASED) */
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  padding: 80px 40px 40px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+  
+}
 
-        /* Individual Cards - FIXED TEXT CONTRAST */
-        .card {
-          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-          color: #2c3e50;
-          border-radius: 15px;
-          padding: 20px;
-          text-align: center;
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          position: relative;
-          overflow: hidden;
-          border: 1px solid #dee2e6;
-        }
+/* LEFT/RIGHT PANELS - Flexible */
+.left-panel,
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
+/* WELCOME INFO */
+.welcome-info h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #2d2d2d;
+}
+.welcome-info p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
 
-        .card::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(52, 152, 219, 0.05) 0%, rgba(255,255,255,0) 70%);
-          transform: rotate(30deg);
-        }
+/* CARDS AREA */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.card {
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  font-size: 16px;
+  color: #333;
+  transition: all 0.3s ease;
+}
 
-        .card i {
-          font-size: 2.5rem;
-          margin-bottom: 10px;
-          background: #3498db;
-          color: white;
-          width: 70px;
-          height: 70px;
-          border-radius: 50%;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
+/* SUPERVISOR CARD */
+.supervisor-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #f0f4ff;
+  border-radius: 15px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+  width: 100%;
+  min-height: 180px;
+  box-sizing: border-box;
+  flex-wrap: wrap; /* penting untuk responsive */
+}
+.supervisor-img {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #4b8cf5;
+}
+.supervisor-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 200px;
+}
 
-        .card br {
-          display: block;
-          height: 8px;
-        }
+/* PROGRESS BARS */
+.horizontal-chart-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+.horizontal-bar {
+  margin-bottom: 15px;
+}
+.label {
+  display: inline-block;
+  width: 80px;
+  font-weight: bold;
+  color: #444;
+}
+.bar-wrapper {
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  height: 22px;
+  overflow: hidden;
+  width: 80%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.bar {
+  height: 100%;
+  line-height: 22px;
+  color: white;
+  padding-left: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  animation: growBar 1.2s ease-out forwards;
+}
+@keyframes growBar {
+  0% { width: 0; }
+}
+.bar-proposal { background: #4b8cf5; width: 85%; }
+.bar-progress { background: #f5b342; width: 55%; }
+.bar-final    { background: #f45b69; width: 20%; }
 
-        .card div {
-          font-size: 1.8rem;
-          font-weight: 700;
-          margin: 10px 0;
-          color: #2c3e50;
-        }
+/* ANNOUNCEMENTS */
+.announcement-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
 
-        /* Timetable Section */
-        .box.timetable {
-          background: white;
-          border-radius: 15px;
-          padding: 25px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-          margin-bottom: 30px;
-          border: 1px solid #eaeaea;
-        }
+/* DEADLINE CARDS */
+.deadline-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.deadline-card {
+  background-color: #f5f8ff;
+  border-left: 5px solid #4b8cf5;
+  padding: 12px 15px;
+  border-radius: 10px;
+}
+.deadline-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #333;
+}
+.deadline-card p,
+.deadline-card button {
+  font-size: 14px;
+  margin: 3px 0;
+}
+.deadline-card button {
+  background-color: #4b8cf5;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* Table Style - Blue Theme */
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.timetable-table thead {
+  background-color: #4b8cf5;
+  color: white;
+}
+.timetable-table th,
+.timetable-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+.timetable-table tbody tr:nth-child(odd) {
+  background-color: #f0f4ff;
+}
+.timetable-table tbody tr:hover {
+  background-color: #dceeff;
+}
 
-        .box.timetable h4 {
-          color: #2c3e50;
-          margin-bottom: 20px;
-          padding-bottom: 15px;
-          border-bottom: 2px solid #f0f4f8;
-          font-size: 1.4rem;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
+/* Make .card interactive (even without using <a>) */
+.card {
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
 
-        .box.timetable h4 i {
-          color: #3498db;
-          background: #e9f7fe;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
 
-        .timetable-table {
-          width: 100%;
-          border-collapse: collapse;
-          border-spacing: 0;
-        }
+/* Supervisor Dashboard Base Layout */
+.dashboard-body {
+  padding: 80px 40px 40px;
+  box-sizing: border-box;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
 
-        .timetable-table th {
-          background: #3498db;
-          color: white;
-          text-align: left;
-          padding: 15px 12px;
-          font-weight: 600;
-        }
+/* Card Colors */
+.purple { background-color: #eae6f8; }
+.yellow { background-color: #fff9e6; }
+.red    { background-color: #fdecea; }
+.green  { background-color: #e8f8f5; }
+.blue   { background-color: #eef6ff; }
+.cyan   { background-color: #e6faff; }
 
-        .timetable-table td {
-          padding: 12px;
-          border-bottom: 1px solid #f0f4f8;
-        }
+/* General Panel */
+.panel {
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  background-color: white;
+}
 
-        .timetable-table tr:nth-child(even) {
-          background-color: #f9fbfd;
-        }
+/* Summary Box Style */
+.summary-box {
+  text-align: center;
+}
+.summary-box h3 {
+  color: #2d2d2d;
+  margin-bottom: 10px;
+}
+.summary-box p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin: 5px 0;
+}
+.summary-box span {
+  font-size: 14px;
+  color: #666;
+}
 
-        .timetable-table tr:hover {
-          background-color: #f0f8ff;
-        }
+/* Table Style */
+.panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.panel th {
+  background-color: #4b8cf5;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+.panel td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+.panel tbody tr:nth-child(odd) {
+  background-color: #f4f9ff;
+}
+.panel tbody tr:hover {
+  background-color: #e8f2ff;
+}
+.panel a {
+  color: #2c3e50;
+  text-decoration: underline;
+}
 
-        .timetable-table th:first-child {
-          border-top-left-radius: 10px;
-        }
-
-        .timetable-table th:last-child {
-          border-top-right-radius: 10px;
-        }
-
-        /* Reminders Section */
-        .reminders {
-          background: white;
-          border-radius: 15px;
-          padding: 25px;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-          border: 1px solid #eaeaea;
-        }
-
-        .reminders h4 {
-          color: #2c3e50;
-          margin-bottom: 20px;
-          font-size: 1.4rem;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .reminders h4 i {
-          color: #e74c3c;
-          background: #fdedec;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .reminders ul {
-          list-style-type: none;
-          padding-left: 0;
-        }
-
-        .reminders li {
-          padding: 15px;
-          border-left: 4px solid #3498db;
-          margin-bottom: 15px;
-          background: #f9fbfd;
-          border-radius: 0 8px 8px 0;
-          position: relative;
-          padding-left: 25px;
-          transition: all 0.3s ease;
-        }
-
-        .reminders li:hover {
-          transform: translateX(5px);
-          background: #f0f8ff;
-          border-left-color: #e74c3c;
-        }
-
-        .reminders li::before {
-          content: '•';
-          position: absolute;
-          left: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #3498db;
-          font-size: 1.5rem;
-        }
-
-        .reminders li strong {
-          color: #e74c3c;
-          background: rgba(231, 76, 60, 0.1);
-          padding: 2px 8px;
-          border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -256,341 +335,458 @@
     <!-- Overlay -->
     <div id="sidebarOverlay"></div>
     
-    <!-- Admin Dashboard -->
-    <% if ("admin".equals(userRole)) { %>
-        <div class="main-content">
-            <div class="welcome-info">
-                    <h2>Welcome, <%= userName %></h2>
-                    <p><%= displayRole %></p>
-                </div>
-            <!-- Summary Cards -->
-            <div class="cards">
-                <div class="card purple"><h3>Students</h3><span>100</span></div>
-                <div class="card blue"><h3>Supervisors</h3><span>100</span></div>
-                <div class="card yellow"><h3>Active FYP Projects</h3><span>100</span></div>
-                <div class="card cyan"><h3>Scheduled Presentations</h3><span>100</span></div>
-                <div class="card grey"><h3>Submitted Reports</h3><span>100</span></div>
-            </div>
+ <!-- Admin Dashboard -->
+<% if ("admin".equals(userRole)) { %>
+<div class="main-content" style="display: flex; gap: 20px;">
 
-            <!-- Widgets -->
-            <div class="widgets">
-                <div class="widget-box">
-                    <h4>Deadline</h4>
-                    <p>☑️ Submissions</p>
-                    <p>☑️ Presentations</p>
-                    <p>🔘 ...</p>
-                </div>
-
-                <div class="widget-box">
-                    <h4>Recent Activity</h4>
-                    <p>🔹 New student registrations</p>
-                    <p>🔹 Supervisor feedback</p>
-                    <p>🔹 Recent submissions</p>
-                </div>
-            </div>
-        </div>
-        
-    <!-- Announcement Box -->
-    <div class="announcement">
-        <strong>📢 New Announcement</strong><br>
-        <input type="text" placeholder="Type...">
-        <button>Publish</button>
+  <!-- LEFT PANEL -->
+  <div class="left-panel" style="flex: 2;">
+    <!-- Welcome Section -->
+    <div class="welcome-info animate-fadeIn">
+      <h2>Welcome, <%= userName %></h2>
+      <p><%= displayRole %></p>
     </div>
 
-    <% } %>
+    <!-- Summary Cards -->
+    <div class="cards grid-cards animate-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+      
+      <!-- Students Card -->
+      <div class="card purple" onclick="toggleLinks()" style="position: relative;">
+        <i class="fas fa-users"></i>
+        <h3>Students</h3>
+        <span>100</span>
+        <!-- Dropdown Link Option -->
+        <div id="linkOptions" style="display: none; margin-top: 10px; position: absolute; background: #fff; color: #000; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;">
+          <div onclick="window.location.href='CSP600.jsp'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
+          <div onclick="window.location.href='CSP650.jsp'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
+        </div>
+      </div>
+
+      <!-- Other Cards -->
+      <div class="card blue">
+        <a href="SupervisorList.jsp">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Supervisors</h3>
+          <span>100</span>
+        </a>
+      </div>
+
+      <div class="card yellow">
+        <a href="PastReport.jsp">
+          <i class="fas fa-tasks"></i>
+          <h3>Past Report</h3>
+          <span>100</span>
+        </a>
+      </div>
+
+      <div class="card cyan">
+        <a href="Presentation.jsp">
+          <i class="fas fa-calendar-alt"></i>
+          <h3>Presentations</h3>
+          <span>100</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" style="flex: 1;">
+    
+    <!-- Deadlines -->
+    <div class="announcement-container animate-fadeIn">
+      <h3><i class="fas fa-hourglass-half"></i> Deadlines</h3>
+      <ul class="deadline-grid">
+        <li class="deadline-card">
+          <h3>Proposal</h3>
+          <p>20 June 2025</p>
+        </li>
+        <li class="deadline-card">
+          <h3>Progress Report</h3>
+          <p>5 July 2025</p>
+        </li>
+        <li class="deadline-card">
+          <h3>Final Report</h3>
+          <p>1 August 2025</p>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="announcement-container animate-fadeIn delay-2">
+      <h3><i class="fas fa-bolt"></i> Recent Activity</h3>
+      <p>🟢 5 New student registrations</p>
+      <p>🟡 Supervisor updated FYP</p>
+      <p>🔵 3 New submissions</p>
+    </div>
+
+    <!-- Announcement Publisher -->
+    <div class="announcement-container animate-fadeIn delay-1">
+      <h3><i class="fas fa-bullhorn"></i> Publish Announcement</h3>
+      <form method="post" action="PostAnnouncementServlet">
+        <input type="text" name="announcement" placeholder="Type announcement here..." required />
+        <button type="submit"><i class="fas fa-paper-plane"></i> Publish</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleLinks() {
+    const links = document.getElementById("linkOptions");
+    links.style.display = links.style.display === "block" ? "none" : "block";
+  }
+
+  // Sembunyi pilihan bila klik luar kad
+  document.addEventListener("click", function(event) {
+    const card = document.querySelector(".card.purple");
+    const links = document.getElementById("linkOptions");
+    if (!card.contains(event.target)) {
+      links.style.display = "none";
+    }
+  });
+</script>
+<% } %>
+
+
     
 
     
    <!-- Student Dashboard -->
 <% if ("student".equals(userRole)) { %>
-  <div class="main-content">
+<div class="main-content">
+  
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <!-- Welcome Info -->
     <div class="welcome-info">
-      <div class="left-panel">
-        <div class="welcome-info">
-    <h2>Welcome, <%= userName %></h2>
-    <p><%= displayRole %></p>
-  </div>
+      <h2>Welcome, <%= userName %></h2>
+      <p><%= displayRole %></p>
+    </div>
 
-        <div class="cards">
-          <div class="card purple"><i class="fas fa-user-graduate"></i> 20 Students</div>
-          <div class="card blue"><i class="fas fa-book-open"></i> 20 Topics</div>
-          <div class="card yellow"><i class="fas fa-folder-open"></i> 100 Past Reports</div>
-          <div class="card supervisor-info">
-            <i class="fas fa-chalkboard-teacher"></i> Supervisor Info
-            <p><strong>Prof. Muhammad Ali</strong></p>
-            <p><a href="mailto:muhdali79@gmail.com">muhdali79@gmail.com</a></p>
-            <p><i class="fas fa-phone"></i>&nbsp;+60 123456789</p>
-          </div>
-        </div>
-
-        <div class="horizontal-chart-box">
-          <h2>Project Progress Overview</h2>
-          <div class="horizontal-bar-container">
-            <div class="horizontal-bar">
-              <span class="label">Proposal</span>
-              <div class="bar-wrapper"><div class="bar bar-proposal">100%</div></div>
-            </div>
-            <div class="horizontal-bar">
-              <span class="label">Progress</span>
-              <div class="bar-wrapper"><div class="bar bar-progress">50%</div></div>
-            </div>
-            <div class="horizontal-bar">
-              <span class="label">Final</span>
-              <div class="bar-wrapper"><div class="bar bar-final">10%</div></div>
-            </div>
-          </div>
-        </div>
+    <!-- Supervisor Card -->
+    <div class="supervisor-card">
+      <img src="images/default-supervisor.jpg" alt="Supervisor Photo" class="supervisor-img">
+      <div class="supervisor-details">
+        <h4><i class="fas fa-chalkboard-teacher"></i> Dr. Noraini Binti Ahmad</h4>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:noraini@uitm.edu.my">noraini@uitm.edu.my</a></p>
+        <p><i class="fas fa-phone"></i> 012-3456789</p>
       </div>
+    </div>
 
-      <div class="right-panel">
-        <div class="announcement-container">
-          <h2>Announcements</h2>
-          <ul>
-            <li>📌 Submit proposal by <strong>20 June 2025</strong></li>
-            <li>📌 Progress report due <strong>5 July 2025</strong></li>
-            <li>📌 Final report window opens <strong>1 August 2025</strong></li>
-          </ul>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- Announcements -->
+    <div class="announcement-container">
+      <h2>📢 Announcements</h2>
+      <ul>
+        <li>📌 Submit proposal by <strong>20 June 2025</strong></li>
+        <li>📌 Final report window opens <strong>1 August 2025</strong></li>
+      </ul>
+    </div>
+
+    <!-- Upcoming Deadlines -->
+    <div class="announcement-container">
+      <h2>📅 Upcoming Deadlines</h2>
+      <div class="deadline-grid">
+        <div class="deadline-card">
+          <h3>Proposal Submission</h3>
+          <p>Due: 20 June 2025</p>
+          <button onclick="goToSubmission('ProposalIdea.jsp')">
+            <i class="fas fa-upload"></i> Submit
+          </button>
         </div>
-
-        <div class="announcement-container">
-          <h2>Upcoming Deadlines</h2>
-          <div class="deadline-grid">
-            <div class="deadline-card">
-              <h3>Proposal Submission</h3>
-              <p>Due: 20 June 2025</p>
-              <button onclick="goToSubmission('Proposal')"><i class="fas fa-upload"></i> Submit</button>
-            </div>
-            <div class="deadline-card">
-              <h3>Progress Report</h3>
-              <p>Due: 5 July 2025</p>
-              <button onclick="goToSubmission('Progress')"><i class="fas fa-upload"></i> Submit</button>
-            </div>
-            <div class="deadline-card">
-              <h3>Final Report</h3>
-              <p>Due: 1 August 2025</p>
-              <button onclick="goToSubmission('Final')"><i class="fas fa-upload"></i> Submit</button>
-            </div>
-          </div>
+       
+        <div class="deadline-card">
+          <h3>Final Report</h3>
+          <p>Due: 1 August 2025</p>
+          <button onclick="goToSubmission('FinalReport.jsp')">
+            <i class="fas fa-upload"></i> Submit
+          </button>
         </div>
       </div>
     </div>
-  
-  </div>
 
-  <script>
-    function goToSubmission(type) {
-      let target = '';
-      switch (type) {
-        case 'Proposal': target = 'submitProposalReport.jsp'; break;
-        case 'Progress': target = 'progressReport.jsp'; break;
-        case 'Final': target = 'finalReport.jsp'; break;
-        default: alert('Invalid submission type.'); return;
-      }
-      window.location.href = target;
+  </div> <!-- END RIGHT PANEL -->
+
+</div> <!-- END DASHBOARD WRAPPER -->
+
+<script>
+  function goToSubmission(type) {
+    let target = '';
+    switch (type) {
+      case 'Proposal': target = 'ProposalIdea.jsp'; break;
+  
+      case 'Final': target = 'FinalReport.jsp'; break;
+      default: alert('Invalid submission type.'); return;
     }
-  </script>
+    window.location.href = target;
+  }
+</script>
 <% } %>
 
-    
-    <!-- Lecturer Dashboard -->
+      <!-- Lecturer Dashboard -->
     <% if ("lecturer".equals(userRole)) { %>
 <div class="main-content">
+
+  <!-- Welcome -->
   <div class="welcome-info">
     <h2>Welcome, <%= userName %></h2>
     <p><%= displayRole %></p>
   </div>
 
-  <div class="cards">
-    <div class="card"><i class="fas fa-user"></i>20<br>Total Students</div>
-    <div class="card"><i class="fas fa-chart-line"></i>20<br>Ongoing Reports</div>
-    <div class="card"><i class="fas fa-file"></i>8<br>Total Forms</div>
-    <div class="card"><i class="fas fa-tasks"></i>10<br>Ongoing Tasks</div>
+  <!-- Summary Cards -->
+    <div class="cards grid-cards animate-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+      
+      <!-- Students Card -->
+      <div class="card purple" onclick="toggleLinks()" style="position: relative;">
+        <i class="fas fa-users"></i>
+        <h3>Students</h3>
+        <span>100</span>
+        <!-- Dropdown Link Option -->
+        <div id="linkOptions" style="display: none; margin-top: 10px; position: absolute; background: #fff; color: #000; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;">
+          <div onclick="window.location.href='CSP600.jsp'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
+          <div onclick="window.location.href='CSP650.jsp'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
+        </div>
+      </div>
+
+      <!-- Other Cards -->
+      <div class="card blue">
+        <a href="SupervisorList.jsp">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Supervisors</h3>
+          <span>100</span>
+        </a>
+      </div>
+
+      <div class="card yellow">
+        <a href="PastReport.jsp">
+          <i class="fas fa-tasks"></i>
+          <h3>Past Report</h3>
+          <span>100</span>
+        </a>
+      </div>
+
   </div>
 
-  <div class="box timetable">
+  <!-- Timetable Box -->
+  <div class="announcement-container">
     <h4><i class="fas fa-calendar-alt"></i> Lecturer Timetable</h4>
-    <table class="timetable-table">
-      <thead>
-        <tr>
-          <th>Day</th>
-          <th>Time</th>
-          <th>Subject</th>
-          <th>Group</th>
-          <th>Location</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Monday</td>
-          <td>9:00 AM - 11:00 AM</td>
-          <td>CSC650</td>
-          <td>Group A</td>
-          <td>DK1</td>
-        </tr>
-        <tr>
-          <td>Monday</td>
-          <td>11:30 AM - 1:30 PM</td>
-          <td>CSP500</td>
-          <td>5B2</td>
-          <td>Lab 3</td>
-        </tr>
-        <tr>
-          <td>Tuesday</td>
-          <td>10:00 AM - 12:00 PM</td>
-          <td>CSP600</td>
-          <td>6B1</td>
-          <td>DK3</td>
-        </tr>
-        <tr>
-          <td>Wednesday</td>
-          <td>2:00 PM - 4:00 PM</td>
-          <td>CSC650</td>
-          <td>Group B</td>
-          <td>Lab 2</td>
-        </tr>
-        <tr>
-          <td>Thursday</td>
-          <td>9:00 AM - 11:00 AM</td>
-          <td>CSP500</td>
-          <td>5B1</td>
-          <td>Lab 4</td>
-        </tr>
-        <tr>
-          <td>Friday</td>
-          <td>10:00 AM - 12:00 PM</td>
-          <td>CSC650</td>
-          <td>Group C</td>
-          <td>DK2</td>
-        </tr>
-        <tr>
-          <td>Friday</td>
-          <td>2:00 PM - 4:00 PM</td>
-          <td>CSP600</td>
-          <td>6B1</td>
-          <td>Lab 1</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="timetable-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Subject</th>
+            <th>Group</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Monday</td><td>9:00 AM - 11:00 AM</td><td>CSC650</td><td>Group A</td><td>DK1</td></tr>
+          <tr><td>Monday</td><td>11:30 AM - 1:30 PM</td><td>CSP500</td><td>5B2</td><td>Lab 3</td></tr>
+          <tr><td>Tuesday</td><td>10:00 AM - 12:00 PM</td><td>CSP600</td><td>6B1</td><td>DK3</td></tr>
+          <tr><td>Wednesday</td><td>2:00 PM - 4:00 PM</td><td>CSC650</td><td>Group B</td><td>Lab 2</td></tr>
+          <tr><td>Thursday</td><td>9:00 AM - 11:00 AM</td><td>CSP500</td><td>5B1</td><td>Lab 4</td></tr>
+          <tr><td>Friday</td><td>10:00 AM - 12:00 PM</td><td>CSC650</td><td>Group C</td><td>DK2</td></tr>
+          <tr><td>Friday</td><td>2:00 PM - 4:00 PM</td><td>CSP600</td><td>6B1</td><td>Lab 1</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="reminders">
-    <h4><i class="fas fa-bell"></i> Reminders:</h4>
-    <ul>
-      <li>Submit FYP2 reports by <strong>20th June 2025</strong>.</li>
-      <li>Review student consultation logs before Friday.</li>
-      <li>Upload marks for CSP500 latest by next Monday.</li>
-    </ul>
-  </div>
-</div>
 
 <% } %>
 
-    <!-- Supervisor Dashboard -->
    <% if ("supervisor".equals(userRole)) { %>
-            <div class="main-content">
-                <div class="welcome-info">
-                    <h2>Welcome, <%= userName %></h2>
-                    <p><%= displayRole %></p>
-                </div>
+<div class="main-content">
+  <!-- Welcome -->
+  <div class="welcome-info">
+    <h2>Welcome, <%= userName %></h2>
+    <p><%= displayRole %></p>
+  </div>
 
-                <div class="dashboard-grid">
-                    <div class="panel announcements-panel">
-                        <h3>Announcements Panel <span class="icon">&#128276;</span></h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Announcement Message</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>17 May</td>
-                                    <td>FYP Briefing Slides have been uploaded</td>
-                                </tr>
-                                <tr>
-                                    <td>18 May</td>
-                                    <td>Reminder: FYP (a) submission closes in 2 days</td>
-                                </tr>
-                                <tr>
-                                    <td>21 May</td>
-                                    <td>New plagiarism policy: reports over 30% must be flagged</td>
-                                </tr>
-                                <tr>
-                                    <td>23 May</td>
-                                    <td>Final Year exhibition schedule released</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+  <!-- Grid Panels -->
+  <div class="dashboard-grid">
 
-                    <div class="panel my-students-panel summary-box">
-                        <h3>My Students</h3>
-                        <p>4</p>
-                        <span>assigned</span>
-                    </div>
+    <!-- Announcements Panel -->
+    <div class="panel announcements-panel blue">
+      <h3>Announcements Panel <span class="icon">&#128276;</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Announcement Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>17 May</td><td>FYP Briefing Slides have been uploaded</td></tr>
+          <tr><td>18 May</td><td>Reminder: FYP(a) submission closes in 2 days</td></tr>
+          <tr><td>21 May</td><td>New plagiarism policy: reports over 30% must be flagged</td></tr>
+          <tr><td>23 May</td><td>Final Year exhibition schedule released</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div class="cards grid-cards animate-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+      
+      <!-- Students Card -->
+      <div class="card purple" onclick="toggleLinks()" style="position: relative;">
+        <i class="fas fa-users"></i>
+        <h3>My Students</h3>
+        <span>4</span>
+        <!-- Dropdown Link Option -->
+        <div id="linkOptions" style="display: none; margin-top: 10px; position: absolute; background: #fff; color: #000; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;">
+          <div onclick="window.location.href='CSP600.jsp'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
+          <div onclick="window.location.href='CSP650.jsp'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
+        </div>
+      </div>
 
-                    <div class="panel pending-reviews-panel summary-box">
-                        <h3>Pending Reviews</h3>
-                        <p>3</p>
-                        <span>forms</span>
-                    </div>
+      <!-- Other Cards -->
+      <div class="card blue">
+        <a href="SupervisorList.jsp">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Pending</h3>
+          <span>100</span>
+        </a>
+      </div>
+      
+           <!-- Other Cards -->
+      <div class="card blue">
+        <a href="ExaminerList.jsp">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Pending</h3>
+          <span>100</span>
+        </a>
+      </div>
 
-                    <div class="panel plagiarism-alerts-panel summary-box">
-                        <h3>Plagiarism Alerts</h3>
-                        <p>1</p>
-                        <span>flagged report</span>
-                    </div>
+  
+    <!-- Upcoming Schedule -->
+    <div class="panel upcoming-schedule-panel cyan">
+      <h3>Upcoming Schedule <span class="icon">&#9200;</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Event</th>
+            <th>Type</th>
+            <th>Student</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>20 May</td><td>FYP(a) Submission Due</td><td>Submission</td><td><a href="#">Nur Aisyah Binti Khalid</a></td></tr>
+          <tr><td>21 May</td><td>Progress Review Checkpoint</td><td>Evaluation</td><td>Nurul Huda Binti Firdaus</td></tr>
+          <tr><td>22 May</td><td>Proposal Review</td><td>Evaluation</td><td>Siti Nur Aila Binti Rahmah</td></tr>
+          <tr><td>25 May</td><td>Plagiarism Verification</td><td>Plagiarism</td><td>Ahmad Faris Bin Zulkifli</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-                    <div class="panel next-deadline-panel summary-box">
-                        <h3>Next Deadline</h3>
-                        <p>Proposal Review</p>
-                        <span>by 20 May</span>
-                    </div>
+  </div>
+</div>
+<% } %>
 
-                    <div class="panel upcoming-schedule-panel">
-                        <h3>Upcoming Schedule <span class="icon">&#9200;</span></h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Event</th>
-                                    <th>Type</th>
-                                    <th>Student</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>20 May</td>
-                                    <td>FYP(a) Submission Due</td>
-                                    <td>Submission</td>
-                                    <td><a href="#">Nur Aisyah Binti Khalid</a></td>
-                                </tr>
-                                <tr>
-                                    <td>21 May</td>
-                                    <td>Progress Review Checkpoint</td>
-                                    <td>Evaluation</td>
-                                    <td>Nurul Huda Binti Firdaus</td>
-                                </tr>
-                                <tr>
-                                    <td>22 May</td>
-                                    <td>Proposal Review</td>
-                                    <td>Evaluation</td>
-                                    <td>Siti Nur Aila Binti Rahmah</td>
-                                </tr>
-                                <tr>
-                                    <td>25 May</td>
-                                    <td>Plagiarism Verification</td>
-                                    <td>Plagiarism</td>
-                                    <td>Ahmad Faris Bin Zulkifli</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-    <% } %>
+
+<% if ("examiner".equals(userRole)) { %>
+<div class="main-content">
+  
+  <!-- Welcome -->
+  <div class="welcome-info">
+    <h2>Welcome, <%= userName %></h2>
+    <p><%= displayRole %></p>
+  </div>
+
+  <!-- Grid Panels -->
+  <div class="dashboard-grid">
+
+    <!-- Announcements Panel -->
+    <div class="panel announcements-panel blue">
+      <h3>Announcements Panel <span class="icon">&#128276;</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Announcement Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>15 May</td><td>Examiner briefing will be held online</td></tr>
+          <tr><td>18 May</td><td>Please review marking rubrics for FYP evaluation</td></tr>
+          <tr><td>22 May</td><td>Reminder: Upload marks within 3 days after viva</td></tr>
+          <tr><td>24 May</td><td>System updated with new evaluation form</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="cards grid-cards animate-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+      
+      <!-- Assigned Students -->
+      <div class="card purple" onclick="toggleLinks()" style="position: relative;">
+        <i class="fas fa-users"></i>
+        <h3>Assigned Students</h3>
+        <span>3</span>
+        <!-- Dropdown Link Option -->
+        <div id="linkOptions" style="display: none; margin-top: 10px; position: absolute; background: #fff; color: #000; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;">
+          <div onclick="window.location.href='CSP600.jsp'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
+          <div onclick="window.location.href='CSP650.jsp'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
+        </div>
+      </div>
+
+      <!-- Report History -->
+      <div class="card cyan" onclick="window.location.href='PastReport.jsp'">
+        <i class="fas fa-folder-open"></i>
+        <h3>Past Report</h3>
+        <span>6</span>
+      </div>
+    </div>
+
+    <!-- Upcoming Evaluation Schedule -->
+    <div class="panel upcoming-schedule-panel cyan">
+      <h3>Upcoming Evaluations <span class="icon">&#9200;</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Event</th>
+            <th>Student</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>25 June</td><td>Proposal Evaluation</td><td>Ahmad Azim Bin Latif</td><td>Pending</td></tr>
+          <tr><td>28 June</td><td>Progress Review</td><td>Fatin Syahirah Bt Mohd</td><td>Scheduled</td></tr>
+          <tr><td>1 July</td><td>Final Report Review</td><td>Mohamad Iqbal Bin Isa</td><td>Pending</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleLinks() {
+    const links = document.getElementById("linkOptions");
+    links.style.display = links.style.display === "block" ? "none" : "block";
+  }
+
+  document.addEventListener("click", function(event) {
+    const card = document.querySelector(".card.purple");
+    const links = document.getElementById("linkOptions");
+    if (!card.contains(event.target)) {
+      links.style.display = "none";
+    }
+  });
+</script>
+<% } %>
+
+
+
+
 
     <jsp:include page="sidebarScript.jsp" />
 </body>

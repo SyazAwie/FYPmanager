@@ -37,6 +37,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>UiTM FYP System</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
         table {
             width: 90%;

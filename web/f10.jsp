@@ -12,11 +12,12 @@
 
     boolean isSupervisor = "supervisor".equals(userRole);
     boolean isExaminer = "examiner".equals(userRole);
+    boolean isLecturer = "lecturer".equals(userRole);
 
-    if (!isSupervisor && !isExaminer) {
-        response.sendRedirect("dashboard.jsp?error=unauthorized");
-        return;
-    }
+    if (!(isSupervisor || isExaminer || isLecturer)) {
+    response.sendRedirect("dashboard.jsp?error=unauthorized");
+    return;
+}
 
     String readOnly = isSupervisor ? "" : "readonly";
 %>
@@ -61,11 +62,18 @@
         }
         .form-group input[readonly], textarea[readonly] { background: #f0f0f0; }
         .next-btn, .submit-btn {
-            background: var(--primary); color: white; padding: 10px 20px;
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-            float: right; margin-top: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
         }
-        .next-btn:hover, .submit-btn:hover { background: var(--secondary); }
+
+        .next-btn:hover, .submit-btn:hover {
+        background: var(--secondary);
+        }
         .form-title {
             padding: 20px; font-size: 20px; font-weight: 600; color: var(--dark);
         }
@@ -118,8 +126,10 @@
                     <label>Project Title</label>
                     <input type="text" name="projectTitle" <%= readOnly %> required>
                 </div>
+                <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
-            </div>
+                </div>
+                </div>
         </div>
 
         <!-- Evaluation Criteria -->
@@ -144,8 +154,10 @@
                         <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
                     </tbody>
                 </table>
+                        <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
-            </div>
+                        </div>
+                        </div>
         </div>
 
         <!-- Reviewer Info -->
@@ -160,7 +172,9 @@
                     <input type="date" name="evaluationDate" <%= readOnly %> required>
                 </div>
                 <% if (isSupervisor) { %>
+                <div class="submit-area">
                 <button type="submit" class="submit-btn">Submit</button>
+                </div>
                 <% } %>
             </div>
         </div>

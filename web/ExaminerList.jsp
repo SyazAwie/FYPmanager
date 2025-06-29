@@ -37,6 +37,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>UiTM FYP System - Examiner</title>
         <link rel="stylesheet" type="text/css" href="styles.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
         table {
             width: 90%;
@@ -76,8 +77,19 @@
     </style>
     </head>
     <body>
-        <!--SIDEBAR-->
-        <jsp:include page="sidebar.jsp" />
+        <!-- Topbar -->
+    <header id="topbar">
+        <jsp:include page="topbar.jsp" />
+    </header>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
+
         <div class="main-content">
         <h2>LIST OF EXAMINERS</h2>
 

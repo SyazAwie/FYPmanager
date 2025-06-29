@@ -1,28 +1,13 @@
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+
 <%
-    // Retrieve user information from session
-    String userId = String.valueOf(session.getAttribute("userId"));
-    String userRole = (String) session.getAttribute("role");
-    String userName = (String) session.getAttribute("userName");
-    String userAvatar = (String) session.getAttribute("avatar");
-    
-    // Set default values if null
-    if(userName == null || "null".equals(userName)) {
-        userName = "User";
-    }
-    // Check login/session
-    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
-        response.sendRedirect("Login.jsp?error=sessionExpired");
-        return;
-    }
-    // Set default avatar
-    if (userAvatar == null || userAvatar.equals("null") || userAvatar.trim().isEmpty()) {
-        userAvatar = "default.png"; // fallback kalau tak ada gambar
-    }
-    
+    String userId = "123";
+    String userRole = "student";
+    String userName = "Test User";
+    String userAvatar = "default.png";
+
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
     roleNames.put("student", "Student");
@@ -30,215 +15,202 @@
     roleNames.put("admin", "Administrator");
 
     String displayRole = roleNames.getOrDefault(userRole, "User");
-    
 %>
 
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>UiTM FYP System -CSP600</title>
-        <link rel="stylesheet" type="text/css" href="styles.css">
-        <style>
-                /* Container Styles */
-            .page-title {
-                color: #2c3e50;
-                font-size: 28px;
-                font-weight: 600;
-                margin-bottom: 25px;
-                padding-bottom: 15px;
-                border-bottom: 2px solid #3498db;
-            }
+<html lang="en">
+<head>
+    <title>UiTM FYP System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="sidebarStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #4b2e83;
+            --secondary: #6d4ac0;
+            --accent: #b399d4;
+            --light: #f9f7fd;
+            --dark: #1a0d3f;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray-medium: #e0e0e0;
+            --gray-dark: #757575;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --danger: #F44336;
+            --info: #2196F3;
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 80px;
+            --topbar-height: 70px;
+            --transition: all 0.3s ease;
+        }
 
-            .table-container {
-                overflow: hidden;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-                background: white;
-            }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+        }
 
-            /* Table Styles */
-            table {
-                width: 100%;
-                border-collapse: separate;
-                border-spacing: 0;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                font-size: 16px;
-            }
+        #sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--primary);
+            color: #fff;
+            overflow-y: auto;
+            transition: width 0.3s;
+            z-index: 998;
+        }
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
 
-            thead {
-                background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-                color: white;
-            }
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            height: var(--topbar-height);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-medium);
+            z-index: 999;
+            transition: left 0.3s, width 0.3s;
+        }
+        #topbar.collapsed {
+            left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
+        }
 
-            thead th {
-                padding: 18px 15px;
-                text-align: left;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-            }
+        .container {
+            max-width: 1200px;
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .container.collapsed {
+            margin-left: var(--sidebar-collapsed);
+        }
 
-            thead th:first-child {
-                border-top-left-radius: 10px;
-            }
+        h1 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
 
-            thead th:last-child {
-                border-top-right-radius: 10px;
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            background-color: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--gray-medium);
+        }
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        th {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background-color: var(--gray-light); }
+        tr:hover { background-color: var(--accent); opacity: 0.9; }
+        .action-buttons { display: flex; gap: 8px; white-space: nowrap; }
+        .action-btn { padding: 8px 12px; border-radius: 6px; text-decoration: none; color: var(--white); font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition); }
+        .action-btn i { font-size: 14px; }
+        .edit-btn { background-color: var(--info); }
+        .delete-btn { background-color: var(--danger); }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); opacity: 0.9; }
+        .add-btn { display: inline-block; padding: 10px 20px; background-color: var(--success); color: var(--white); text-decoration: none; border-radius: 6px; font-weight: 500; margin-bottom: 20px; transition: var(--transition); }
+        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body>
+    <header id="topbar">
+        <button id="sidebarToggle" style="background:none;border:none;cursor:pointer;margin-left:10px;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <jsp:include page="topbar.jsp" />
+    </header>
 
-            tbody tr {
-                transition: all 0.3s ease;
-                border-bottom: 1px solid #eaeaea;
-            }
+    <aside id="sidebar">
+        <jsp:include page="navbar.jsp" />
+    </aside>
 
-            tbody tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
+    <div class="container">
+        <h1>LIST OF STUDENT CSP600</h1>
 
-            tbody tr:hover {
-                background-color: #f1f8ff;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 8px rgba(52, 152, 219, 0.1);
-            }
+        <a href="addStudent.jsp" class="add-btn">
+            <i class="fas fa-plus"></i> Add New Student
+        </a>
 
-            tbody td {
-                padding: 16px 15px;
-                color: #34495e;
-                border-bottom: 1px solid #eee;
-            }
-
-            /* Action Buttons */
-            .btn-edit, .btn-delete {
-                padding: 10px 18px;
-                border-radius: 6px;
-                font-weight: 600;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.25s ease;
-                border: none;
-                outline: none;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .btn-edit {
-                background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-                color: white;
-                margin-right: 8px;
-            }
-
-            .btn-edit:hover {
-                background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
-            }
-
-            .btn-delete {
-                background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-                color: white;
-            }
-
-            .btn-delete:hover {
-                background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
-            }
-
-            /* Responsive adjustments */
-            @media (max-width: 768px) {
-                .table-container {
-                    overflow-x: auto;
-                }
-
-                table {
-                    min-width: 600px;
-                }
-
-                .main-content {
-                    padding: 20px 15px;
-                }
-
-                .page-title {
-                    font-size: 24px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!--SIDEBAR-->
-        <jsp:include page="sidebar.jsp" />
-        
-        <%-- Admin & Lecturer Part --%>
-<% if ("admin".equals(userRole) || "lecturer".equals(userRole)) { %>
-    <div class="main-content">
-        <h2 class="page-title">List of Student CSP600</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Student ID</th>
-                        <th>Programme</th>
-                        <th>Supervisor</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="student" items="${studentList}">
-                        <tr>
-                            <td>${student.name}</td>
-                            <td>${student.studentId}</td>
-                            <td>${student.programme}</td>
-                            <td>${student.supervisorName}</td>
-                            <td>
-                                <button class="btn-edit">Edit</button>
-                                <button class="btn-delete" onclick="return confirm('Delete student?');">Delete</button>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Programme</th>
+                    <th>Supervisor</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Muhammad Amirul Bin Iskandar</td>
+                    <td>2023118937</td>
+                    <td>CDCS230</td>
+                    <td>Prof. Muhammad Ali</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="EditStudentServlet?id=2023118937" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="DeleteStudentServlet?id=2023118937" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this student?');"><i class="fas fa-trash"></i> Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nurul Huda Binti Firdaus</td>
+                    <td>2023230569</td>
+                    <td>CDCS230</td>
+                    <td>Dr. Nurul Huda binti Kamaruddin</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="EditStudentServlet?id=2023230569" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="DeleteStudentServlet?id=2023230569" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this student?');"><i class="fas fa-trash"></i> Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-<% } %>
 
-        
-        <%-- Supervisor Part --%>
-<% if ("supervisor".equals(userRole)) { %>
-    <div class="main-content">
-        <h2 class="page-title">List of Supervisees</h2>
-        <p>Currently supervising: 4 / 6 Students</p>
-        <button class="btn-green">Edit Quota</button>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const topbar = document.getElementById("topbar");
+            const container = document.querySelector(".container");
+            const toggleBtn = document.getElementById("sidebarToggle");
 
-        <div class="table-container">
-            <table class="supervisor-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Student ID</th>
-                        <th>Title</th>
-                        <th>Progress Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Nur Aisyah Binti Khalid</td>
-                        <td>2023123456</td>
-                        <td>Development of a Remote Patient Monitoring System</td>
-                        <td><span class="status in-progress">In Progress (50%)</span></td>
-                    </tr>
-                    <tr>
-                        <td>Ahmad Faris Bin Zulkifli</td>
-                        <td>2023123477</td>
-                        <td>Analysis of Wireless Network Security in UiTM Kampus Kuala Terengganu</td>
-                        <td><span class="status completed">Completed</span></td>
-                    </tr>
-                    <tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-<% } %>
-
-            
-    </body>
+            toggleBtn.addEventListener("click", function () {
+                sidebar.classList.toggle("collapsed");
+                topbar.classList.toggle("collapsed");
+                container.classList.toggle("collapsed");
+            });
+        });
+    </script>
+</body>
 </html>

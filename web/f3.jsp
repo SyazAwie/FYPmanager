@@ -101,19 +101,17 @@
         }
 
         .next-btn, .submit-btn {
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            float: right;
-            margin-top: 20px;
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
         }
 
         .next-btn:hover, .submit-btn:hover {
-            background: var(--secondary);
+        background: var(--secondary);
         }
 
         .form-title {
@@ -173,8 +171,10 @@
                     <label>Project Title</label>
                     <input type="text" name="projectTitle" <%= isEditable ? "" : "readonly" %> required>
                 </div>
+                <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
-            </div>
+                </div>
+                </div>
         </div>
 
         <!-- Evaluation Criteria -->
@@ -205,8 +205,10 @@
                     <label>Total Marks (%)</label>
                     <input type="text" id="totalScore" name="totalScore" readonly>
                 </div>
+                    <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
-            </div>
+                    </div>
+                    </div>
         </div>
 
         <!-- Reviewer Info -->
@@ -221,7 +223,9 @@
                     <textarea name="remarks" rows="4" <%= isEditable ? "" : "readonly" %>></textarea>
                 </div>
                 <% if (isEditable) { %>
+                <div class="submit-area">
                 <button type="submit" class="submit-btn">Submit</button>
+                </div>
                 <% } %>
             </div>
         </div>

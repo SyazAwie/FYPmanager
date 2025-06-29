@@ -27,6 +27,7 @@
     roleNames.put("student", "Student");
     roleNames.put("lecturer", "Lecturer");
     roleNames.put("admin", "Administrator");
+    roleNames.put("examiner", "Examiner");
 
     String displayRole = roleNames.getOrDefault(userRole, "User");
     
@@ -68,7 +69,7 @@
             <div class="menu-text">Profile</div>
         </a>
 
-        <a href="SupervisorStudent.jsp" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
+        <a href="CSP600.jsp" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-user-graduate"></i></div>
             <div class="menu-text">Students</div>
         </a>
@@ -78,26 +79,11 @@
             <div class="menu-text">Forms</div>
         </a>
 
-        <div class="menu-dropdown">
-            <div class="menu-item parent-item">
-                <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="menu-text">Review</div>
-                <div class="menu-arrow">&#9662;</div>
-            </div>
-            <div class="submenu">
-                <a href="#" class="submenu-item">Plagiarism</a>
-            </div>
-        </div>
-            
-        <a href="Evaluation.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Evaluation.jsp") ? "active" : "" %>">
-            <div class="menu-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="menu-text">Evaluation</div>
-        </a>
-
-        <a href="#" class="menu-item">
+        <a href="PastReport.jsp" class="menu-item">
             <div class="menu-icon"><i class="fas fa-folder-open"></i></div>
             <div class="menu-text">Past Projects</div>
         </a>
+            
     <% } else if ("student".equals(userRole)) { %>
         <!-- Student Menu -->
         <a href="ProfileServlet" class="menu-item <%= currentURI.endsWith("/Profile.jsp") ? "active" : "" %>">
@@ -115,12 +101,12 @@
             <div class="menu-text">Forms</div>
         </a>
 
-        <a href="ProgressReportSubmission.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ProgressReportSubmission.jsp") ? "active" : "" %>"">
+        <a href="ProgressReport.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ProgressReport.jsp") ? "active" : "" %>"">
             <div class="menu-icon"><i class="fas fa-tasks"></i></div>
             <div class="menu-text">Progress Report</div>
         </a>
 
-        <a href="SubmitFinalReports.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/SubmitFinalReports.jsp") ? "active" : "" %>">
+        <a href="FinalReport.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("FinalReport.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-pdf"></i></div>
             <div class="menu-text">Final Reports</div>
         </a>
@@ -130,12 +116,12 @@
             <div class="menu-text">Guideline</div>
         </a>
 
-        <a href="StudentConsultationLog.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/StudentConsultationLog.jsp") ? "active" : "" %>">
+        <a href="ConsultationLog.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ConsultationLog.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-comments"></i></div>
             <div class="menu-text">Consultation Log</div>
         </a>
 
-        <a href="PastReports.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/PastReports.jsp") ? "active" : "" %>">
+        <a href="PastReport.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/PastReport.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-archive"></i></div>
             <div class="menu-text">Past Reports</div>
         </a>
@@ -174,20 +160,90 @@
             <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
             <div class="menu-text">Forms</div>
         </a>
+    <% } %>
+    
+    <!-- Admin-->
+    
+    <% if ("admin".equals(userRole)) { %>
+<!-- Students Dropdown -->
+<div class="menu-dropdown">
+    <div class="menu-item parent-item">
+        <div class="menu-icon"><i class="fas fa-user-graduate"></i></div>
+        <div class="menu-text">Students</div>
+        <div class="menu-arrow">&#9662;</div>
+    </div>
+    <div class="submenu">
+        <a href="CSP600.jsp" class="submenu-item">CSP600</a>
+        <a href="CSP650.jsp" class="submenu-item">CSP650</a>
+    </div>
+</div>
 
-        <a href="LecturerReports.jsp" class="menu-item <%= currentURI.endsWith("/LecturerReports.jsp") ? "active" : "" %>">
-            <div class="menu-icon"><i class="fas fa-chart-bar"></i></div>
-            <div class="menu-text">Reports</div>
+<!-- Supervisors Dropdown -->
+<div class="menu-dropdown">
+    <div class="menu-item parent-item">
+        <div class="menu-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+        <div class="menu-text">Supervisors</div>
+        <div class="menu-arrow">&#9662;</div>
+    </div>
+    <div class="submenu">
+        <a href="SupervisorList.jsp" class="submenu-item">Supervisors</a>
+        <a href="ExaminerList.jsp" class="submenu-item">Examiners</a>
+    </div>
+</div>
+
+<!-- Presentation -->
+<a href="Presentation.jsp" class="menu-item <%= currentURI.endsWith("/Presentation.jsp") ? "active" : "" %>">
+    <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+    <div class="menu-text">Presentation</div>
+</a>
+
+<!-- Submissions Dropdown -->
+<div class="menu-dropdown">
+    <div class="menu-item parent-item">
+        <div class="menu-icon"><i class="fas fa-file-upload"></i></div>  <%-- icon baru lebih sesuai --%>
+        <div class="menu-text">Submissions</div>
+        <div class="menu-arrow">&#9662;</div>
+    </div>
+    <div class="submenu">
+        <a href="ProposalReport.jsp" class="submenu-item">Proposal Report</a>
+        <a href="FinalReport.jsp" class="submenu-item">Final Report</a>
+    </div>
+</div>
+
+<!-- Past Report (menu sendiri, bukan dropdown) -->
+<a href="PastReport.jsp" class="menu-item <%= currentURI.endsWith("/PastReport.jsp") ? "active" : "" %>">
+    <div class="menu-icon"><i class="fas fa-archive"></i></div>
+    <div class="menu-text">Past Reports</div>
+</a>
+
+<% } %>
+    <%   if ("examiner".equals(userRole)) { %>
+        <!-- Examiner Menu -->
+        <a href="ProfileServlet" class="menu-item <%= currentURI.endsWith("/Profile.jsp") ? "active" : "" %>">
+            <div class="menu-icon"><i class="fas fa-user"></i></div>
+            <div class="menu-text">Profile</div>
+        </a>
+
+        <a href="CSP600.jsp" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
+            <div class="menu-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="menu-text">Students</div>
+        </a>
+
+        <a href="Form.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/Form.jsp") ? "active" : "" %>">
+            <div class="menu-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="menu-text">Forms</div>
+        </a>
+
+        <a href="PastReport.jsp" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-folder-open"></i></div>
+            <div class="menu-text">Past Projects</div>
         </a>
     <% } %>
+
 
     <div class="divider"></div>
 
     <!-- Common Settings & Logout -->
-    <a href="#" class="menu-item">
-        <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
-        <div class="menu-text">Help & Support</div>
-    </a>
 
     <div class="divider"></div>
 

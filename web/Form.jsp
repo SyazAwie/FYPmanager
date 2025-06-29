@@ -1,6 +1,7 @@
+<%@page import="fyp.model.DB.StudentDB"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@page import="java.util.*"%>
-
+<%@ page import="fyp.model.Student" %>
 <%
     String userId = String.valueOf(session.getAttribute("userId"));
     String userRole = (String) session.getAttribute("role");
@@ -42,25 +43,35 @@
         {"F12", "Confirmation of Correction Form", null},
         {"F13", "Business Model Evaluation Form", null}
     };
-
+    Student student = StudentDB.getStudentById(userId);
     // Define accessible forms per role
-    Set<String> accessibleForms = new HashSet<>();
-    switch (userRole) {
+     Set<String> accessibleForms = new HashSet<>();
+     switch (userRole) {
         case "student":
-            accessibleForms.addAll(Arrays.asList("F1", "F2", "F3", "F4", "F5", "F6a", "F6b"));
-            break;
+        if (student.getCourse_id() == 1) {
+            accessibleForms.addAll(Arrays.asList("F1", "F2", "F3", "F4", "F5", "F6a"));
+        } else if (student.getCourse_id() == 2) {
+            accessibleForms.addAll(Arrays.asList("F6b"));
+        }
+        break;
         case "lecturer":
-            for (String[] f : allForms) accessibleForms.add(f[0]);
-            break;
+        for (String[] f : allForms) {
+            String formCode = f[0];
+            if (!Arrays.asList("F7", "F8", "F11", "F12").contains(formCode)) {
+                accessibleForms.add(formCode);
+            }
+        }
+        break;
         case "supervisor":
-            accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a", "F6b", "F7", "F8", "F10", "F11", "F12"));
-            break;
+        accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a", "F6b", "F7", "F8", "F10", "F11", "F12"));
+        break;
         case "examiner":
-            accessibleForms.addAll(Arrays.asList("F7", "F8", "F10", "F11", "F12"));
-            break;
+        accessibleForms.addAll(Arrays.asList("F7", "F8", "F10", "F11", "F12"));
+        break;
         default:
-            accessibleForms.clear(); // no access if role not matched
-    }
+        accessibleForms.clear(); // no access if role not matched
+}
+
 %>
 
 <!DOCTYPE html>
@@ -188,10 +199,6 @@
             <% } %>
         </tbody>
     </table>
-
-    <div class="automation-placeholder">
-        <p>⚙️ Automation logic space: control due dates, access restrictions, or dependencies between forms.</p>
-    </div>
 </div>
 
 <jsp:include page="sidebarScript.jsp" />

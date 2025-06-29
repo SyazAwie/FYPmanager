@@ -21,17 +21,15 @@
 <%@ page import="fyp.model.Student" %>
 <%@ page import="fyp.model.Lecturer" %>
 <%@ page import="fyp.model.Supervisor" %>
-<%--
 <%@ page import="fyp.model.Admin" %>
 <%@ page import="fyp.model.Examiner" %>
---%>
 
 <%
     Student student = null;
     Lecturer lecturer = null;
     Supervisor supervisor = null;
-    /*Admin admin = null;
-    Examiner examiner = null;*/
+    Admin admin = null;
+    Examiner examiner = null;
 
     if ("student".equals(role)) {
         student = (Student) request.getAttribute("profile");
@@ -39,11 +37,11 @@
         lecturer = (Lecturer) request.getAttribute("profile");
     } else if ("supervisor".equals(role)) {
         supervisor = (Supervisor) request.getAttribute("profile");
-    } /*else if ("admin".equals(role)) {
-        admin = (Admin) request.getAttribute("admin");
+    } else if ("admin".equals(role)) {
+        admin = (Admin) request.getAttribute("profile");
     } else if ("examiner".equals(role)) {
-        examiner = (Examiner) request.getAttribute("examiner");
-    }*/
+        examiner = (Examiner) request.getAttribute("profile");
+    }
 %>
 
 
@@ -54,6 +52,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="styles.css">
         <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -312,6 +311,80 @@
                         <div class="form-group">
                             <label for="student-id">Staff ID</label>
                             <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        </div>
+
+                        <!-- Password Fields -->
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" placeholder="Enter current password">
+                        </div>
+
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" placeholder="Enter new password">
+                        </div>
+
+                        <div class="form-group password-field" style="display:none;">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="button-group">
+                            <button type="button" id="editButton">Edit Profile</button>
+                            <button type="button" id="saveButton" style="display:none;">Save Changes</button>
+                            <button type="button" id="cancelButton" style="display:none;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% } %>
+        
+        <% if ("examiner".equals(role)) { %>
+        <div class="main-content">
+            <div class="profile-container">
+                <div class="profile">
+                    <h2>Welcome</h2>
+
+                    <!-- Combined Form -->
+                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="user_id" value="<%= userId %>">
+                        <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
+
+                        <!-- Avatar Section -->
+                        <div class="profile-photo">
+                            <img id="profileImg"
+                                 src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>"
+                                 alt="User Avatar"
+                                 style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+
+                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                                <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
+                                <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
+                                <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
+                            </div>
+                        </div>
+
+                        <!-- Profile Info -->
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="student-id">Staff ID</label>
+                            <input type="text" id="examiner-id" name="examiner-id" value="<%= examiner.getExaminer_id() %>" disabled>
                         </div>
 
                         <div class="form-group">

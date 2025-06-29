@@ -145,11 +145,11 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Student Name</label>
-                        <input type="text" name="studentName" <&= userName %> <%= isEditable ? "" : "disabled" %> required>
+                        <input type="text" name="studentName" <%= isEditable ? "" : "disabled" %> >
                     </div>
                     <div class="form-group">
                         <label>Student ID</label>
-                        <input type="text" name="studentId" <%= isEditable ? "" : "disabled" %> required>
+                        <input type="text" name="studentId" <%= isEditable ? "" : "disabled" %> >
                     </div>
                     <div class="form-group">
                         <label>Programme</label>
@@ -200,8 +200,8 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Agreement Statement</label>
-                        <textarea rows="5" disabled>
-I hereby confirm that I agree to the responsibilities and expectations outlined above for this Final Year Project.
+                        <textarea rows="1" disabled>
+                I hereby confirm that I agree to the responsibilities and expectations outlined above for this Final Year Project.
                         </textarea>
                     </div>
                     <% if (isEditable) { %>

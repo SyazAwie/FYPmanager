@@ -52,6 +52,14 @@ public class ProfileServlet extends HttpServlet {
                     Supervisor supervisor = SupervisorDB.getSupervisorById(userId);
                     request.setAttribute("profile", supervisor);
                     break;
+                case "examiner":
+                    Examiner examiner = ExaminerDB.getExaminerById(userId);
+                    request.setAttribute("profile", examiner);
+                    break;
+                case "admin":
+                    Admin admin = AdminDB.getAdminById(userId);
+                    request.setAttribute("profile", admin);
+                    break;
                 default:
                     response.sendRedirect("Login.jsp?error=invalidRole");
                     return;
