@@ -3,16 +3,18 @@ package fyp.model;
 public class Project_Idea {
     private int projectIdea_id;
     private String title;
+    private String scope;
     private String description;
     private String status;
     private int student_id;
-    private int supervisor_id;
+    private Integer supervisor_id;
 
     // Parameterized constructor
-    public Project_Idea(int projectIdea_id, String title, String description, 
+    public Project_Idea(int projectIdea_id, String title, String scope, String description, 
                       String status, int student_id, int supervisor_id) {
         this.projectIdea_id = projectIdea_id;
         this.title = title;
+        this.scope = scope;
         this.description = description;
         this.status = status;
         this.student_id = student_id;
@@ -41,9 +43,17 @@ public class Project_Idea {
     public String getTitle() {
         return title;
     }
-
+    
     public void setTitle(String title) {
         this.title = title;
+    }
+    
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public String getDescription() {
@@ -70,11 +80,11 @@ public class Project_Idea {
         this.student_id = student_id;
     }
 
-    public int getSupervisor_id() {
+    public Integer getSupervisor_id() {
         return supervisor_id;
     }
 
-    public void setSupervisor_id(int supervisor_id) {
+    public void setSupervisor_id(Integer supervisor_id) {
         this.supervisor_id = supervisor_id;
     }
 }

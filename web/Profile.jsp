@@ -60,48 +60,74 @@
         <link rel="stylesheet" href="sidebarStyle.css">
 
         <style>
-.button-group button {
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.3s ease;
-}
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
 
-/* Edit Profile button - Green */
-#editButton {
-    background-color: #28a745; /* Bootstrap-style green */
-    color: white;
-}
+        /* Edit Profile button - Green */
+        #editButton {
+            background-color: #28a745; /* Bootstrap-style green */
+            color: white;
+        }
 
-#editButton:hover {
-    background-color: #218838;
-}
+        #editButton:hover {
+            background-color: #218838;
+        }
 
-/* Save Changes button - Slightly different green */
-#saveButton {
-    background-color: #20c997; /* Teal green */
-    color: white;
-}
+        /* Save Changes button - Slightly different green */
+        #saveButton {
+            background-color: #20c997; /* Teal green */
+            color: white;
+        }
 
-#saveButton:hover {
-    background-color: #17a2b8;
-}
+        #saveButton:hover {
+            background-color: #17a2b8;
+        }
 
-/* Cancel button - Red */
-#cancelButton {
-    background-color: #dc3545; /* Bootstrap-style red */
-    color: white;
-}
+        /* Cancel button - Red */
+        #cancelButton {
+            background-color: #dc3545; /* Bootstrap-style red */
+            color: white;
+        }
 
-#cancelButton:hover {
-    background-color: #c82333;
-}
+        #cancelButton:hover {
+            background-color: #c82333;
+        }
 
-</style>
+        /* New styles for compact form */
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        </style>
 
     </head>
     <body>
@@ -147,18 +173,20 @@
                         </div>
 
                         <!-- Profile Info -->
-                        <div class="form-group">
-                            <label for="full-name">Full Name</label>
-                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="full-name">Full Name</label>
+                                <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="student-id">Student ID</label>
+                                <input type="text" id="student-id" name="student-id" value="<%= student.getStudent_id() %>" disabled>
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="student-id">Student ID</label>
-                            <input type="text" id="student-id" name="student-id" value="<%= student.getStudent_id() %>" disabled>
-                        </div>
-
-                        <%  String selectedCourse = String.valueOf(student.getCourse_id());  %>
-                        <div class="form-group">
+                            <%  String selectedCourse = String.valueOf(student.getCourse_id());  %>
                             <label for="course">Course</label>
                             <select id="course" name="course" disabled>
                                 <option value="600" <%= "1".equals(selectedCourse) ? "selected" : "" %>>CSP600</option>
@@ -166,14 +194,16 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                            </div>
                         </div>
 
                         <!-- Password Fields -->
@@ -222,32 +252,34 @@
                                  alt="User Avatar"
                                  style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
 
-                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px;">
                                 <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
                                 <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
                                 <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
                             </div>
                         </div>
 
-                        <!-- Profile Info -->
-                        <div class="form-group">
-                            <label for="full-name">Full Name</label>
-                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        <!-- Profile Info - Compact Layout -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="full-name">Full Name</label>
+                                <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="lecturer-id">Staff ID</label>
+                                <input type="text" id="lecturer-id" name="lecturer-id" value="<%= lecturer.getLecturer_id() %>" disabled>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="student-id">Staff ID</label>
-                            <input type="text" id="lecturer-id" name="lecturer-id" value="<%= lecturer.getLecturer_id() %>" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                            </div>
                         </div>
 
                         <!-- Password Fields -->
@@ -284,8 +316,7 @@
                 <div class="profile">
                     <h2>Welcome</h2>
 
-                    <!-- Combined Form -->
-                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data">
+                    <form id="profileForm" action="UpdateProfile" method="post" enctype="multipart/form-data" class="form-container">
                         <input type="hidden" name="user_id" value="<%= userId %>">
                         <input type="hidden" id="delete_avatar_flag" name="delete_avatar" value="false">
 
@@ -296,32 +327,34 @@
                                  alt="User Avatar"
                                  style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
 
-                            <div id="uploadButtonGroup" style="display: none; margin-top: 10px; text-align:center;">
+                            <div id="uploadButtonGroup" class="avatar-actions" style="display: none;">
                                 <input type="file" id="photoInput" name="avatar" style="display:none;" accept="image/*" onchange="previewPhoto(event)">
                                 <button type="button" class="upload-photo" onclick="document.getElementById('photoInput').click()">Upload</button>
                                 <button type="button" class="delete-photo" onclick="confirmDelete()">Delete Picture</button>
                             </div>
                         </div>
 
-                        <!-- Profile Info -->
-                        <div class="form-group">
-                            <label for="full-name">Full Name</label>
-                            <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                        <!-- Profile Info - Compact Layout -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="full-name">Full Name</label>
+                                <input type="text" id="full-name" name="full-name" value="<%= userName %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="supervisor-id">Supervisor ID</label>
+                                <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="student-id">Staff ID</label>
-                            <input type="text" id="supervisor-id" name="supervisor-id" value="<%= supervisor.getSupervisor_id() %>" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="<%= email %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" value="<%= phone %>" disabled>
+                            </div>
                         </div>
 
                         <!-- Password Fields -->

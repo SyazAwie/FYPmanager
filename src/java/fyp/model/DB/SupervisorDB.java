@@ -175,4 +175,27 @@ public class SupervisorDB {
             e.printStackTrace();
         }
     }
+    
+    public static List<Supervisor> getSupervisorsByScope(String scope) {
+    List<Supervisor> list = new ArrayList<>();
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        String sql = "SELECT * FROM supervisor WHERE roleOfInterest = ? AND quota > 0";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, scope);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            Supervisor s = new Supervisor();
+            s.setSupervisor_id(rs.getInt("supervisor_id"));
+            s.setQuota(rs.getInt("quota"));
+            s.setRoleOfInterest(rs.getString("roleOfInterest"));
+            s.setPastProject(rs.getString("pastProject"));
+            s.setAdmin_id(rs.getInt("admin_id"));
+            list.add(s);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 }
