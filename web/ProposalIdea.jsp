@@ -1,31 +1,42 @@
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page errorPage="error.jsp" %>
+<%@ page import="fyp.model.User" %>
+<%@ page import="fyp.model.Student" %>
+<%@ page import="fyp.model.Supervisor" %>
+<%@ page import="fyp.model.Project_Idea" %>
+<%@ page import="java.util.*" %>
+<%@ page isELIgnored="false" %>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+
 <%
-    // Retrieve user information from session
-    String userId = String.valueOf(session.getAttribute("userId"));
+    User user = (User) request.getAttribute("user");
+    Student student = (Student) request.getAttribute("profile");
+    List<Supervisor> matchingSupervisors = (List<Supervisor>) session.getAttribute("matchingSupervisors");
+    Project_Idea existingProposal = (Project_Idea) request.getAttribute("existingProposal");
+
+    // Initialize default values
+    String userName = "User";
+    String userId = "";
+    int semester = 0;
     String userRole = (String) session.getAttribute("role");
-    String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
-    
-    // Set default values if null
-    if(userName == null || "null".equals(userName)) {
-        userName = "User";
+
+    // Safely handle user data
+    if (user != null) {
+        userName = user.getName() != null ? user.getName() : userName;
+        userId = String.valueOf(user.getUser_id());
     }
-    // Check login/session
-    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
+    
+    if (student != null) {
+        semester = student.getSemester();
+    }
+
+    // Session validation
+    if (userId.isEmpty() || userRole == null) {
         response.sendRedirect("Login.jsp?error=sessionExpired");
         return;
     }
-    
-    Map<String, String> roleNames = new HashMap<String, String>();
-    roleNames.put("supervisor", "Supervisor");
-    roleNames.put("student", "Student");
-    roleNames.put("lecturer", "Lecturer");
-    roleNames.put("admin", "Administrator");
-
-    String displayRole = roleNames.getOrDefault(userRole, "User");
 %>
 
 <!DOCTYPE html>
@@ -395,6 +406,155 @@
     .btn i {
         font-size: 1.1em;
     }
+    
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .alert.success {
+        background-color: rgba(133, 119, 230, 0.1);
+        color: var(--success);
+        border: 1px solid rgba(133, 119, 230, 0.3);
+    }
+    
+    .alert.error {
+        background-color: rgba(230, 119, 119, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(230, 119, 119, 0.3);
+    }
+
+    
+    .current-proposal {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    max-width: 100%;
+    margin: 1.5rem 0;
+    background: var(--light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 1px solid var(--accent);
+    transition: var(--transition);
+}
+
+.current-proposal:hover {
+    box-shadow: 0 15px 30px rgba(26, 13, 63, 0.15);
+    transform: translateY(-3px);
+}
+
+.proposal-details {
+    padding: 1.5rem 2rem;
+}
+
+.detail-row {
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(179, 153, 212, 0.3);
+    align-items: center;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    flex: 0 0 180px;
+    font-weight: 600;
+    color: var(--gray);
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+}
+
+.detail-value {
+    flex: 1;
+    color: var(--dark);
+    font-size: 1rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-value .fas {
+    color: var(--danger);
+    font-size: 1.2rem;
+}
+
+.file-info {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-left: 8px;
+    font-style: italic;
+}
+
+/* Status colors using your variables */
+.detail-value.draft {
+    color: var(--warning);
+    font-weight: 500;
+}
+
+.detail-value.submitted {
+    color: var(--secondary);
+    font-weight: 500;
+}
+
+.detail-value.approved {
+    color: var(--success);
+    font-weight: 500;
+}
+
+.detail-value.rejected {
+    color: var(--danger);
+    font-weight: 500;
+}
+
+.detail-value.review {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+/* Hover effects */
+.detail-row:hover {
+    background-color: rgba(179, 153, 212, 0.05);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 1.2rem 0;
+    }
+    
+    .detail-label {
+        flex: none;
+        width: 100%;
+        font-size: 0.8rem;
+    }
+    
+    .detail-value {
+        flex: none;
+        width: 100%;
+    }
+    
+    .proposal-details {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .current-proposal {
+        margin: 1rem 0;
+    }
+    
+    .proposal-details {
+        padding: 1rem;
+    }
+}
 
     /* Responsive Design */
     @media (max-width: 768px) {
@@ -464,11 +624,56 @@
     <!-- Overlay -->
     <div id="sidebarOverlay"></div>
     
-    
     <% if ("student".equals(userRole)) { %>
     <div class="main-content">
         <div class="card">
-          <h1>Write your proposal here:</h1>
+          <h1><%= existingProposal != null ? "Your Current Proposal" : "Write your proposal here" %></h1>
+
+          <!-- Display success/error messages -->
+          <% if (request.getAttribute("success") != null) { %>
+            <div class="alert success">
+                <i class="fas fa-check-circle"></i> ${success}
+            </div>
+          <% } %>
+          
+          <% if (request.getAttribute("error") != null) { %>
+            <div class="alert error">
+                <i class="fas fa-exclamation-circle"></i> ${error}
+            </div>
+          <% } %>
+
+          <!-- Display current proposal details if exists -->
+          <% if (existingProposal != null) { %>
+            <div class="current-proposal">
+                <div class="proposal-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Title</span>
+                        <span class="detail-value"><%= existingProposal.getTitle() %></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Scope</span>
+                        <span class="detail-value"><%= existingProposal.getScope() %></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value <%= existingProposal.getStatus().toLowerCase() %>">
+                            <%= existingProposal.getStatus() %>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Submitted File</span>
+                        <span class="detail-value">
+                            <i class="fas fa-file-pdf"></i> 
+                            <%= existingProposal.getDescription() %>
+                            <% if (request.getAttribute("fileSize") != null) { %>
+                                <span class="file-info"><%= request.getAttribute("fileSize") %></span>
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        <div class="divider"></div>
+          <% } %>
 
           <div class="profile-info">
             <img src="DownloadAvatar?filename=<%= userAvatar != null ? userAvatar : "default.png" %>" 
@@ -479,7 +684,9 @@
             </div>
           </div>
 
-          <form action="#" method="post" enctype="multipart/form-data">
+        <form action="ProposalServlet" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="<%= existingProposal != null ? "update" : "submit" %>">
+            
             <div class="form-row">
               <div class="form-group half-width">
                 <label>Full Name:</label>
@@ -494,188 +701,159 @@
             <div class="form-row">
               <div class="form-group half-width">
                 <label>Semester:</label>
-                <input type="text" readonly>
+                <input type="text" value="<%= semester %>" readonly>
               </div>
               <div class="form-group half-width">
                 <label>Topic:</label>
-                <input type="text" required>
+                <input type="text" name="title" value="<%= existingProposal != null ? existingProposal.getTitle() : "" %>" required>
               </div>
             </div>
 
             <div class="form-group full-width">
-              <label>Scope:</label>
-              <input type="text" required>
+                <label>Scope:</label>
+                <select name="scope" required>
+                  <option value="">-- Select Scope --</option>
+                  <% 
+                  String[] scopes = {
+                    "Artificial Intelligence", "Data Science & Analytics", "Cybersecurity",
+                    "Web Development", "Mobile App Development", "Internet of Things (IoT)",
+                    "Cloud Computing", "Blockchain", "Game Development", "Robotics & Automation",
+                    "Computer Vision", "Natural Language Processing", "Software Engineering",
+                    "Networking", "Human-Computer Interaction", "Educational Technology"
+                  };
+                  
+                  for (String scopeOption : scopes) {
+                      boolean selected = existingProposal != null && scopeOption.equals(existingProposal.getScope());
+                  %>
+                    <option value="<%= scopeOption %>" <%= selected ? "selected" : "" %>>
+                      <%= scopeOption %>
+                    </option>
+                  <% } %>
+                </select>
             </div>
 
             <div class="form-group full-width">
               <label>Upload File:</label>
               <div class="upload-section">
-                <input type="file" id="upload" name="proposalFile" accept=".pdf" required>
+                  <input type="hidden" name="studentId" value="<%= userId %>">
+                <input type="file" id="upload" name="proposalFile" accept=".pdf" <%= existingProposal == null ? "required" : "" %>>
                 <div class="upload-content">
                   <i class="fas fa-cloud-upload-alt"></i>
-                  <h3>Upload Proposal PDF</h3>
+                  <h3><%= existingProposal != null ? "Upload New Version" : "Upload Proposal PDF" %></h3>
                   <p>Max file size: 10MB</p>
                 </div>
-                <div class="file-info" id="fileInfo">
-                  <div class="file-name"><i class="fas fa-file-pdf"></i> <span id="fileName"></span></div>
-                  <div class="file-size">Size: <span id="fileSize"></span></div>
+                <div class="file-info" id="fileInfo" style="<%= existingProposal != null ? "display:block" : "display:none" %>">
+                  <div class="file-name">
+                    <i class="fas fa-file-pdf"></i> 
+                    <span id="fileName"><%= existingProposal != null ? existingProposal.getDescription() : "" %></span>
+                  </div>
+                  <div class="file-size">
+                    Size: <span id="fileSize"><%= request.getAttribute("fileSize") != null ? request.getAttribute("fileSize") : "" %></span>
+                  </div>
                 </div>
+                <% if (existingProposal != null) { %>
+                  <p class="file-note">Leave empty to keep current file</p>
+                <% } %>
               </div>
             </div>
 
             <div class="buttons">
                 <div class="action-buttons">
-                    <button class="btn btn-back" onclick="showBackAlert()">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
-                    <button class="btn btn-update" onclick="showUpdateAlert()">
-                        <i class="fas fa-sync-alt"></i> Update
-                    </button>
-                    <button class="btn btn-delete" onclick="showDeleteAlert()">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
+                    <% if (existingProposal != null) { %>
+                      <button type="button" class="btn btn-delete" onclick="confirmDelete()">
+                          <i class="fas fa-trash-alt"></i> Delete
+                      </button>
+                    <% } %>
                 </div>
-                <button class="btn btn-submit btn-lg" onclick="showSuccessAlert()">
-                    <i class="fas fa-check-circle"></i> Submit
+                <button type="submit" class="btn btn-submit btn-lg">
+                    <i class="fas fa-check-circle"></i> <%= existingProposal != null ? "Update Proposal" : "Submit Proposal" %>
                 </button>
             </div>
-
           </form>
         </div>
     </div>
     <% } %>
     
-    
-    
     <jsp:include page="sidebarScript.jsp" />
+    
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Get all necessary elements
-    const backBtn = document.querySelector('.main-content .btn-back');
-    const updateBtn = document.querySelector('.main-content .btn-update');
-    const deleteBtn = document.querySelector('.main-content .btn-delete');
-    const submitBtn = document.querySelector('.main-content .btn-submit');
-    const fileInput = document.querySelector('.main-content #upload');
-    const fileInfo = document.querySelector('.main-content #fileInfo');
-    const fileName = document.querySelector('.main-content #fileName');
-    const fileSize = document.querySelector('.main-content #fileSize');
-    const form = document.querySelector('.main-content form');
+        // File upload display functionality
+        const fileInput = document.getElementById('upload');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
 
-    // Back button functionality
-    if (backBtn) {
-      backBtn.addEventListener('click', function() {
-        // You can modify this to match your navigation needs
-        window.history.back();
-        // Or redirect to a specific page:
-        // window.location.href = '/previous-page';
-      });
-    }
+                    if (file.type !== 'application/pdf') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid File Type',
+                            text: 'Please upload a PDF file only.'
+                        });
+                        this.value = '';
+                        return;
+                    }
 
-    // Update button functionality
-    if (updateBtn) {
-      updateBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Here you would typically validate the form first
-        if (validateForm()) {
-          // Submit the form with an "update" action
-          form.setAttribute('action', '/update-proposal');
-          form.submit();
+                    if (file.size > 10 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Too Large',
+                            text: 'File size exceeds 10MB limit.'
+                        });
+                        this.value = '';
+                        return;
+                    }
+
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    fileInfo.style.display = 'block';
+                }
+            });
         }
-      });
-    }
 
-    // Delete button functionality
-    if (deleteBtn) {
-      deleteBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Confirm before deleting
-        if (confirm('Are you sure you want to delete this proposal?')) {
-          // Submit the form with a "delete" action
-          form.setAttribute('action', '/delete-proposal');
-          form.submit();
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const title = document.querySelector('input[name="title"]');
+                const scope = document.querySelector('select[name="scope"]');
+                
+                if (!title.value.trim()) {
+                    e.preventDefault();
+                    title.style.borderColor = 'red';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Missing Field',
+                        text: 'Please enter a topic title'
+                    });
+                }
+                
+                if (!scope.value) {
+                    e.preventDefault();
+                    scope.style.borderColor = 'red';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Missing Field',
+                        text: 'Please select a scope'
+                    });
+                }
+            });
         }
-      });
-    }
+    });
 
-    // Submit button functionality
-    if (submitBtn) {
-      submitBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        // Validate form before submission
-        if (validateForm()) {
-          // Submit the form with the default action
-          form.submit();
-        }
-      });
-    }
-
-    // File upload display functionality
-    if (fileInput) {
-      fileInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-          const file = this.files[0];
-
-          // Check file type (PDF only)
-          if (file.type !== 'application/pdf') {
-            alert('Please upload a PDF file only.');
-            this.value = '';
-            return;
-          }
-
-          // Check file size (10MB max)
-          if (file.size > 10 * 1024 * 1024) {
-            alert('File size exceeds 10MB limit.');
-            this.value = '';
-            return;
-          }
-
-          // Display file info
-          fileName.textContent = file.name;
-          fileSize.textContent = formatFileSize(file.size);
-          fileInfo.style.display = 'block';
-        }
-      });
-    }
-
-    // Form validation function
-    function validateForm() {
-      let isValid = true;
-      const requiredFields = document.querySelectorAll('.main-content input[required]');
-
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          isValid = false;
-          field.style.borderColor = 'red';
-
-          // Remove error style after user starts typing
-          field.addEventListener('input', function() {
-            this.style.borderColor = '#ddd';
-          });
-        }
-      });
-
-      // Check if file is uploaded (if required)
-      const fileUpload = document.querySelector('.main-content #upload');
-      if (fileUpload && fileUpload.required && !fileUpload.files[0]) {
-        isValid = false;
-        alert('Please upload your proposal file.');
-      }
-
-      return isValid;
-    }
-
-    // Helper function to format file size
     function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-  });
-</script>
 
-<script>
     function showBackAlert() {
         Swal.fire({
             title: 'Are you sure?',
@@ -689,89 +867,39 @@
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Add your back navigation logic here
                 window.history.back();
             }
         });
     }
 
-    function showUpdateAlert() {
+    function confirmDelete() {
         Swal.fire({
-            title: 'Update Record',
-            html: `
-                <form id="updateForm">
-                    <div class="form-group">
-                        <label for="updateField">Update Field:</label>
-                        <input type="text" id="updateField" class="swal2-input" placeholder="Enter new value">
-                    </div>
-                </form>
-            `,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonColor: '#4b2e83',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Update',
-            cancelButtonText: 'Cancel',
-            preConfirm: () => {
-                return {
-                    value: document.getElementById('updateField').value
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    'Updated!',
-                    'Your record has been updated.',
-                    'success'
-                );
-                // Add your update logic here
-            }
-        });
-    }
-
-    function showDeleteAlert() {
-        Swal.fire({
-            title: 'Delete Record?',
+            title: 'Delete Proposal?',
             text: "You won't be able to revert this!",
-            icon: 'error',
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#6c757d',
             confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel',
-            reverseButtons: true
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    'Deleted!',
-                    'Your record has been deleted.',
-                    'success'
-                );
-                // Add your delete logic here
+                // Create a hidden form for deletion
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'ProposalServlet';
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'action';
+                input.value = 'delete';
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
             }
         });
     }
-
-    function showSuccessAlert() {
-        const submitBtn = document.querySelector('.btn-submit');
-        submitBtn.classList.add('loading');
-        submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
-        
-        // Simulate async operation
-        setTimeout(() => {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Your form has been submitted successfully.',
-                icon: 'success',
-                confirmButtonColor: '#4b2e83',
-            }).then(() => {
-                submitBtn.classList.remove('loading');
-                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Submit';
-                // Add your submit logic here
-            });
-        }, 1500);
-    }
 </script>
-
 </body>
 </html>

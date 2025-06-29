@@ -24,6 +24,7 @@
     
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
+    roleNames.put("examiner", "Examiner");
     roleNames.put("student", "Student");
     roleNames.put("lecturer", "Lecturer");
     roleNames.put("admin", "Administrator");
@@ -91,7 +92,7 @@
             <div class="menu-text">Profile</div>
         </a>
 
-        <a href="ProposalIdea.jsp" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
+        <a href="ProposalServlet" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-lightbulb"></i></div>
             <div class="menu-text">Proposal Idea</div>
         </a>

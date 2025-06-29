@@ -24,6 +24,7 @@
     
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
+    roleNames.put("examiner", "Examiner");
     roleNames.put("student", "Student");
     roleNames.put("lecturer", "Lecturer");
     roleNames.put("admin", "Administrator");

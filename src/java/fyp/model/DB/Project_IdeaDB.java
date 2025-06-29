@@ -8,32 +8,34 @@ import DBconnection.DatabaseConnection;
 public class Project_IdeaDB {
 
     // Insert a new project idea
-    public int insertProjectIdea(Project_Idea idea) {
-        String sql = "INSERT INTO project_idea (title, description, status, student_id, supervisor_id) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+    public static boolean insertProjectIdea(Project_Idea idea, String fileName) {
+        String sql = "INSERT INTO project_idea (title, description, status, student_id, supervisor_id, scope) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, idea.getTitle());
-            stmt.setString(2, idea.getDescription());
+            stmt.setString(2, fileName); // or idea.getDescription()
             stmt.setString(3, idea.getStatus());
             stmt.setInt(4, idea.getStudent_id());
-            stmt.setInt(5, idea.getSupervisor_id());
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getInt(1); // Return generated projectIdea_id
-                    }
-                }
+
+            // Handle NULL supervisor_id
+            if (idea.getSupervisor_id() == null || idea.getSupervisor_id() == 0) {
+                stmt.setNull(5, Types.INTEGER);
+            } else {
+                stmt.setInt(5, idea.getSupervisor_id());
             }
+
+            stmt.setString(6, idea.getScope());
+
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return -1; // Return -1 on failure
     }
+
 
     // Get all project ideas
     public List<Project_Idea> getAllProjectIdeas() {
@@ -137,18 +139,19 @@ public class Project_IdeaDB {
 
     // Update project idea
     public boolean updateProjectIdea(Project_Idea idea) {
-        String sql = "UPDATE project_idea SET title = ?, description = ?, status = ?, " +
+        String sql = "UPDATE project_idea SET title = ?, scope=?, description = ?, status = ?, " +
                      "student_id = ?, supervisor_id = ? WHERE projectIdea_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, idea.getTitle());
-            stmt.setString(2, idea.getDescription());
-            stmt.setString(3, idea.getStatus());
-            stmt.setInt(4, idea.getStudent_id());
-            stmt.setInt(5, idea.getSupervisor_id());
-            stmt.setInt(6, idea.getProjectIdea_id());
+            stmt.setString(2, idea.getScope());
+            stmt.setString(3, idea.getDescription());
+            stmt.setString(4, idea.getStatus());
+            stmt.setInt(5, idea.getStudent_id());
+            stmt.setInt(6, idea.getSupervisor_id());
+            stmt.setInt(7, idea.getProjectIdea_id());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -199,5 +202,55 @@ public class Project_IdeaDB {
         idea.setStudent_id(rs.getInt("student_id"));
         idea.setSupervisor_id(rs.getInt("supervisor_id"));
         return idea;
+    }
+    
+    public static Project_Idea getProposalByStudentId(int studentId) {
+        String sql = "SELECT * FROM project_idea WHERE student_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Project_Idea idea = new Project_Idea();
+                idea.setProjectIdea_id(rs.getInt("projectIdea_id"));
+                idea.setTitle(rs.getString("title"));
+                idea.setDescription(rs.getString("description"));
+                idea.setStatus(rs.getString("status"));
+                idea.setStudent_id(rs.getInt("student_id"));
+                idea.setSupervisor_id(rs.getInt("supervisor_id"));
+                idea.setScope(rs.getString("scope"));
+                return idea;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean updateProposal(Project_Idea idea) {
+        String sql = "UPDATE project_idea SET title=?, description=?, scope=? WHERE projectIdea_id=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, idea.getTitle());
+            stmt.setString(2, idea.getDescription());
+            stmt.setString(3, idea.getScope());
+            stmt.setInt(4, idea.getProjectIdea_id());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteProposal(int proposalId) {
+        String sql = "DELETE FROM project_idea WHERE projectIdea_id=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, proposalId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
