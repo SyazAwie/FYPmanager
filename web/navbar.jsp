@@ -107,7 +107,7 @@
             <div class="menu-text">Progress Report</div>
         </a>
 
-        <a href="FinalReport.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("FinalReport.jsp") ? "active" : "" %>">
+        <a href="FinalReportSubmission.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("FinalReportSubmission.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-file-pdf"></i></div>
             <div class="menu-text">Final Reports</div>
         </a>

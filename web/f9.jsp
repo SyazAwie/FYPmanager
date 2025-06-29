@@ -91,8 +91,6 @@
         .criteria-table input[type="number"] {
             width: 80px; padding: 6px; font-size: 14px;
         }
-        
-        }
     </style>
 </head>
 <body>
