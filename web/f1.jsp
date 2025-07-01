@@ -139,7 +139,7 @@
         </div>
 
         <!-- Tab Contents -->
-        <form action="SubmitF1Servlet" method="post">
+        <form action="F1Servlet" method="post">
             <!-- Student Tab -->
             <div class="tab-content active" id="studentTab">
                 <div class="form-section">
