@@ -145,15 +145,15 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Student Name</label>
-                        <input type="text" name="studentName" <%= isEditable ? "" : "disabled" %> >
+                        <input type="text" value="${studentName}"  name="studentName" <%= isEditable ? "" : "disabled" %> >
                     </div>
                     <div class="form-group">
                         <label>Student ID</label>
-                        <input type="text" name="studentId" <%= isEditable ? "" : "disabled" %> >
+                        <input type="text" value="${studentId}" name="studentId" <%= isEditable ? "" : "disabled" %> >
                     </div>
                     <div class="form-group">
                         <label>Programme</label>
-                        <input type="text" name="programme" <%= isEditable ? "" : "disabled" %>>
+                        <input type="text" value="${programme}" name="programme" <%= isEditable ? "" : "disabled" %>>
                     </div>
                     <div class="action-area">
                         <button type="button" class="action-btn" onclick="showTabById('supervisorTab')">Next</button>
@@ -166,11 +166,11 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Supervisor Name</label>
-                        <input type="text" name="supervisorName" <%= isEditable ? "" : "disabled" %>>
+                        <input type="text" value="${supervisorName}" name="supervisorName" <%= isEditable ? "" : "disabled" %>>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" name="supervisorEmail" <%= isEditable ? "" : "disabled" %>>
+                        <input type="email" value="${supervisorEmail}" name="supervisorEmail" <%= isEditable ? "" : "disabled" %>>
                     </div>
                     <div class="action-area">
                         <button type="button" class="action-btn" onclick="showTabById('projectTab')">Next</button>
@@ -183,11 +183,11 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label>Project Title</label>
-                        <input type="text" name="projectTitle" <%= isEditable ? "" : "disabled" %>>
+                        <input type="text" value="${projectTitle}"  name="projectTitle" <%= isEditable ? "" : "disabled" %>>
                     </div>
                     <div class="form-group">
                         <label>Project Description</label>
-                        <textarea name="projectDescription" rows="4" <%= isEditable ? "" : "disabled" %>></textarea>
+                        <textarea name="projectDescription" rows="4" <%= isEditable ? "" : "disabled" %>>${projectDescription}</textarea>
                     </div>
                     <div class="action-area">
                         <button type="button" class="action-btn" onclick="showTabById('agreementTab')">Next</button>

@@ -6,12 +6,18 @@ import fyp.model.Forms;
 import DBconnection.DatabaseConnection;
 
 public class FormsDB {
+    
+    Connection conn = DatabaseConnection.getConnection();
+    
+    public FormsDB(Connection conn) {
+        this.conn = conn;
+    }
+
 
     public void insertForm(Forms form) {
         String sql = "INSERT INTO FORMS (form_id, form_code, form_name, description, access_role, formDate, submitted_by, submitted_to, submitted_date, status, score, remarks, student_id, lecturer_id, supervisor_id, admin_id, examinerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, form.getForm_id());
             stmt.setString(2, form.getForm_code());
@@ -42,8 +48,7 @@ public class FormsDB {
         List<Forms> formList = new ArrayList<>();
         String sql = "SELECT * FROM FORMS";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
+        try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
@@ -79,8 +84,7 @@ public class FormsDB {
     public void updateForm(Forms form) {
         String sql = "UPDATE FORMS SET form_code = ?, form_name = ?, description = ?, access_role = ?, formDate = ?, submitted_by = ?, submitted_to = ?, submitted_date = ?, status = ?, score = ?, remarks = ?, student_id = ?, lecturer_id = ?, supervisor_id = ?, admin_id = ?, examinerId = ? WHERE form_id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, form.getForm_code());
             stmt.setString(2, form.getForm_name());
@@ -110,8 +114,7 @@ public class FormsDB {
     public void deleteForm(int formId) {
         String sql = "DELETE FROM FORMS WHERE form_id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, formId);
             stmt.executeUpdate();
@@ -119,5 +122,69 @@ public class FormsDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public Map<String, String> getFormF1Data(int studentId) throws SQLException {
+        String sql = "SELECT pi.projectIdea_id, pi.title, pi.description, " +
+                "u.name AS student_name, u.email AS student_email, s.semester, s.intake, " +
+                "sup.supervisor_id, sup.roleOfInterest, sup.pastProject, " +
+                "u2.name AS supervisor_name, u2.email AS supervisor_email " +
+                "FROM project_idea pi " +
+                "JOIN student s ON pi.student_id = s.student_id " +
+                "JOIN users u ON s.student_id = u.user_id " +
+                "JOIN supervisor sup ON pi.supervisor_id = sup.supervisor_id " +
+                "JOIN users u2 ON sup.supervisor_id = u2.user_id " +
+                "WHERE pi.student_id = ? AND pi.status = 'ACCEPTED'";
+
+        Map<String, String> data = new HashMap<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    data.put("studentName", rs.getString("student_name"));
+                    data.put("studentId", String.valueOf(studentId));
+                    data.put("programme", rs.getString("intake"));
+
+                    data.put("supervisorName", rs.getString("supervisor_name"));
+                    data.put("supervisorEmail", rs.getString("supervisor_email"));
+
+                    data.put("projectTitle", rs.getString("title"));
+                    data.put("projectDescription", rs.getString("description"));
+                }
+            }
+        }
+        return data;
+    }
+
+    // Simpan Form F1
+    public void saveFormF1(int studentId, String studentSignature) throws SQLException {
+        int supervisorId = getSupervisorIdByStudent(studentId);
+
+        String sql = "INSERT INTO forms (form_code, form_name, student_id, supervisor_id, submitted_by, submitted_date, status, description) " +
+                     "VALUES (?, ?, ?, ?, ?, NOW(), ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "F1");
+            ps.setString(2, "Form Agreement");
+            ps.setInt(3, studentId);
+            ps.setInt(4, supervisorId);
+            ps.setString(5, String.valueOf(studentId));
+            ps.setString(6, "Submitted");
+            ps.setString(7, studentSignature);
+            ps.executeUpdate();
+        }
+    }
+
+    private int getSupervisorIdByStudent(int studentId) throws SQLException {
+        String sql = "SELECT supervisor_id FROM project_idea WHERE student_id = ? AND status = 'ACCEPTED'";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("supervisor_id");
+                }
+            }
+        }
+        return 0;
     }
 }

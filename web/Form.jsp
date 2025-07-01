@@ -179,15 +179,15 @@
 
                     String formName = form[1];
                     String dueDate = form[2];
-                    String filename = formId.toLowerCase() + ".jsp";
+                    String filename = formId + "Servlet";
             %>
             <tr>
                 <td><%= formId %></td>
-                <td><a class="form-link" href="<%= filename %>?mode=view"><%= formName %></a></td>
+                <td><a class="form-link" href="<%= filename %>"><%= formName %></a></td>
                 <td><%= (dueDate != null) ? dueDate : "<span style='color:#999;'>Pending</span>" %></td>
                 <td>
                     <div class="action-icons">
-                        <a class="icon-button edit-btn" href="<%= filename %>?mode=edit" title="Edit or Sign Form">
+                        <a class="icon-button edit-btn" href="<%= filename %>" title="Edit or Sign Form">
                             <i class="fas fa-pen"></i>
                         </a>
                         <a class="icon-button download-btn" href="DownloadFormServlet?form=<%= formId %>" title="Download PDF">
