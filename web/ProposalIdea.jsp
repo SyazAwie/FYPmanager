@@ -6,6 +6,7 @@
 <%@ page import="fyp.model.Project_Idea" %>
 <%@ page import="java.util.*" %>
 <%@ page isELIgnored="false" %>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
 
@@ -37,6 +38,19 @@
         response.sendRedirect("Login.jsp?error=sessionExpired");
         return;
     }
+%>
+<%
+    // Get data from request
+    List<Project_Idea> proposals = (List<Project_Idea>) request.getAttribute("proposals");
+    Map<Integer, Student> studentMap = (Map<Integer, Student>) request.getAttribute("studentMap");
+    Map<Integer, User> userMap = (Map<Integer, User>) request.getAttribute("userMap");
+    
+    // Get filter parameters
+    String statusFilter = request.getParameter("status");
+    String searchQuery = request.getParameter("search");
+    
+    // Date formatter
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm");
 %>
 
 <!DOCTYPE html>
@@ -774,6 +788,116 @@
     </div>
     <% } %>
     
+    <% if ("supervisor".equals(userRole)) { %>
+    <div class="proposal-dashboard">
+        <h1>Student Proposals</h1>
+
+        <form method="get" action="ProposalServlet">
+            <div class="proposal-filters">
+                <div class="filter-group">
+                    <label for="status-filter">Filter by Status</label>
+                    <select id="status-filter" name="status" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="Pending" <%= "Pending".equals(statusFilter) ? "selected" : "" %>>Pending</option>
+                        <option value="Approved" <%= "Approved".equals(statusFilter) ? "selected" : "" %>>Approved</option>
+                        <option value="Rejected" <%= "Rejected".equals(statusFilter) ? "selected" : "" %>>Rejected</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" name="search" placeholder="Search proposals..."
+                           value="<%= searchQuery != null ? searchQuery : "" %>">
+                    <input type="hidden" name="action" value="supervisorView">
+                    <button type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+
+        <div class="proposals-grid">
+            <% if (proposals == null || proposals.isEmpty()) { %>
+                <div class="empty-state">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>No proposals found</h3>
+                    <p>There are currently no student proposals matching your criteria</p>
+                </div>
+            <% } else { 
+                for (Project_Idea proposal : proposals) { 
+                    User studentUser = userMap != null ? userMap.get(proposal.getStudent_id()) : null;
+                    String statusClass = "status-" + proposal.getStatus().toLowerCase();
+            %>
+                <div class="proposal-card">
+                    <div class="proposal-header">
+                        <h3 class="proposal-title"><%= proposal.getTitle() %></h3>
+                        <span class="proposal-status <%= statusClass %>">
+                            <%= proposal.getStatus() %>
+                        </span>
+                    </div>
+
+                    <div class="proposal-meta">
+                        <div class="proposal-meta-item">
+                            <span class="proposal-meta-label">Student:</span>
+                            <span class="proposal-meta-value">
+                                <%= studentUser != null ? studentUser.getName() : "N/A" %> 
+                                (<%= student != null ? student.getStudent_id() : "N/A" %>)
+                            </span>
+                        </div>
+                        <div class="proposal-meta-item">
+                            <span class="proposal-meta-label">Scope:</span>
+                            <span class="proposal-meta-value"><%= proposal.getScope() %></span>
+                        </div>
+                    </div>
+
+                    <div class="proposal-actions">
+                        <button class="action-btn btn-view" 
+                                onclick="viewProposal(<%= proposal.getProjectIdea_id() %>)">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+
+                        <% if ("Pending".equals(proposal.getStatus())) { %>
+                            <button class="action-btn btn-approve" 
+                                    onclick="updateStatus(<%= proposal.getProjectIdea_id() %>, 'Approved')">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="action-btn btn-reject" 
+                                    onclick="updateStatus(<%= proposal.getProjectIdea_id() %>, 'Rejected')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            <% } 
+            } %>
+        </div>
+    </div>
+    <% } %>
+
+<script>
+function viewProposal(proposalId) {
+    window.location.href = 'ProposalServlet?action=view&id=' + proposalId;
+}
+
+function updateStatus(proposalId, status) {
+    if (confirm('Are you sure you want to ' + status.toLowerCase() + ' this proposal?')) {
+        fetch('ProposalServlet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=updateStatus&id=' + proposalId + '&status=' + status
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Error updating status');
+            }
+        });
+    }
+}
+</script>
+    
     <jsp:include page="sidebarScript.jsp" />
     
 <script>
@@ -901,5 +1025,205 @@
         });
     }
 </script>
+
+<style>
+    /* Supervisor Proposal Dashboard Styles */
+    .proposal-dashboard {
+        margin-top: 2rem;
+    }
+
+    .proposal-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--gray);
+        font-weight: 500;
+    }
+
+    .filter-group select, 
+    .filter-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--accent);
+        border-radius: var(--border-radius);
+        background: white;
+        font-size: 0.9rem;
+    }
+
+    .proposals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .proposal-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    .proposal-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .proposal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .proposal-title {
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+        font-size: 1.1rem;
+        max-width: 70%;
+    }
+
+    .proposal-status {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: rgba(230, 193, 119, 0.15);
+        color: var(--warning);
+    }
+
+    .status-approved {
+        background: rgba(133, 119, 230, 0.15);
+        color: var(--success);
+    }
+
+    .status-rejected {
+        background: rgba(230, 119, 119, 0.15);
+        color: var(--danger);
+    }
+
+    .proposal-meta {
+        margin-bottom: 1rem;
+    }
+
+    .proposal-meta-item {
+        display: flex;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .proposal-meta-label {
+        font-weight: 500;
+        color: var(--dark);
+        min-width: 100px;
+    }
+
+    .proposal-meta-value {
+        color: var(--gray);
+        flex: 1;
+    }
+
+    .proposal-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding-top: 1rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-btn i {
+        font-size: 0.9em;
+    }
+
+    .btn-view {
+        background: var(--light);
+        color: var(--primary);
+    }
+
+    .btn-view:hover {
+        background: rgba(75, 46, 131, 0.1);
+    }
+
+    .btn-approve {
+        background: rgba(133, 119, 230, 0.1);
+        color: var(--success);
+    }
+
+    .btn-approve:hover {
+        background: rgba(133, 119, 230, 0.2);
+    }
+
+    .btn-reject {
+        background: rgba(230, 119, 119, 0.1);
+        color: var(--danger);
+    }
+
+    .btn-reject:hover {
+        background: rgba(230, 119, 119, 0.2);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--gray);
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+        .proposals-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .proposal-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .proposal-title {
+            max-width: 100%;
+        }
+    }
+</style>
+
 </body>
 </html>

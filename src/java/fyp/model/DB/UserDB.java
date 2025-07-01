@@ -298,7 +298,25 @@ public class UserDB {
 
     }
 
-
+    public static List<String> getUserRoles(String userId) {
+    List<String> roles = new ArrayList<>();
+    String sql = "SELECT role FROM users WHERE user_id = ?";
+    
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, userId);
+        ResultSet rs = stmt.executeQuery();
+        
+        while (rs.next()) {
+            roles.add(rs.getString("role"));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return roles;
+}
 
 
 

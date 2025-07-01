@@ -1,46 +1,69 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="fyp.model.User" %>
-<%
-    User user = (User) request.getAttribute("user");
-
-    String role = "";
-    String userAvatar = "", userName = "", email = "", phone = "", userId = "";
-
-    if (user != null) {
-        role = user.getRole();
-        userAvatar = user.getAvatar();
-        userName = user.getName();
-        email = user.getEmail();
-        phone = user.getPhoneNum();
-        userId = String.valueOf(user.getUser_id());
-    } else {
-        out.println("ERROR: 'user' is null. Please login again or check servlet.");
-    }
-%>
-
 <%@ page import="fyp.model.Student" %>
 <%@ page import="fyp.model.Lecturer" %>
 <%@ page import="fyp.model.Supervisor" %>
 <%@ page import="fyp.model.Admin" %>
 <%@ page import="fyp.model.Examiner" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 
 <%
+    // Get attributes from request
+    User user = (User) request.getAttribute("user");
+    Map<String, Object> profiles = (Map<String, Object>) request.getAttribute("profiles");
+    List<String> userRoles = (List<String>) request.getAttribute("userRoles");
+    String currentRole = (String) request.getAttribute("currentRole");
+    Object profile = request.getAttribute("profile");
+
+    // Initialize user data variables with empty defaults
+    String userAvatar = "";
+    String userName = "";
+    String email = "";
+    String phone = "";
+    String userId = "";
+
+    // Handle user data
+    if (user != null) {
+        userAvatar = user.getAvatar() != null ? user.getAvatar() : "";
+        userName = user.getName() != null ? user.getName() : "";
+        email = user.getEmail() != null ? user.getEmail() : "";
+        phone = user.getPhoneNum() != null ? user.getPhoneNum() : "";
+        userId = String.valueOf(user.getUser_id());
+    } else {
+        response.sendRedirect("error.jsp?error=userNotFound");
+        return;
+    }
+
+    // Initialize role-specific objects
     Student student = null;
     Lecturer lecturer = null;
     Supervisor supervisor = null;
     Admin admin = null;
     Examiner examiner = null;
 
-    if ("student".equals(role)) {
-        student = (Student) request.getAttribute("profile");
-    } else if ("lecturer".equals(role)) {
-        lecturer = (Lecturer) request.getAttribute("profile");
-    } else if ("supervisor".equals(role)) {
-        supervisor = (Supervisor) request.getAttribute("profile");
-    } else if ("admin".equals(role)) {
-        admin = (Admin) request.getAttribute("profile");
-    } else if ("examiner".equals(role)) {
-        examiner = (Examiner) request.getAttribute("profile");
+    // Get the profile object based on current role
+    if (currentRole != null && profile != null) {
+        switch (currentRole.toLowerCase()) {
+            case "student":
+                student = (Student) profile;
+                break;
+            case "lecturer":
+                lecturer = (Lecturer) profile;
+                break;
+            case "supervisor":
+                supervisor = (Supervisor) profile;
+                break;
+            case "admin":
+                admin = (Admin) profile;
+                break;
+            case "examiner":
+                examiner = (Examiner) profile;
+                break;
+        }
+    } else {
+        response.sendRedirect("error.jsp?error=roleNotFound");
+        return;
     }
 %>
 
@@ -146,7 +169,7 @@
 
          
         <!-- Student Profile Section -->
-        <% if ("student".equals(role)) { %>
+        <% if ("student".equalsIgnoreCase(currentRole)) { %>
         <div class="main-content">
             <div class="profile-container">
                 <div class="profile">
@@ -233,7 +256,7 @@
         </div>
         <% } %>                
              <!-- Lecturer Profile Section -->
-        <% if ("lecturer".equals(role)) { %>
+        <% if ("lecturer".equalsIgnoreCase(currentRole)) { %>
         <div class="main-content">
             <div class="profile-container">
                 <div class="profile">
@@ -309,7 +332,7 @@
         </div>
         <% } %>
              <!-- Supervisor Profile Section -->
-        <% if ("supervisor".equals(role)) { %>
+        <% if ("supervisor".equalsIgnoreCase(currentRole)) { %>
         <div class="main-content">
             <div class="profile-container">
                 <div class="profile">
@@ -384,7 +407,7 @@
         </div>
         <% } %>
         
-        <% if ("examiner".equals(role)) { %>
+        <% if ("examiner".equalsIgnoreCase(currentRole)) { %>
         <div class="main-content">
             <div class="profile-container">
                 <div class="profile">

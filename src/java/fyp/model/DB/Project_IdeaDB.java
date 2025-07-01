@@ -253,4 +253,72 @@ public class Project_IdeaDB {
             return false;
         }
     }
+    
+    public static List<Project_Idea> getAllProposals(String statusFilter, String searchQuery) {
+        List<Project_Idea> proposals = new ArrayList<>();
+        String sql = "SELECT * FROM project_idea WHERE 1=1";
+
+        if (statusFilter != null && !statusFilter.isEmpty()) {
+            sql += " AND status = ?";
+        }
+
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            sql += " AND (title LIKE ? OR scope LIKE ? OR description LIKE ?)";
+        }
+
+        // Ganti ORDER BY ke column yang memang wujud
+        sql += " ORDER BY projectIdea_id DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+            if (statusFilter != null && !statusFilter.isEmpty()) {
+                stmt.setString(paramIndex++, statusFilter);
+            }
+
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                String searchParam = "%" + searchQuery + "%";
+                stmt.setString(paramIndex++, searchParam);
+                stmt.setString(paramIndex++, searchParam);
+                stmt.setString(paramIndex++, searchParam);
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Project_Idea proposal = new Project_Idea();
+                proposal.setProjectIdea_id(rs.getInt("projectIdea_id"));
+                proposal.setTitle(rs.getString("title"));
+                proposal.setDescription(rs.getString("description"));
+                proposal.setStatus(rs.getString("status"));
+                proposal.setStudent_id(rs.getInt("student_id"));
+                proposal.setSupervisor_id(rs.getInt("supervisor_id"));
+                proposal.setScope(rs.getString("scope"));
+
+                proposals.add(proposal);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return proposals;
+    }
+
+
+    public static boolean updateProposalStatus(int proposalId, String status, int supervisorId) {
+        String sql = "UPDATE project_idea SET status = ?, supervisor_id = ? WHERE projectIdea_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, status);
+            stmt.setInt(2, supervisorId);
+            stmt.setInt(3, proposalId);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

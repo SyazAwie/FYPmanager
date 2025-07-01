@@ -69,6 +69,11 @@
             <div class="menu-icon"><i class="fas fa-user"></i></div>
             <div class="menu-text">Profile</div>
         </a>
+            
+        <a href="ProposalServlet" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
+            <div class="menu-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="menu-text">Proposal Idea</div>
+        </a>
 
         <a href="CSP600.jsp" class="menu-item <%= currentURI.endsWith("/ProposalIdea.jsp") ? "active" : "" %>">
             <div class="menu-icon"><i class="fas fa-user-graduate"></i></div>
