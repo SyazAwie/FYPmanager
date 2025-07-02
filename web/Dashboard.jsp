@@ -7,7 +7,7 @@
     String userRole = (String) session.getAttribute("role");
     String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
-    
+    //test laptop khaleda
     // Set default values if null
     if(userName == null || "null".equals(userName)) {
         userName = "User";
