@@ -722,7 +722,9 @@
                     
                     <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary);">Examiner Registration</h2>
                     
-                    <form id="register-form" action="/FYPManagement/RegisterExaminerServlet" method="post" onsubmit="return validateRegisterForm()">
+                    <form id="register-form" action="<%= request.getContextPath() %>/RegisterNewExaminerServlet" method="post" 
+                            onsubmit="return validateRegisterForm()">
+                        
                         <div class="form-group">
                             <label for="register-name">Full Name</label>
                             <input type="text" id="register-name" name="name" class="form-control" placeholder="Enter your full name" required>

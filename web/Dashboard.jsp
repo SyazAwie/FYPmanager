@@ -1,5 +1,7 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
+<%@ page import="java.sql.*, java.util.*" %>
+<%@ page import="DBconnection.DatabaseConnection" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     // Retrieve user information from session
@@ -30,6 +32,53 @@
     roleNames.put("admin", "Administrator");
 
     String displayRole = roleNames.getOrDefault(userRole, "User");
+%>
+<%
+    String approveId = request.getParameter("approveExaminerId");
+    if (approveId != null) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // Get data from examiner_register
+            String query = "SELECT * FROM examiner_register WHERE id = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, Integer.parseInt(approveId));
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                String examinerId = rs.getString("examiner_id");
+                String name = rs.getString("full_name");
+                String email = rs.getString("email");
+                String phone = rs.getString("phone");
+                String password = rs.getString("password");
+                String role = "examiner";
+                String avatar = "default.png";
+
+                // Insert into users table
+                String insertUser = "INSERT INTO users (user_id, name, email, phoneNum, password, role, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement psInsert = conn.prepareStatement(insertUser);
+                psInsert.setString(1, examinerId);
+                psInsert.setString(2, name);
+                psInsert.setString(3, email);
+                psInsert.setString(4, phone);
+                psInsert.setString(5, password);
+                psInsert.setString(6, role);
+                psInsert.setString(7, avatar);
+                psInsert.executeUpdate();
+
+                // Update status to 'accepted'
+                String updateStatus = "UPDATE examiner_register SET status = 'accepted' WHERE id = ?";
+                PreparedStatement psUpdate = conn.prepareStatement(updateStatus);
+                psUpdate.setInt(1, Integer.parseInt(approveId));
+                psUpdate.executeUpdate();
+
+                out.println("<script>alert('Examiner approved successfully.');</script>");
+            }
+
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            out.println("<p style='color:red;'>Error during approval: " + e.getMessage() + "</p>");
+        }
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -387,6 +436,32 @@
           <span>100</span>
         </a>
       </div>
+      
+      <!-- Examiner Pending Approval Section (Clickable Card) -->
+        <a href="ApproveExaminer.jsp" style="display: block; text-decoration: none; color: inherit;">
+        <div class="card" style="background: #fff; padding: 15px; border-radius: 12px; margin-top: 20px; transition: box-shadow 0.3s;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">Pending Examiner Approvals</h3>
+        <%
+            try (Connection conn = DatabaseConnection.getConnection()) {
+                String sql = "SELECT COUNT(*) AS total FROM examiner_register WHERE status = 'pending'";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery();
+            
+                if (rs.next()) {
+                    int total = rs.getInt("total");
+        %>
+                <p style="font-size: 24px; font-weight: bold;"><%= total %> pending</p>
+        <%}
+                rs.close();
+                ps.close();
+            } catch (Exception e) {
+                out.println("<p style='color:red;'>Error: " + e.getMessage() + "</p>");
+            }
+        %>
+    <p style="font-size: 14px; color: gray;">Click to review & approve examiners</p>
+  </div>
+</a>
+
     </div>
   </div>
 
