@@ -8,6 +8,7 @@
     String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
     //test laptop khaleda
+    //laptop danisa
     // Set default values if null
     if(userName == null || "null".equals(userName)) {
         userName = "User";
