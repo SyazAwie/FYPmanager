@@ -1,6 +1,7 @@
 package fyp.controller;
 
 import DBconnection.DatabaseConnection;
+import fyp.model.DB.UserDB;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +22,8 @@ public class RegisterNewExaminerServlet extends HttpServlet {
         String email = request.getParameter("email");
         String examinerId = request.getParameter("examinerId");
         String password = request.getParameter("password");
+        String hashedPassword = UserDB.hashPassword(password);
+        System.out.println("DEBUG: Hashed Password=" + hashedPassword);
         String phone = request.getParameter("phone");
         String expertise = request.getParameter("expertise");
         String affiliation = request.getParameter("affiliation");
@@ -50,7 +53,7 @@ public class RegisterNewExaminerServlet extends HttpServlet {
                 ps.setString(1, name);
                 ps.setString(2, email);
                 ps.setString(3, examinerId);
-                ps.setString(4, password);
+                ps.setString(4, hashedPassword);
                 ps.setString(5, phone);
                 ps.setString(6, expertise);
                 ps.setString(7, affiliation);
