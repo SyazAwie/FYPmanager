@@ -18,7 +18,7 @@ public class StudentDisplayDAO {
     public List<StudentDisplayDTO> getStudentsByCourse(String courseId) {
     List<StudentDisplayDTO> list = new ArrayList<>();
 
-    String sql = "SELECT u.name AS student_name, s.student_id, c.courseName AS programme, " +
+    String sql = "SELECT DISTINCT u.name AS student_name, s.student_id, c.courseName AS programme, " +
                  "su.name AS supervisor_name " +
                  "FROM student s " +
                  "JOIN users u ON s.student_id = u.user_id " +
