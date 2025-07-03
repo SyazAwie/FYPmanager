@@ -1,6 +1,10 @@
 <%@ page import="java.sql.*, DBconnection.DatabaseConnection" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
+    // Ambil dari session
+    String userIdString = String.valueOf(session.getAttribute("userId"));
+    int userId = Integer.parseInt(userIdString);
+
     String userRole = (String) session.getAttribute("role");
     if (userRole == null || !userRole.equals("admin")) {
         response.sendRedirect("Login.jsp?error=unauthorized");
@@ -129,15 +133,12 @@ if (rejectId != null) {
                     insertUserStmt.setString(7, "default.png");
                     insertUserStmt.executeUpdate();
 
-                    String insertExaminer = "INSERT INTO examiner (examiner_id, name, email, phone, expertise, affiliation) VALUES (?, ?, ?, ?, ?, ?)";
+                    String insertExaminer = "INSERT INTO examiner (examiner_id, admin_id) VALUES (?, ?)";
                     PreparedStatement insertExaminerStmt = conn.prepareStatement(insertExaminer);
                     insertExaminerStmt.setString(1, examinerId);
-                    insertExaminerStmt.setString(2, fullName);
-                    insertExaminerStmt.setString(3, email);
-                    insertExaminerStmt.setString(4, phone);
-                    insertExaminerStmt.setString(5, expertise);
-                    insertExaminerStmt.setString(6, affiliation);
+                    insertExaminerStmt.setInt(2, userId); // adminId datang dari session
                     insertExaminerStmt.executeUpdate();
+
 
                     String updateStatus = "UPDATE examiner_register SET status = 'accepted' WHERE id = ?";
                     PreparedStatement updateStmt = conn.prepareStatement(updateStatus);
