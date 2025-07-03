@@ -1,25 +1,26 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
-<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.Statement, java.sql.ResultSet" %>
 
 <%
-    // Retrieve user information from session
-    String userId = String.valueOf(session.getAttribute("userId"));
+    // Ambil dari session
+    String userIdString = String.valueOf(session.getAttribute("userId"));
+    int userId = Integer.parseInt(userIdString);
+    
     String userRole = (String) session.getAttribute("role");
-    String userName = (String) session.getAttribute("userName");
-    String userAvatar = (String) session.getAttribute("avatar");
-
-    // Set default values if null
-    if (userName == null || "null".equals(userName)) {
-        userName = "User";
-    }
-    if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
-        response.sendRedirect("Login.jsp?error=sessionExpired");
+    if (userRole == null || !userRole.equals("admin")) {
+        response.sendRedirect("Login.jsp?error=unauthorized");
         return;
     }
-    if (userAvatar == null || "null".equals(userAvatar) || userAvatar.trim().isEmpty()) {
-        userAvatar = "default.png";
+    
+    String userName = (String) session.getAttribute("userName");
+    if(userName == null || "null".equals(userName)) {
+        userName = "User";
+    }
+    
+    String userAvatar = (String) session.getAttribute("avatar");
+    if (userAvatar == null || userAvatar.equals("null") || userAvatar.trim().isEmpty()) {
+        userAvatar = "default.png"; // fallback kalau tak ada gambar
     }
 
     Map<String, String> roleNames = new HashMap<String, String>();
@@ -34,61 +35,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>UiTM FYP System</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="sidebarStyle.css">
-  <style>
+        <title>UiTM FYP System</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="sidebarStyle.css">
+    <style>
         :root {
-            /* Primary Colors */
-            --primary: #4b2e83;       /* Dark Purple (UiTM Brand) */
-            --secondary: #6d4ac0;     /* Medium Purple */
-            --accent: #b399d4;        /* Light Purple */
-            
-            /* Neutral Colors */
-            --light: #f9f7fd;         /* Very Light Purple (Background) */
-            --dark: #1a0d3f;          /* Very Dark Purple (Text) */
-            --white: #ffffff;         /* Pure White */
-            --gray-light: #f5f5f5;    /* Light Gray */
-            --gray-medium: #e0e0e0;   /* Medium Gray */
-            --gray-dark: #757575;     /* Dark Gray */
-            
-            /* Status Colors */
-            --success: #4CAF50;       /* Green */
-            --warning: #FFC107;       /* Amber */
-            --danger: #F44336;        /* Red */
-            --info: #2196F3;         /* Blue */
-            
-            /* Component Colors */
+            --primary: #4b2e83;
+            --secondary: #6d4ac0;
+            --accent: #b399d4;
+            --light: #f9f7fd;
+            --dark: #1a0d3f;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray-medium: #e0e0e0;
+            --gray-dark: #757575;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --danger: #F44336;
+            --info: #2196F3;
             --sidebar-width: 250px;
-            --sidebar-collapsed: 70px;
+            --sidebar-collapsed: 80px;
             --topbar-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --transition: all 0.3s ease;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: var(--light);
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+
+        #sidebar {
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--primary);
+            color: #fff;
+            overflow-y: auto;
+            transition: width 0.3s;
+            z-index: 998;
         }
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            height: var(--topbar-height);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-medium);
+            z-index: 999;
+            transition: left 0.3s, width 0.3s;
+        }
+        #topbar.collapsed {
+            left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 40px;
+        }
+
+
+        .main-content.collapsed {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+
         h1 {
             color: var(--primary);
             border-bottom: 2px solid var(--secondary);
             padding-bottom: 10px;
             margin-top: 30px;
         }
-        
-        /* Table styling */
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -108,75 +144,21 @@
             background: var(--primary);
             color: var(--white);
             font-weight: 600;
-            padding: 15px 12px;
         }
-        tr:nth-child(even) {
-            background-color: var(--gray-light);
-        }
-        tr:hover {
-            background-color: var(--accent);
-            opacity: 0.9;
-        }
-        th:first-child {
-            border-top-left-radius: 10px;
-        }
-        th:last-child {
-            border-top-right-radius: 10px;
-        }
-        
-        /* Action buttons */
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        .action-btn {
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--white);
-            font-size: 14px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: var(--transition);
-        }
-        .action-btn i {
-            font-size: 14px;
-        }
-        .edit-btn {
-            background-color: var(--info);
-        }
-        .delete-btn {
-            background-color: var(--danger);
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            opacity: 0.9;
-        }
-        
-        /* Add new student button */
-        .add-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--success);
-            color: var(--white);
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: var(--transition);
-        }
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+        tr:nth-child(even) { background-color: var(--gray-light); }
+        tr:hover { background-color: var(--accent); opacity: 0.9; }
+        .action-buttons { display: flex; gap: 8px; white-space: nowrap; }
+        .action-btn { padding: 8px 12px; border-radius: 6px; text-decoration: none; color: var(--white); font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; transition: var(--transition); }
+        .action-btn i { font-size: 14px; }
+        .edit-btn { background-color: var(--info); }
+        .delete-btn { background-color: var(--danger); }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); opacity: 0.9; }
+        .add-btn { display: inline-block; width: fit-content; padding: 8px 14px; background-color: var(--success); color: var(--white); text-decoration: none; border-radius: 6px; font-weight: 500; margin-bottom: 20px; transition: var(--transition); }
+        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
-     <!-- Topbar -->
+    <!-- Topbar -->
     <header id="topbar">
         <jsp:include page="topbar.jsp" />
     </header>
@@ -189,13 +171,14 @@
     <!-- Overlay -->
     <div id="sidebarOverlay"></div>
 
-    <div class="container">
+    <div class="main-content" style="display: flex; gap: 20px;">
         <h1>LIST OF STUDENT CSP650</h1>
-        
-        <a href="addStudent.jsp?programme=CSP650" class="add-btn">
+
+        <button type="button" class="add-btn" onclick="showAddStudentForm()">
             <i class="fas fa-plus"></i> Add New Student
-        </a>
-        
+        </button>
+
+
         <table>
             <thead>
                 <tr>
@@ -206,132 +189,71 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <%
-                    // Database connection parameters
-                    String url = "jdbc:mysql://localhost:3306/fyp_system";
-                    String username = "root";
-                    String password = "";
-                    
-                    try {
-                        // Load JDBC driver
-                        Class.forName("com.mysql.jdbc.Driver");
-                        
-                        // Establish connection
-                        Connection conn = DriverManager.getConnection(url, username, password);
-                        
-                        // Create statement
-                        Statement stmt = conn.createStatement();
-                        
-                        // Execute query for CSP650 students
-                        String query = "SELECT * FROM students WHERE programme = 'CDCS230' AND course = 'CSP650'";
-                        ResultSet rs = stmt.executeQuery(query);
-                        
-                        // Display results
-                        while (rs.next()) {
-                %>
-                <tr>
-                    <td><%= rs.getString("name") %></td>
-                    <td><%= rs.getString("student_id") %></td>
-                    <td><%= rs.getString("programme") %></td>
-                    <td><%= rs.getString("supervisor") %></td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=<%= rs.getString("student_id") %>&course=CSP650" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="DeleteStudentServlet?id=<%= rs.getString("student_id") %>&course=CSP650" class="action-btn delete-btn" 
-                               onclick="return confirm('Are you sure you want to delete this student?');">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <%
-                        }
-                        
-                        // Close connections
-                        rs.close();
-                        stmt.close();
-                        conn.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // Fallback to dummy data if database connection fails
-                %>
-                <!-- Dummy Data (will be removed when database works) -->
-                <tr>
-                    <td>Muhammad Alman Hakim Bin Roslan</td>
-                    <td>2023260248</td>
-                    <td>CDCS230</td>
-                    <td>Prof. Muhammad Ali</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023260248&course=CSP650" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="DeleteStudentServlet?id=2023260248&course=CSP650" class="action-btn delete-btn" 
-                               onclick="return confirm('Are you sure you want to delete this student?');">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Siti Aisyah Binti Zulkifli</td>
-                    <td>2023260357</td>
-                    <td>CDCS230</td>
-                    <td>Dr. Nurul Huda binti Kamaruddin</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023260357&course=CSP650" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="DeleteStudentServlet?id=2023260357&course=CSP650" class="action-btn delete-btn" 
-                               onclick="return confirm('Are you sure you want to delete this student?');">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Muhammad Faris Bin Rahman</td>
-                    <td>2023260412</td>
-                    <td>CDCS230</td>
-                    <td>Madam Tan Mei Ling</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023260412&course=CSP650" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="DeleteStudentServlet?id=2023260412&course=CSP650" class="action-btn delete-btn" 
-                               onclick="return confirm('Are you sure you want to delete this student?');">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Nurul Izzati Binti Hassan</td>
-                    <td>2023260521</td>
-                    <td>CDCS230</td>
-                    <td>Encik Ahmad Zaki bin Osman</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023260521&course=CSP650" class="action-btn edit-btn">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="DeleteStudentServlet?id=2023260521&course=CSP650" class="action-btn delete-btn" 
-                               onclick="return confirm('Are you sure you want to delete this student?');">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                <%
-                    }
-                %>
-            </tbody>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<tbody>
+    <c:forEach var="student" items="${studentList}">
+        <tr>
+            <td>${student.name}</td>
+            <td>${student.studentId}</td>
+            <td>${student.programme}</td>
+            <td>${student.supervisorName}</td>
+            <td>
+                <div class="action-buttons">
+                    <a href="#" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="#" class="action-btn delete-btn"><i class="fas fa-trash"></i> Delete</a>
+                </div>
+            </td>
+        </tr>
+    </c:forEach>
+</tbody>
         </table>
-    </div>
+   
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const topbar = document.getElementById("topbar");
+            const container = document.querySelector(".main-content");
+            const toggleBtn = document.getElementById("sidebarToggle");
+
+        if (toggleBtn && sidebar && topbar && container) {
+            toggleBtn.addEventListener("click", function () {
+                sidebar.classList.toggle("collapsed");
+                topbar.classList.toggle("collapsed");
+                container.classList.toggle("collapsed");
+            });
+        }
+        });
+        
+
+function showAddStudentForm() {
+    Swal.fire({
+        title: 'Add New Student',
+        html:
+                '<form id="studentForm" action="StudentListServlet" method="post">' +
+                '<input name="student_id" class="swal2-input" placeholder="Student ID" required>' +
+                '<input name="name" class="swal2-input" placeholder="Full Name" required>' +
+                '<input name="email" class="swal2-input" placeholder="Email" type="email" required>' +
+                '<input name="phoneNum" class="swal2-input" placeholder="Phone Number" required>' +
+                '<input name="semester" class="swal2-input" placeholder="Semester" required>' +
+                '<input name="intake" class="swal2-input" placeholder="Intake" required>' +
+                '<input name="course_id" class="swal2-input" value="2" readonly>' +
+                '<button type="submit" class="swal2-confirm swal2-styled" style="display:inline-block; margin-top:10px;">Submit</button>' +
+            '</form>',
+        showConfirmButton: false, // disable default OK button
+        focusConfirm: false,
+        didOpen: () => {
+            const form = document.getElementById('studentForm');
+            form.addEventListener('submit', () => {
+                Swal.showLoading(); // optional loading state
+            });
+        }
+    });
+}
+
+
+
+    </script>
+        <jsp:include page="sidebarScript.jsp" />
 </body>
 </html>

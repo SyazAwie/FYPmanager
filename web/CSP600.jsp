@@ -189,34 +189,26 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Muhammad Amirul Bin Iskandar</td>
-                    <td>2023118937</td>
-                    <td>CDCS230</td>
-                    <td>Prof. Muhammad Ali</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023118937" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
-                            <a href="DeleteStudentServlet?id=2023118937" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this student?');"><i class="fas fa-trash"></i> Delete</a>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Nurul Huda Binti Firdaus</td>
-                    <td>2023230569</td>
-                    <td>CDCS230</td>
-                    <td>Dr. Nurul Huda binti Kamaruddin</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="EditStudentServlet?id=2023230569" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
-                            <a href="DeleteStudentServlet?id=2023230569" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this student?');"><i class="fas fa-trash"></i> Delete</a>
-                        </div>
-                    </td>
-                </tr>
+            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<tbody>
+    <c:forEach var="student" items="${studentList}">
+        <tr>
+            <td>${student.name}</td>
+            <td>${student.studentId}</td>
+            <td>${student.programme}</td>
+            <td>${student.supervisorName}</td>
+            <td>
+                <div class="action-buttons">
+                    <a href="#" class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="#" class="action-btn delete-btn"><i class="fas fa-trash"></i> Delete</a>
                 </div>
-            </tbody>
+            </td>
+        </tr>
+    </c:forEach>
+</tbody>
         </table>
+    </div>
    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -239,55 +231,31 @@ function showAddStudentForm() {
     Swal.fire({
         title: 'Add New Student',
         html:
-            '<input id="student_id" class="swal2-input" placeholder="Student ID">' +
-            '<input id="name" class="swal2-input" placeholder="Full Name">' +
-            '<input id="email" class="swal2-input" placeholder="Email">' +
-            '<input id="phoneNum" class="swal2-input" placeholder="Phone Number">' +
-            '<input id="semester" class="swal2-input" placeholder="Semester">' +
-            '<input id="intake" class="swal2-input" placeholder="Intake">' +
-            '<input id="course_id" class="swal2-input" value="1" readonly>',  // CSP600 = 1
+            '<form id="studentForm" action="StudentListServlet" method="post">' +
+                '<input name="student_id" class="swal2-input" placeholder="Student ID" required>' +
+                '<input name="name" class="swal2-input" placeholder="Full Name" required>' +
+                '<input name="email" class="swal2-input" placeholder="Email" type="email" required>' +
+                '<input name="phoneNum" class="swal2-input" placeholder="Phone Number" required>' +
+                '<input name="semester" class="swal2-input" placeholder="Semester" required>' +
+                '<input name="intake" class="swal2-input" placeholder="Intake" required>' +
+                '<input name="course_id" class="swal2-input" value="1" readonly>' +
+                '<button type="submit" class="swal2-confirm swal2-styled" style="display:inline-block; margin-top:10px;">Submit</button>' +
+            '</form>',
+        showConfirmButton: false, // disable default OK button
         focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Save',
-        preConfirm: () => {
-            const student_id = document.getElementById('student_id').value;
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phoneNum = document.getElementById('phoneNum').value;
-            const semester = document.getElementById('semester').value;
-            const intake = document.getElementById('intake').value;
-            const course_id = document.getElementById('course_id').value;
-
-            if (!student_id || !name || !email || !phoneNum || !semester || !intake) {
-                Swal.showValidationMessage('Please fill in all fields');
-                return false;
-            }
-
-            // ✅ admin_id TAK ADA dalam form —> akan dihantar melalui session dalam backend
-            const formData = `student_id=${student_id}&name=${name}&email=${email}&phoneNum=${phoneNum}&semester=${semester}&intake=${intake}&course_id=${course_id}`;
-
-            return fetch('StudentListServlet', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error(response.statusText);
-                return response.text();
-            })
-            .then(data => {
-                Swal.fire('Success!', 'Student added successfully.', 'success')
-                    .then(() => window.location.href = 'StudentListServlet?course=' + course_id);
-            })
-            .catch(error => {
-                Swal.fire('Error!', 'Failed to add student: ' + error, 'error');
+        didOpen: () => {
+            const form = document.getElementById('studentForm');
+            form.addEventListener('submit', () => {
+                Swal.showLoading(); // optional loading state
             });
         }
     });
 }
 
 
+
     </script>
         <jsp:include page="sidebarScript.jsp" />
+
 </body>
 </html>

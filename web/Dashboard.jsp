@@ -408,8 +408,8 @@
         <span>100</span>
         <!-- Dropdown Link Option -->
         <div id="linkOptions" style="display: none; margin-top: 10px; position: absolute; background: #fff; color: #000; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;">
-          <div onclick="window.location.href='CSP600.jsp'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
-          <div onclick="window.location.href='CSP650.jsp'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
+          <div onclick="window.location.href='StudentListServlet?course=1'" style="cursor: pointer; padding: 5px 0;">CSP600</div>
+          <div onclick="window.location.href='StudentListServlet?course=2'" style="cursor: pointer; padding: 5px 0;">CSP650</div>
         </div>
       </div>
 

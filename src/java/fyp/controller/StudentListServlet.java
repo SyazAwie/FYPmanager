@@ -52,7 +52,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         int courseId = Integer.parseInt(request.getParameter("course_id"));
 
         HttpSession session = request.getSession();
-        int adminId = (int) session.getAttribute("userId");
+        Object userIdObj = session.getAttribute("userId");
+        if (userIdObj == null) {
+            response.sendRedirect("Login.jsp?error=sessionexpired");
+            return;
+        }
+        int adminId = Integer.parseInt(userIdObj.toString());
+
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");

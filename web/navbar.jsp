@@ -179,8 +179,8 @@
         <div class="menu-arrow">&#9662;</div>
     </div>
     <div class="submenu">
-        <a href="CSP600.jsp" class="submenu-item">CSP600</a>
-        <a href="CSP650.jsp" class="submenu-item">CSP650</a>
+        <a href="StudentListServlet?course=1" class="submenu-item">CSP600</a>
+        <a href="StudentListServlet?course=2" class="submenu-item">CSP600</a>
     </div>
 </div>
 
@@ -192,8 +192,8 @@
         <div class="menu-arrow">&#9662;</div>
     </div>
     <div class="submenu">
-        <a href="SupervisorList.jsp" class="submenu-item">Supervisors</a>
-        <a href="ExaminerList.jsp" class="submenu-item">Examiners</a>
+        <a href="SupervisorListServlet" class="submenu-item">Supervisors</a>
+        <a href="ExaminerListServlet" class="submenu-item">Examiners</a>
     </div>
 </div>
 
