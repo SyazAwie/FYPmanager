@@ -3,10 +3,25 @@
 <%@ page import="java.util.HashMap" %>
 
 <%
-    String userId = "123";
-    String userRole = "student";
-    String userName = "Test User";
-    String userAvatar = "default.png";
+    // Ambil dari session
+    String userIdString = String.valueOf(session.getAttribute("userId"));
+    int userId = Integer.parseInt(userIdString);
+    
+    String userRole = (String) session.getAttribute("role");
+    if (userRole == null || !userRole.equals("admin")) {
+        response.sendRedirect("Login.jsp?error=unauthorized");
+        return;
+    }
+    
+    String userName = (String) session.getAttribute("userName");
+    if(userName == null || "null".equals(userName)) {
+        userName = "User";
+    }
+    
+    String userAvatar = (String) session.getAttribute("avatar");
+    if (userAvatar == null || userAvatar.equals("null") || userAvatar.trim().isEmpty()) {
+        userAvatar = "default.png"; // fallback kalau tak ada gambar
+    }
 
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
@@ -159,9 +174,10 @@
     <div class="main-content" style="display: flex; gap: 20px;">
         <h1>LIST OF STUDENT CSP600</h1>
 
-        <a href="addStudent.jsp" class="add-btn">
+        <button type="button" class="add-btn" onclick="showAddStudentForm()">
             <i class="fas fa-plus"></i> Add New Student
-        </a>
+        </button>
+
 
         <table>
             <thead>
@@ -216,7 +232,60 @@
                 container.classList.toggle("collapsed");
             });
         }
+        });
+        
+
+function showAddStudentForm() {
+    Swal.fire({
+        title: 'Add New Student',
+        html:
+            '<input id="student_id" class="swal2-input" placeholder="Student ID">' +
+            '<input id="name" class="swal2-input" placeholder="Full Name">' +
+            '<input id="email" class="swal2-input" placeholder="Email">' +
+            '<input id="phoneNum" class="swal2-input" placeholder="Phone Number">' +
+            '<input id="semester" class="swal2-input" placeholder="Semester">' +
+            '<input id="intake" class="swal2-input" placeholder="Intake">' +
+            '<input id="course_id" class="swal2-input" value="1" readonly>',  // CSP600 = 1
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        preConfirm: () => {
+            const student_id = document.getElementById('student_id').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phoneNum = document.getElementById('phoneNum').value;
+            const semester = document.getElementById('semester').value;
+            const intake = document.getElementById('intake').value;
+            const course_id = document.getElementById('course_id').value;
+
+            if (!student_id || !name || !email || !phoneNum || !semester || !intake) {
+                Swal.showValidationMessage('Please fill in all fields');
+                return false;
+            }
+
+            // ✅ admin_id TAK ADA dalam form —> akan dihantar melalui session dalam backend
+            const formData = `student_id=${student_id}&name=${name}&email=${email}&phoneNum=${phoneNum}&semester=${semester}&intake=${intake}&course_id=${course_id}`;
+
+            return fetch('StudentListServlet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(response.statusText);
+                return response.text();
+            })
+            .then(data => {
+                Swal.fire('Success!', 'Student added successfully.', 'success')
+                    .then(() => window.location.href = 'StudentListServlet?course=' + course_id);
+            })
+            .catch(error => {
+                Swal.fire('Error!', 'Failed to add student: ' + error, 'error');
+            });
+        }
     });
+}
+
 
     </script>
         <jsp:include page="sidebarScript.jsp" />

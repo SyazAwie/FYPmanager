@@ -66,6 +66,7 @@ public class StudentDB {
             stmt.setInt(3, student.getAdmin_id());
             stmt.setInt(4, student.getCourse_id());
             stmt.setInt(6, student.getStudent_id());
+            
 
             stmt.executeUpdate();
 

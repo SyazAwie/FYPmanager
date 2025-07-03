@@ -15,7 +15,7 @@ import javax.servlet.annotation.WebServlet;
  *
  * @author syazw
  */
-@WebServlet("/StudentList")
+@WebServlet("/StudentListServlet")
 public class StudentListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,4 +38,63 @@ public class StudentListServlet extends HttpServlet {
             request.getRequestDispatcher("CSP600.jsp").forward(request, response);
         }
     }
+    
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+
+    System.out.println(">>> doPost() called in StudentListServlet");
+
+    try {
+        int studentId = Integer.parseInt(request.getParameter("student_id"));
+        int semester = Integer.parseInt(request.getParameter("semester"));
+        String intake = request.getParameter("intake");
+        int courseId = Integer.parseInt(request.getParameter("course_id"));
+
+        HttpSession session = request.getSession();
+        int adminId = (int) session.getAttribute("userId");
+
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String phoneNum = request.getParameter("phoneNum");
+
+        System.out.println("Student ID: " + studentId);
+        System.out.println("Course ID: " + courseId);
+        System.out.println("Admin ID: " + adminId);
+
+        // users table
+        User user = new User();
+        user.setUser_id(studentId);
+        user.setName(name);
+        user.setEmail(email);
+        user.setPhoneNum(phoneNum);
+        user.setRole("student");
+        user.setPassword(UserDB.hashPassword(String.valueOf(studentId)));
+        user.setAvatar("default.png");
+
+        UserDB userDB = new UserDB();
+        userDB.insertUser(user);
+        System.out.println("Inserted user to USERS table");
+
+        // student table
+        Student student = new Student();
+        student.setStudent_id(studentId);
+        student.setSemester(semester);
+        student.setIntake(intake);
+        student.setCourse_id(courseId);
+        student.setAdmin_id(adminId); 
+
+        StudentDB studentDB = new StudentDB();
+        studentDB.insertStudent(student);
+        System.out.println("Inserted student to STUDENT table");
+
+        response.sendRedirect("StudentListServlet?course=" + courseId);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+}
+
+
 }

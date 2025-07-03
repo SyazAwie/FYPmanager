@@ -28,6 +28,10 @@ public class User {
          this.avatar = avatar;
     }
 
+    public User() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     // Getters
     public int getUser_id() {
         return user_id;
