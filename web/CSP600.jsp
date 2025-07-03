@@ -20,14 +20,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>UiTM FYP System</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="sidebarStyle.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <title>UiTM FYP System</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="sidebarStyle.css">
     <style>
         :root {
             --primary: #4b2e83;
@@ -90,16 +91,17 @@
             width: calc(100% - var(--sidebar-collapsed));
         }
 
-        .container {
-            max-width: 1200px;
+        .main-content {
             margin-left: var(--sidebar-width);
             margin-top: var(--topbar-height);
-            padding: 20px;
-            transition: margin-left 0.3s;
+            padding: 40px;
         }
-        .container.collapsed {
+
+
+        .main-content.collapsed {
             margin-left: var(--sidebar-collapsed);
         }
+
 
         h1 {
             color: var(--primary);
@@ -136,23 +138,25 @@
         .edit-btn { background-color: var(--info); }
         .delete-btn { background-color: var(--danger); }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); opacity: 0.9; }
-        .add-btn { display: inline-block; padding: 10px 20px; background-color: var(--success); color: var(--white); text-decoration: none; border-radius: 6px; font-weight: 500; margin-bottom: 20px; transition: var(--transition); }
+        .add-btn { display: inline-block; width: fit-content; padding: 8px 14px; background-color: var(--success); color: var(--white); text-decoration: none; border-radius: 6px; font-weight: 500; margin-bottom: 20px; transition: var(--transition); }
         .add-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
+    <!-- Topbar -->
     <header id="topbar">
-        <button id="sidebarToggle" style="background:none;border:none;cursor:pointer;margin-left:10px;">
-            <i class="fas fa-bars"></i>
-        </button>
         <jsp:include page="topbar.jsp" />
     </header>
-
+    
+    <!-- Sidebar -->
     <aside id="sidebar">
         <jsp:include page="navbar.jsp" />
     </aside>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay"></div>
 
-    <div class="container">
+    <div class="main-content" style="display: flex; gap: 20px;">
         <h1>LIST OF STUDENT CSP600</h1>
 
         <a href="addStudent.jsp" class="add-btn">
@@ -194,23 +198,27 @@
                         </div>
                     </td>
                 </tr>
+                </div>
             </tbody>
         </table>
-    </div>
-
+   
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const sidebar = document.getElementById("sidebar");
             const topbar = document.getElementById("topbar");
-            const container = document.querySelector(".container");
+            const container = document.querySelector(".main-content");
             const toggleBtn = document.getElementById("sidebarToggle");
 
+        if (toggleBtn && sidebar && topbar && container) {
             toggleBtn.addEventListener("click", function () {
                 sidebar.classList.toggle("collapsed");
                 topbar.classList.toggle("collapsed");
                 container.classList.toggle("collapsed");
             });
-        });
+        }
+    });
+
     </script>
+        <jsp:include page="sidebarScript.jsp" />
 </body>
 </html>
