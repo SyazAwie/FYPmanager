@@ -111,7 +111,7 @@
         <button class="tab-button" onclick="showTab(event, 'reviewerTab')">Supervisor Info</button>
     </div>
 
-    <form action="SubmitF9Servlet" method="post">
+    <form action="F9Servlet" method="post">
         <!-- Student Info -->
         <div class="tab-content active" id="studentTab">
             <div class="form-section">
