@@ -20,6 +20,7 @@
     }
 
     String readOnly = isAuthorized ? "" : "readonly";
+    String disabled = isAuthorized ? "" : "disabled";
 %>
 <!DOCTYPE html>
 <html>
@@ -85,13 +86,13 @@
             margin-bottom: 5px;
             color: var(--dark);
         }
-        .form-group input, .form-group textarea {
+        .form-group input {
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 14px;
         }
-        .form-group input[readonly] {
+        .form-group input[readonly], .form-group input[disabled] {
             background: #f0f0f0;
         }
         .form-title {
@@ -132,8 +133,9 @@
         <button class="tab-button" onclick="showTab(event, 'confirmationTab')">Confirmation</button>
     </div>
 
-    <form action="SubmitF12Servlet" method="post">
-        <!-- Student Info -->
+    <form action="F12Servlet" method="post">
+        <input type="hidden" name="formCode" value="F12">
+
         <div class="tab-content active" id="studentTab">
             <div class="form-section">
                 <div class="form-group">
@@ -151,15 +153,13 @@
             </div>
         </div>
 
-        <!-- Confirmation Tab -->
         <div class="tab-content" id="confirmationTab">
             <div class="form-section">
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" name="confirmation" value="confirmed" <%= readOnly %> required>
+                        <input type="checkbox" name="confirmation" value="confirmed" <%= disabled %> required>
                         I hereby confirm this student has made the necessary amendments to his/her Final Year Project report.
-                        The report complies with the requirements for the Computing Sciences Bachelor Degree programme
-                        conducted by the Faculty of Computer & Mathematical Sciences. This student may submit his/her final report.
+                        This student may submit his/her final report.
                     </label>
                 </div>
                 <div class="form-group">
@@ -168,10 +168,11 @@
                 </div>
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date" name="dateConfirmed" <%= readOnly %> required>
+                    <input type="date" name="dateConfirmed" <%= disabled %> required>
                 </div>
+
                 <% if (isAuthorized) { %>
-                <button type="submit" class="submit-btn">Submit</button>
+                    <button type="submit" class="submit-btn">Submit</button>
                 <% } %>
             </div>
         </div>
@@ -187,16 +188,6 @@
         evt.currentTarget.classList.add('active');
         document.getElementById(tabId).classList.add('active');
     }
-
-    function showTabById(tabId) {
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        const tabBtn = Array.from(document.querySelectorAll('.tab-button'))
-            .find(btn => btn.textContent.replace(/\s/g, '').toLowerCase().includes(tabId.replace('Tab', '').toLowerCase()));
-        if (tabBtn) tabBtn.classList.add('active');
-    }
 </script>
-
 </body>
 </html>

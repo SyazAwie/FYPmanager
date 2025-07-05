@@ -10,17 +10,14 @@
         return;
     }
 
-    boolean isSupervisor = "supervisor".equals(userRole);
-    boolean isExaminer = "examiner".equals(userRole);
     boolean isLecturer = "lecturer".equals(userRole);
 
-    if (!(isSupervisor || isExaminer || isLecturer)) {
-    response.sendRedirect("dashboard.jsp?error=unauthorized");
-    return;
-}
+    if (!isLecturer) {
+        response.sendRedirect("dashboard.jsp?error=unauthorized");
+        return;
+    }
 
-
-    String readOnly = isSupervisor || isExaminer ? "" : "readonly";
+    String readOnly = ""; // Lecturer can edit
 %>
 <!DOCTYPE html>
 <html>
@@ -62,17 +59,11 @@
         }
         .form-group input[readonly], textarea[readonly] { background: #f0f0f0; }
         .next-btn, .submit-btn {
-        background: var(--primary);
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
+            background: var(--primary); color: white; padding: 10px 20px;
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
         }
-
         .next-btn:hover, .submit-btn:hover {
-        background: var(--secondary);
+            background: var(--secondary);
         }
         .form-title {
             padding: 20px; font-size: 20px; font-weight: 600; color: var(--dark);
@@ -117,9 +108,9 @@
                 <div class="form-group"><label>Student ID</label><input type="text" name="studentId" <%= readOnly %> required></div>
                 <div class="form-group"><label>Project Title</label><input type="text" name="projectTitle" <%= readOnly %> required></div>
                 <div class="submit-area">
-                <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
+                    <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
                 </div>
-                </div>
+            </div>
         </div>
 
         <!-- Evaluation Criteria -->
@@ -130,22 +121,22 @@
                         <tr><th>Assessment Criteria</th><th>Weight</th><th>Score (1–10)</th><th>Marks (W × S)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Problem</td><td>2</td><td><input type="number" id="score1" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark1" readonly></td></tr>
-                        <tr><td>Solution</td><td>1</td><td><input type="number" id="score2" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark2" readonly></td></tr>
-                        <tr><td>Key Metrics</td><td>1</td><td><input type="number" id="score3" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark3" readonly></td></tr>
-                        <tr><td>Unique Value Proposition</td><td>1</td><td><input type="number" id="score4" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark4" readonly></td></tr>
-                        <tr><td>Unfair Advantage</td><td>1</td><td><input type="number" id="score5" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark5" readonly></td></tr>
-                        <tr><td>Channels</td><td>1</td><td><input type="number" id="score6" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark6" readonly></td></tr>
-                        <tr><td>Customer Segments</td><td>1</td><td><input type="number" id="score7" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark7" readonly></td></tr>
-                        <tr><td>Cost Structure</td><td>1</td><td><input type="number" id="score8" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark8" readonly></td></tr>
-                        <tr><td>Revenue Streams</td><td>1</td><td><input type="number" id="score9" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark9" readonly></td></tr>
+                        <tr><td>Problem</td><td>2</td><td><input type="number" id="score1" name="score1" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark1" readonly></td></tr>
+                        <tr><td>Solution</td><td>1</td><td><input type="number" id="score2" name="score2" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark2" readonly></td></tr>
+                        <tr><td>Key Metrics</td><td>1</td><td><input type="number" id="score3" name="score3" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark3" readonly></td></tr>
+                        <tr><td>Unique Value Proposition</td><td>1</td><td><input type="number" id="score4" name="score4" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark4" readonly></td></tr>
+                        <tr><td>Unfair Advantage</td><td>1</td><td><input type="number" id="score5" name="score5" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark5" readonly></td></tr>
+                        <tr><td>Channels</td><td>1</td><td><input type="number" id="score6" name="score6" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark6" readonly></td></tr>
+                        <tr><td>Customer Segments</td><td>1</td><td><input type="number" id="score7" name="score7" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark7" readonly></td></tr>
+                        <tr><td>Cost Structure</td><td>1</td><td><input type="number" id="score8" name="score8" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark8" readonly></td></tr>
+                        <tr><td>Revenue Streams</td><td>1</td><td><input type="number" id="score9" name="score9" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark9" readonly></td></tr>
                         <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
                     </tbody>
                 </table>
-                        <div class="submit-area">
-                <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
-                        </div>
-                        </div>
+                <div class="submit-area">
+                    <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
+                </div>
+            </div>
         </div>
 
         <!-- Reviewer Info -->
@@ -153,11 +144,9 @@
             <div class="form-section">
                 <div class="form-group"><label>Reviewer Name</label><input type="text" name="reviewerName" value="<%= userName %>" readonly></div>
                 <div class="form-group"><label>Evaluation Date</label><input type="date" name="evaluationDate" <%= readOnly %> required></div>
-                <% if (isSupervisor || isExaminer) { %>
                 <div class="submit-area">
-                <button type="submit" class="submit-btn">Submit</button>
+                    <button type="submit" class="submit-btn">Submit</button>
                 </div>
-                <% } %>
             </div>
         </div>
     </form>
@@ -182,39 +171,17 @@
         if (tabBtn) tabBtn.classList.add('active');
     }
 
-    // Auto calculate marks - F13 style with real weights
     document.addEventListener("input", () => {
-        const s1 = parseFloat(document.getElementById('score1').value) || 0;
-        const s2 = parseFloat(document.getElementById('score2').value) || 0;
-        const s3 = parseFloat(document.getElementById('score3').value) || 0;
-        const s4 = parseFloat(document.getElementById('score4').value) || 0;
-        const s5 = parseFloat(document.getElementById('score5').value) || 0;
-        const s6 = parseFloat(document.getElementById('score6').value) || 0;
-        const s7 = parseFloat(document.getElementById('score7').value) || 0;
-        const s8 = parseFloat(document.getElementById('score8').value) || 0;
-        const s9 = parseFloat(document.getElementById('score9').value) || 0;
+        const weights = [2,1,1,1,1,1,1,1,1];
+        let total = 0;
 
-        const m1 = s1 * 2; // Problem
-        const m2 = s2 * 1; // Solution
-        const m3 = s3 * 1; // Key Metrics
-        const m4 = s4 * 1; // Unique Value Proposition
-        const m5 = s5 * 1; // Unfair Advantage
-        const m6 = s6 * 1; // Channels
-        const m7 = s7 * 1; // Customer Segments
-        const m8 = s8 * 1; // Cost Structure
-        const m9 = s9 * 1; // Revenue Streams
+        for (let i = 1; i <= 9; i++) {
+            const score = parseFloat(document.getElementById(`score${i}`).value) || 0;
+            const mark = score * weights[i - 1];
+            document.getElementById(`mark${i}`).value = mark.toFixed(2);
+            total += mark;
+        }
 
-        document.getElementById('mark1').value = m1.toFixed(2);
-        document.getElementById('mark2').value = m2.toFixed(2);
-        document.getElementById('mark3').value = m3.toFixed(2);
-        document.getElementById('mark4').value = m4.toFixed(2);
-        document.getElementById('mark5').value = m5.toFixed(2);
-        document.getElementById('mark6').value = m6.toFixed(2);
-        document.getElementById('mark7').value = m7.toFixed(2);
-        document.getElementById('mark8').value = m8.toFixed(2);
-        document.getElementById('mark9').value = m9.toFixed(2);
-
-        const total = m1 + m2 + m3 + m4 + m5 + m6 + m7 + m8 + m9;
         document.getElementById('totalMarks').value = total.toFixed(2);
     });
 </script>

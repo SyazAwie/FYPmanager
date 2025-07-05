@@ -13,7 +13,7 @@ public class UserDB {
 
     // Insert user
     public void insertUser(User user) {
-        String sql = "INSERT INTO USERS (user_id, name, email, phoneNum, password, role, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO USERS (user_id, name, email, phoneNum, password, role) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -317,7 +317,8 @@ public class UserDB {
     
     return roles;
 }
-    
-    
+
+
+
     
 }

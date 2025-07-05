@@ -20,7 +20,7 @@
 }
 
 
-    String readOnly = isSupervisor ? "" : "readonly";
+    String readOnly = isLecturer ? "" : "readonly";
 %>
 <!DOCTYPE html>
 <html>
@@ -137,23 +137,47 @@
         <!-- Evaluation Criteria -->
         <div class="tab-content" id="criteriaTab">
             <div class="form-section">
-                <table class="criteria-table">
-                    <thead>
-                        <tr>
-                            <th>Assessment Criteria</th>
-                            <th>Weight</th>
-                            <th>Score (1-10)</th>
-                            <th>Marks (W × S)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Depth of Knowledge</td><td>3</td><td><input type="number" id="score1" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark1" readonly></td></tr>
-                        <tr><td>Overall Organization of Project Presentation</td><td>1</td><td><input type="number" id="score2" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark2" readonly></td></tr>
-                        <tr><td>Progress</td><td>4</td><td><input type="number" id="score3" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark3" readonly></td></tr>
-                        <tr><td>Delivery Skills</td><td>2</td><td><input type="number" id="score4" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark4" readonly></td></tr>
-                        <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
-                    </tbody>
-                </table>
+                <<table class="criteria-table">
+    <thead>
+        <tr>
+            <th>Assessment Criteria</th>
+            <th>Weight</th>
+            <th>Score (1-10)</th>
+            <th>Marks (W × S)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Depth of Knowledge</td>
+            <td>3</td>
+            <td><input type="number" id="score1" name="score1" min="1" max="10" <%= readOnly %>></td>
+            <td><input type="number" id="mark1" name="mark1" readonly></td>
+        </tr>
+        <tr>
+            <td>Overall Organization of Project Presentation</td>
+            <td>1</td>
+            <td><input type="number" id="score2" name="score2" min="1" max="10" <%= readOnly %>></td>
+            <td><input type="number" id="mark2" name="mark2" readonly></td>
+        </tr>
+        <tr>
+            <td>Progress</td>
+            <td>4</td>
+            <td><input type="number" id="score3" name="score3" min="1" max="10" <%= readOnly %>></td>
+            <td><input type="number" id="mark3" name="mark3" readonly></td>
+        </tr>
+        <tr>
+            <td>Delivery Skills</td>
+            <td>2</td>
+            <td><input type="number" id="score4" name="score4" min="1" max="10" <%= readOnly %>></td>
+            <td><input type="number" id="mark4" name="mark4" readonly></td>
+        </tr>
+        <tr>
+            <th colspan="3">Total Marks</th>
+            <td><input type="number" id="totalMarks" name="totalMarks" readonly></td>
+        </tr>
+    </tbody>
+</table>
+
                         <div class="submit-area">
                 <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
             </div>
@@ -171,7 +195,7 @@
                     <label>Evaluation Date</label>
                     <input type="date" name="evaluationDate" <%= readOnly %> required>
                 </div>
-                <% if (isSupervisor) { %>
+                <% if (isLecturer) { %>
                 <button type="submit" class="submit-btn">Submit</button>
                 <% } %>
             </div>

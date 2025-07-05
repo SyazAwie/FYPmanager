@@ -28,11 +28,11 @@
 
     // Full list of forms
     String[][] allForms = {
-        {"F1", "Mutual Acceptance Form", "2025-07-10"},
+        {"F1", "Mutual Acceptance Form", null},
         {"F2", "Project Motivation Form", null},
-        {"F3", "Literature Review Evaluation Form", "2025-07-18"},
+        {"F3", "Literature Review Evaluation Form", null},
         {"F4", "Methodology Evaluation Form", null},
-        {"F5", "Proposal/Project In-Progress Form", "2025-07-25"},
+        {"F5", "Proposal/Project In-Progress Form", null},
         {"F6a", "Project Formulation Report Submission Form", null},
         {"F6b", "Project Report Submission Form", null},
         {"F7", "Project Formulation Presentation Form", null},
@@ -45,33 +45,56 @@
     };
     Student student = StudentDB.getStudentById(userId);
     // Define accessible forms per role
-     Set<String> accessibleForms = new HashSet<>();
-     switch (userRole) {
+    Set<String> accessibleForms = new HashSet<>();
+    switch (userRole) {
         case "student":
-        if (student.getCourse_id() == 1) {
-            accessibleForms.addAll(Arrays.asList("F1", "F2", "F3", "F4", "F5", "F6a"));
-        } else if (student.getCourse_id() == 2) {
-            accessibleForms.addAll(Arrays.asList("F6b"));
-        }
-        break;
-        case "lecturer":
-        for (String[] f : allForms) {
-            String formCode = f[0];
-            if (!Arrays.asList("F7", "F8", "F11", "F12").contains(formCode)) {
-                accessibleForms.add(formCode);
-            }
-        }
-        break;
-        case "supervisor":
-        accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a", "F6b", "F7", "F8", "F10", "F11", "F12"));
-        break;
-        case "examiner":
-        accessibleForms.addAll(Arrays.asList("F7", "F8", "F10", "F11", "F12"));
-        break;
-        default:
-        accessibleForms.clear(); // no access if role not matched
-}
+            if (student.getCourse_id() == 1) {
+             accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a"));
+            } else if (student.getCourse_id() == 2) {
+             accessibleForms.addAll(Arrays.asList("F6b"));
+            } else {
+            // Optional fallback untuk testing
+             accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a", "F6b"));
+              }
 
+            break;
+        case "lecturer":
+            for (String[] f : allForms) {
+                String formCode = f[0];
+                if (!Arrays.asList("F7", "F8", "F11", "F12").contains(formCode)) {
+                    accessibleForms.add(formCode);
+                }
+            }
+            break;
+        case "supervisor":
+            accessibleForms.addAll(Arrays.asList("F1", "F5", "F6a", "F6b", "F7", "F8", "F10", "F11", "F12"));
+            break;
+        case "examiner":
+            accessibleForms.addAll(Arrays.asList("F7", "F8", "F10", "F11", "F12"));
+            break;
+        default:
+            accessibleForms.clear(); // no access if role not matched
+    }
+
+    // --- START: Get student list for dropdown (if not student) ---
+    List<Student> studentList = new ArrayList<>();
+    if (!"student".equals(userRole)) {
+        switch (userRole) {
+            case "lecturer":
+                studentList = StudentDB.getStudentsByLecturerId(Integer.parseInt(userId));
+                break;
+            case "supervisor":
+                studentList = StudentDB.getStudentsBySupervisorId(Integer.parseInt(userId));
+                break;
+            case "examiner":
+                studentList = StudentDB.getStudentsByExaminerId(Integer.parseInt(userId));
+                break;
+            case "admin":
+                studentList = StudentDB.getAllStudents();
+                break;
+        }
+    }
+    // --- END: Get student list ---
 %>
 
 <!DOCTYPE html>
@@ -147,6 +170,14 @@
             color: var(--dark); font-weight: 500;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
+
+        /* Dropdown styling */
+        #studentSelect {
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-left: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -162,6 +193,20 @@
 
 <div class="main-content">
     <h2 style="padding: 20px; color: var(--dark); font-weight: bold;">Forms and Due Date</h2>
+    
+    <% if (!"student".equals(userRole)) { %>
+    <div style="padding: 0 40px 20px;">
+        <label for="studentSelect" style="font-weight: 600;">Select Student:</label>
+        
+            <option disabled selected>Select a student</option>
+            <% for (Student s : studentList) { %>
+
+            <option value="<%= s.getStudent_id() %>"><%= s.getStudent_id() %> - <%= s.getName() %></option>
+            <% } %>
+        
+    </div>
+    <% } %>
+
     <table class="form-table">
         <thead>
             <tr>

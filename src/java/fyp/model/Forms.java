@@ -40,6 +40,25 @@ public class Forms {
         this.admin_id = admin_id;
         this.examinerId = examinerId;
     }
+        public Forms() {
+        this.form_id = 0;
+        this.form_code = "";
+        this.form_name = "";
+        this.description = "";
+        this.access_role = "";
+        this.formDate = "";
+        this.submitted_by = "";
+        this.submitted_to = "";
+        this.submitted_date = "";
+        this.status = "";
+        this.score = 0.0;
+        this.remarks = "";
+        this.student_id = 0;
+        this.lecturer_id = 0;
+        this.supervisor_id = 0;
+        this.admin_id = 0;
+        this.examinerId = 0;
+    }
 
     // Getters and setters (only showing a few for brevity, but include all in your actual file)
     public int getForm_id() {

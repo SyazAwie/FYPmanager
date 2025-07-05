@@ -110,7 +110,7 @@
         <button class="tab-button" onclick="showTab(event, 'reviewerTab')">Reviewer Info</button>
     </div>
 
-    <form action="SubmitF10Servlet" method="post">
+    <form action="F10Servlet" method="post">
         <!-- Student Info -->
         <div class="tab-content active" id="studentTab">
             <div class="form-section">
@@ -152,6 +152,11 @@
                         <tr><td>Research / Project Completeness Appropriate to Discipline</td><td>2</td><td><input type="number" id="score5" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark5" readonly></td></tr>
                         <tr><td>Delivery Skills</td><td>1</td><td><input type="number" id="score6" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark6" readonly></td></tr>
                         <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
+                        <tr>
+                        <th colspan="3">Final Mark (× 15%)</th>
+                        <td><input type="number" id="finalMark" name="finalMark" readonly></td>
+                        </tr>
+
                     </tbody>
                 </table>
                         <div class="submit-area">
@@ -201,31 +206,36 @@
     }
 
     // Auto calculate marks - EXACTLY like F8 (6 criteria version)
-    document.addEventListener("input", () => {
-        const s1 = parseFloat(document.getElementById('score1').value) || 0;
-        const s2 = parseFloat(document.getElementById('score2').value) || 0;
-        const s3 = parseFloat(document.getElementById('score3').value) || 0;
-        const s4 = parseFloat(document.getElementById('score4').value) || 0;
-        const s5 = parseFloat(document.getElementById('score5').value) || 0;
-        const s6 = parseFloat(document.getElementById('score6').value) || 0;
+   document.addEventListener("input", () => {
+    const s1 = parseFloat(document.getElementById('score1').value) || 0;
+    const s2 = parseFloat(document.getElementById('score2').value) || 0;
+    const s3 = parseFloat(document.getElementById('score3').value) || 0;
+    const s4 = parseFloat(document.getElementById('score4').value) || 0;
+    const s5 = parseFloat(document.getElementById('score5').value) || 0;
+    const s6 = parseFloat(document.getElementById('score6').value) || 0;
 
-        const m1 = s1 * 3; // depth of knowledge
-        const m2 = s2 * 1; // overall organization
-        const m3 = s3 * 1; // poster organization
-        const m4 = s4 * 2; // complexity
-        const m5 = s5 * 2; // completeness
-        const m6 = s6 * 1; // delivery
+    const m1 = s1 * 3;
+    const m2 = s2 * 1;
+    const m3 = s3 * 1;
+    const m4 = s4 * 2;
+    const m5 = s5 * 2;
+    const m6 = s6 * 1;
 
-        document.getElementById('mark1').value = m1.toFixed(2);
-        document.getElementById('mark2').value = m2.toFixed(2);
-        document.getElementById('mark3').value = m3.toFixed(2);
-        document.getElementById('mark4').value = m4.toFixed(2);
-        document.getElementById('mark5').value = m5.toFixed(2);
-        document.getElementById('mark6').value = m6.toFixed(2);
+    const total = m1 + m2 + m3 + m4 + m5 + m6;
 
-        const total = m1 + m2 + m3 + m4 + m5 + m6;
-        document.getElementById('totalMarks').value = total.toFixed(2);
-    });
+    document.getElementById('mark1').value = m1.toFixed(2);
+    document.getElementById('mark2').value = m2.toFixed(2);
+    document.getElementById('mark3').value = m3.toFixed(2);
+    document.getElementById('mark4').value = m4.toFixed(2);
+    document.getElementById('mark5').value = m5.toFixed(2);
+    document.getElementById('mark6').value = m6.toFixed(2);
+    document.getElementById('totalMarks').value = total.toFixed(2);
+
+    const final = total * 0.15;
+    const finalInput = document.getElementById('finalMark');
+    if (finalInput) finalInput.value = final.toFixed(2);
+});
+
 </script>
 
 </body>

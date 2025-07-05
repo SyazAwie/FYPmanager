@@ -18,7 +18,8 @@
         return;
     }
 
-    String readOnly = isSupervisor ? "" : "readonly";
+    String readOnly = (isSupervisor || isExaminer) ? "" : "readonly";
+
 %>
 <!DOCTYPE html>
 <html>
@@ -101,7 +102,7 @@
         <button class="tab-button" onclick="showTab(event, 'reviewerTab')">Supervisor Info</button>
     </div>
 
-    <form action="SubmitF11Servlet" method="post">
+    <form action="F11Servlet" method="post">
         <!-- Student Info -->
         <div class="tab-content active" id="studentTab">
             <div class="form-section">
@@ -120,17 +121,50 @@
                         <tr><th>Assessment Criteria</th><th>Weight</th><th>Score (1–10)</th><th>Marks (W × S)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Abstract</td><td>1</td><td><input type="number" id="score1" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark1" readonly></td></tr>
-                        <tr><td>Introduction</td><td>1</td><td><input type="number" id="score2" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark2" readonly></td></tr>
-                        <tr><td>Literature Review</td><td>1</td><td><input type="number" id="score3" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark3" readonly></td></tr>
-                        <tr><td>Methodology</td><td>2</td><td><input type="number" id="score4" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark4" readonly></td></tr>
-                        <tr><td>Development</td><td>5</td><td><input type="number" id="score5" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark5" readonly></td></tr>
-                        <tr><td>Findings / Discussion</td><td>5</td><td><input type="number" id="score6" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark6" readonly></td></tr>
-                        <tr><td>Conclusion and Recommendation</td><td>2</td><td><input type="number" id="score7" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark7" readonly></td></tr>
-                        <tr><td>Report Presentation</td><td>1</td><td><input type="number" id="score8" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark8" readonly></td></tr>
-                        <tr><td>References and Citation</td><td>2</td><td><input type="number" id="score9" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark9" readonly></td></tr>
-                        <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
-                    </tbody>
+                    <tr><td>Abstract</td><td>1</td>
+                        <td><input type="number" id="score1" name="score1" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark1" readonly></td></tr>
+
+                    <tr><td>Introduction</td><td>1</td>
+                        <td><input type="number" id="score2" name="score2" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark2" readonly></td></tr>
+
+                    <tr><td>Literature Review</td><td>1</td>
+                        <td><input type="number" id="score3" name="score3" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark3" readonly></td></tr>
+
+                    <tr><td>Methodology</td><td>2</td>
+                        <td><input type="number" id="score4" name="score4" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark4" readonly></td></tr>
+
+                    <tr><td>Development</td><td>5</td>
+                        <td><input type="number" id="score5" name="score5" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark5" readonly></td></tr>
+
+                    <tr><td>Findings / Discussion</td><td>5</td>
+                        <td><input type="number" id="score6" name="score6" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark6" readonly></td></tr>
+
+                    <tr><td>Conclusion and Recommendation</td><td>2</td>
+                        <td><input type="number" id="score7" name="score7" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark7" readonly></td></tr>
+
+                    <tr><td>Report Presentation</td><td>1</td>
+                        <td><input type="number" id="score8" name="score8" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark8" readonly></td></tr>
+
+                    <tr><td>References and Citation</td><td>2</td>
+                        <td><input type="number" id="score9" name="score9" min="1" max="10" <%= readOnly %>></td>
+                        <td><input type="number" id="mark9" readonly></td></tr>
+
+                    <tr><th colspan="3">Total Marks</th>
+                        <td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
+
+                    <tr><th colspan="3">Weighted Score</th>
+                        <td><input type="number" id="weightedScore" name="weightedScore" readonly></td>
+                    </tr>
+                </tbody>
+
                 </table>
                 <button type="button" class="next-btn" onclick="showTabById('reviewerTab')">Next</button>
             </div>
@@ -141,9 +175,10 @@
             <div class="form-section">
                 <div class="form-group"><label>Supervisor Name</label><input type="text" name="supervisorName" value="<%= userName %>" readonly></div>
                 <div class="form-group"><label>Evaluation Date</label><input type="date" name="evaluationDate" <%= readOnly %> required></div>
-                <% if (isSupervisor) { %>
+                <% if (isSupervisor || isExaminer) { %>
                 <button type="submit" class="submit-btn">Submit</button>
                 <% } %>
+
             </div>
         </div>
     </form>
@@ -202,6 +237,15 @@
 
         const total = m1 + m2 + m3 + m4 + m5 + m6 + m7 + m8 + m9;
         document.getElementById('totalMarks').value = total.toFixed(2);
+
+        // Weighted score: only calculate if SV or Examiner
+        let percentage = 0.0;
+        if ("<%= userRole %>" === "supervisor") percentage = 0.25;
+        else if ("<%= userRole %>" === "examiner") percentage = 0.20;
+
+        const weighted = total * percentage;
+        document.getElementById('weightedScore').value = weighted.toFixed(2);
+
     });
 </script>
 
