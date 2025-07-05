@@ -11,7 +11,6 @@
     }
 
     boolean isLecturer = "lecturer".equals(userRole);
-
     if (!isLecturer) {
         response.sendRedirect("dashboard.jsp?error=unauthorized");
         return;
@@ -104,9 +103,9 @@
         <!-- Student Info -->
         <div class="tab-content active" id="studentTab">
             <div class="form-section">
-                <div class="form-group"><label>Student Name</label><input type="text" name="studentName" <%= readOnly %> required></div>
-                <div class="form-group"><label>Student ID</label><input type="text" name="studentId" <%= readOnly %> required></div>
-                <div class="form-group"><label>Project Title</label><input type="text" name="projectTitle" <%= readOnly %> required></div>
+                <div class="form-group"><label>Student Name</label><input type="text" name="studentName" required></div>
+                <div class="form-group"><label>Student ID</label><input type="text" name="studentId" required></div>
+                <div class="form-group"><label>Project Title</label><input type="text" name="projectTitle" required></div>
                 <div class="submit-area">
                     <button type="button" class="next-btn" onclick="showTabById('criteriaTab')">Next</button>
                 </div>
@@ -121,15 +120,22 @@
                         <tr><th>Assessment Criteria</th><th>Weight</th><th>Score (1–10)</th><th>Marks (W × S)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Problem</td><td>2</td><td><input type="number" id="score1" name="score1" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark1" readonly></td></tr>
-                        <tr><td>Solution</td><td>1</td><td><input type="number" id="score2" name="score2" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark2" readonly></td></tr>
-                        <tr><td>Key Metrics</td><td>1</td><td><input type="number" id="score3" name="score3" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark3" readonly></td></tr>
-                        <tr><td>Unique Value Proposition</td><td>1</td><td><input type="number" id="score4" name="score4" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark4" readonly></td></tr>
-                        <tr><td>Unfair Advantage</td><td>1</td><td><input type="number" id="score5" name="score5" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark5" readonly></td></tr>
-                        <tr><td>Channels</td><td>1</td><td><input type="number" id="score6" name="score6" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark6" readonly></td></tr>
-                        <tr><td>Customer Segments</td><td>1</td><td><input type="number" id="score7" name="score7" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark7" readonly></td></tr>
-                        <tr><td>Cost Structure</td><td>1</td><td><input type="number" id="score8" name="score8" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark8" readonly></td></tr>
-                        <tr><td>Revenue Streams</td><td>1</td><td><input type="number" id="score9" name="score9" min="1" max="10" <%= readOnly %>></td><td><input type="number" id="mark9" readonly></td></tr>
+                        <%
+                            String[] criteria = {
+                                "Problem", "Solution", "Key Metrics", "Unique Value Proposition",
+                                "Unfair Advantage", "Channels", "Customer Segments", "Cost Structure", "Revenue Streams"
+                            };
+                            int[] weights = {2, 1, 1, 1, 1, 1, 1, 1, 1};
+
+                            for (int i = 0; i < criteria.length; i++) {
+                        %>
+                        <tr>
+                            <td><%= criteria[i] %></td>
+                            <td><%= weights[i] %></td>
+                            <td><input type="number" id="score<%= (i + 1) %>" name="score<%= (i + 1) %>" min="1" max="10"></td>
+                            <td><input type="number" id="mark<%= (i + 1) %>" readonly></td>
+                        </tr>
+                        <% } %>
                         <tr><th colspan="3">Total Marks</th><td><input type="number" id="totalMarks" name="totalMarks" readonly></td></tr>
                     </tbody>
                 </table>
@@ -143,7 +149,7 @@
         <div class="tab-content" id="reviewerTab">
             <div class="form-section">
                 <div class="form-group"><label>Reviewer Name</label><input type="text" name="reviewerName" value="<%= userName %>" readonly></div>
-                <div class="form-group"><label>Evaluation Date</label><input type="date" name="evaluationDate" <%= readOnly %> required></div>
+                <div class="form-group"><label>Evaluation Date</label><input type="date" name="evaluationDate" required></div>
                 <div class="submit-area">
                     <button type="submit" class="submit-btn">Submit</button>
                 </div>
@@ -166,23 +172,40 @@
         document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
+
         const tabBtn = Array.from(document.querySelectorAll('.tab-button'))
             .find(btn => btn.textContent.replace(/\s/g, '').toLowerCase().includes(tabId.replace('Tab', '').toLowerCase()));
         if (tabBtn) tabBtn.classList.add('active');
     }
 
-    document.addEventListener("input", () => {
-        const weights = [2,1,1,1,1,1,1,1,1];
-        let total = 0;
-
-        for (let i = 1; i <= 9; i++) {
-            const score = parseFloat(document.getElementById(`score${i}`).value) || 0;
-            const mark = score * weights[i - 1];
-            document.getElementById(`mark${i}`).value = mark.toFixed(2);
-            total += mark;
+    function calculateMark(num, weight) {
+        const score = parseFloat(document.getElementById('score' + num).value);
+        const markField = document.getElementById('mark' + num);
+        if (!isNaN(score)) {
+            markField.value = (score * weight).toFixed(2);
+        } else {
+            markField.value = '';
         }
+        calculateTotal();
+    }
 
+    function calculateTotal() {
+        let total = 0;
+        for (let i = 1; i <= 9; i++) {
+            const mark = parseFloat(document.getElementById('mark' + i).value);
+            total += isNaN(mark) ? 0 : mark;
+        }
         document.getElementById('totalMarks').value = total.toFixed(2);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const weights = [2,1,1,1,1,1,1,1,1];
+        for (let i = 1; i <= 9; i++) {
+            const scoreInput = document.getElementById('score' + i);
+            if (scoreInput) {
+                scoreInput.addEventListener('input', () => calculateMark(i, weights[i - 1]));
+            }
+        }
     });
 </script>
 
