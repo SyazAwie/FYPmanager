@@ -197,12 +197,13 @@
     <% if (!"student".equals(userRole)) { %>
     <div style="padding: 0 40px 20px;">
         <label for="studentSelect" style="font-weight: 600;">Select Student:</label>
-        
-            <option disabled selected>Select a student</option>
-            <% for (Student s : studentList) { %>
-
+        <select id="studentSelect" name="studentId">
+        <option disabled selected>Select a student</option>
+        <% for (Student s : studentList) { %>
             <option value="<%= s.getStudent_id() %>"><%= s.getStudent_id() %> - <%= s.getName() %></option>
-            <% } %>
+        <% } %>
+    </select>
+
         
     </div>
     <% } %>
