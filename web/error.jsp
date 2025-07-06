@@ -1,5 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*" %>
+<%@ page import="java.util.*" %>
+<%
+System.out.println("========= JSP STARTED RENDERING =========");
+System.out.println("JSP Path: " + request.getRequestURI());
+System.out.println("Attributes: " + Collections.list(request.getAttributeNames()));
+%>
 <!DOCTYPE html>
 <html>
 <head>

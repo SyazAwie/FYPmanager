@@ -176,7 +176,7 @@ public class FormsDB {
     }
 
     private int getSupervisorIdByStudent(int studentId) throws SQLException {
-        String sql = "SELECT supervisor_id FROM project_idea WHERE student_id = ? AND status = 'ACCEPTED'";
+        String sql = "SELECT supervisor_id FROM project_idea WHERE student_id = ? AND status = 'Accepted'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {

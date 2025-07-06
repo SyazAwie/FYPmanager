@@ -25,9 +25,9 @@ public class ProposalServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession(false);
-        
+
         // Session validation
         if (session == null || session.getAttribute("userId") == null || session.getAttribute("role") == null) {
             response.sendRedirect("Login.jsp?error=sessionExpired");
@@ -36,23 +36,38 @@ public class ProposalServlet extends HttpServlet {
 
         String userId = (String) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
-        
+        String action = request.getParameter("action");
+
         try {
+            // Handle proposal file viewing
+            if ("viewFile".equalsIgnoreCase(action)) {
+                int proposalId = Integer.parseInt(request.getParameter("id"));
+                handleViewFile(request, response, proposalId);
+                return;
+            }
+
+            // Handle proposal details request
+            if ("getProposalDetails".equalsIgnoreCase(action)) {
+                int proposalId = Integer.parseInt(request.getParameter("id"));
+                handleGetProposalDetails(request, response, proposalId);
+                return;
+            }
+
             // Handle supervisor view
             if ("supervisor".equalsIgnoreCase(role)) {
                 handleSupervisorView(request, response);
                 return;
             }
-            
+
             // Handle student view
             if ("student".equalsIgnoreCase(role)) {
                 handleStudentView(request, response, userId);
                 return;
             }
-            
+
             // Unauthorized access
             response.sendRedirect("Dashboard.jsp?error=unauthorized");
-            
+
         } catch (NumberFormatException e) {
             response.sendRedirect("Login.jsp?error=invalidSession");
         } catch (Exception e) {
@@ -60,7 +75,6 @@ public class ProposalServlet extends HttpServlet {
             response.sendRedirect("error.jsp?error=serverError");
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -134,8 +148,13 @@ public class ProposalServlet extends HttpServlet {
         request.setAttribute("user", user);
         request.setAttribute("profile", student);
         session.removeAttribute("matchingSupervisors");
+        
+        if (existingProposal != null && existingProposal.getSupervisor_id() != null) {
+            User supervisor = UserDB.getUserById(existingProposal.getSupervisor_id());
+            request.setAttribute("supervisorName", supervisor != null ? supervisor.getName() : "Not assigned");
+        }
 
-        request.getRequestDispatcher("ProposalIdea.jsp").forward(request, response);
+        request.getRequestDispatcher("ProposalIdeaSubmission.jsp").forward(request, response);
     }
     
     private void handleStudentSubmission(HttpServletRequest request, HttpServletResponse response, String userId)
@@ -260,49 +279,101 @@ public class ProposalServlet extends HttpServlet {
     
     private void handleSupervisorView(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Session handling
         HttpSession session = request.getSession(false);
+        if (session == null) {
+            System.out.println("[ERROR] No active session found - redirecting to login");
+            response.sendRedirect("Login.jsp");
+            return;
+        }
+
         String userRole = (String) session.getAttribute("role");
+        System.out.printf("[DEBUG] Session attributes - Role: %s, Session ID: %s%n", 
+                userRole, session.getId());
         request.setAttribute("userRole", userRole);
-        
+        // Supervisor ID dari session
+        String userId = (String) session.getAttribute("userId");
+        User supervisor = UserDB.getUserById(Integer.parseInt(userId));
+
         try {
-            // Get filter parameters
+            // Parameter processing
             String statusFilter = request.getParameter("status");
             String searchQuery = request.getParameter("search");
-            
-        // Fallback untuk elak null
-        if (statusFilter == null) statusFilter = "";
-        if (searchQuery == null) searchQuery = "";
+            System.out.printf("[DEBUG] Request parameters - status: '%s', search: '%s'%n", 
+                    statusFilter, searchQuery);
 
-        // SET ke JSP
-        request.setAttribute("statusFilter", statusFilter);
-        request.setAttribute("searchQuery", searchQuery);
+            // Null handling
+            statusFilter = (statusFilter == null) ? "" : statusFilter.trim();
+            searchQuery = (searchQuery == null) ? "" : searchQuery.trim();
+            System.out.printf("[DEBUG] Sanitized parameters - status: '%s', search: '%s'%n", 
+                    statusFilter, searchQuery);
 
-            
-            // Get all proposals with filters
+            request.setAttribute("statusFilter", statusFilter);
+            request.setAttribute("searchQuery", searchQuery);
+
+            // Database query
+            System.out.println("[DEBUG] Querying proposals from database...");
+            long queryStart = System.currentTimeMillis();
             List<Project_Idea> proposals = Project_IdeaDB.getAllProposals(statusFilter, searchQuery);
-            
-            // Get additional student and user info for display
+            long queryTime = System.currentTimeMillis() - queryStart;
+            System.out.printf("[DEBUG] Retrieved %d proposals in %d ms%n", 
+                    proposals.size(), queryTime);
+
+            // Student and user data collection
+            System.out.println("[DEBUG] Building supplementary data maps...");
             Map<Integer, Student> studentMap = new HashMap<>();
             Map<Integer, User> userMap = new HashMap<>();
-            
+            int studentLookups = 0;
+            int userLookups = 0;
+
             for (Project_Idea proposal : proposals) {
                 int studentId = proposal.getStudent_id();
+
                 if (!studentMap.containsKey(studentId)) {
+                    System.out.printf("[TRACE] Processing new student ID: %d%n", studentId);
+
+                    // Student data
                     Student student = StudentDB.getStudentById(String.valueOf(studentId));
+                    if (student != null) {
+                        studentMap.put(studentId, student);
+                        studentLookups++;
+                    }
+
+                    // User data
+                    long userQueryStart = System.currentTimeMillis();
                     User user = UserDB.getUserById(studentId);
-                    if (student != null) studentMap.put(studentId, student);
-                    if (user != null) userMap.put(studentId, user);
+                    if (user != null) {
+                        userMap.put(studentId, user);
+                        userLookups++;
+                        System.out.printf("[TRACE] Added user: %s (ID: %d) in %d ms%n",
+                                user.getName(), studentId, System.currentTimeMillis() - userQueryStart);
+                    }
                 }
             }
-            
+
+            System.out.printf("[DEBUG] Data collection complete - Students: %d/%d, Users: %d/%d%n",
+                    studentMap.size(), proposals.size(), userMap.size(), proposals.size());
+
+            // Prepare request attributes
             request.setAttribute("proposals", proposals);
             request.setAttribute("studentMap", studentMap);
             request.setAttribute("userMap", userMap);
-            
-            request.getRequestDispatcher("SupervisorProposals.jsp").forward(request, response);
-            
+            Supervisor supervisorProfile = SupervisorDB.getSupervisorById(userId);
+            request.setAttribute("user", supervisor);  // Sama nama, supaya JSP dapat guna
+            request.setAttribute("profile", supervisorProfile); // Kalau ada
+            String userAvatar = (String) session.getAttribute("avatar");
+            request.setAttribute("userAvatar", userAvatar);
+
+            // Forward to JSP
+            System.out.println("Forward path: " + getServletContext().getRealPath("/ProposalIdea.jsp"));
+            System.out.println("[DEBUG] Forwarding to ProposalIdea.jsp");
+            request.getRequestDispatcher("ProposalIdea.jsp").forward(request, response);
+
         } catch (Exception e) {
+            System.err.printf("[ERROR] Exception in handleSupervisorView: %s%n", e.getMessage());
             e.printStackTrace();
+            System.out.println("[ERROR] Redirecting to error page");
             response.sendRedirect("error.jsp?error=serverError");
         }
     }
@@ -365,6 +436,60 @@ public class ProposalServlet extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("error", "Error rejecting proposal: " + e.getMessage());
             handleSupervisorView(request, response);
+        }
+    }
+
+    private void handleGetProposalDetails(HttpServletRequest request, HttpServletResponse response, int proposalId) 
+            throws ServletException, IOException {
+        try {
+            Project_Idea proposal = Project_IdeaDB.getProposalById(proposalId);
+            if (proposal != null) {
+                // Prepare JSON response
+                response.setContentType("application/json");
+                PrintWriter out = response.getWriter();
+                out.print("{\"fileName\": \"" + proposal.getDescription() + "\"}");
+                out.flush();
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Proposal not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving proposal");
+        }
+    }
+
+    private void handleViewFile(HttpServletRequest request, HttpServletResponse response, int proposalId) 
+            throws ServletException, IOException {
+        try {
+            Project_Idea proposal = Project_IdeaDB.getProposalById(proposalId);
+            if (proposal == null || proposal.getDescription() == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Proposal not found");
+                return;
+            }
+
+            File file = new File(PROPOSAL_UPLOAD_DIR, proposal.getDescription());
+            if (!file.exists()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+                return;
+            }
+
+            // Set response headers for PDF
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+            response.setContentLength((int) file.length());
+
+            // Stream the file to the response
+            try (InputStream in = new FileInputStream(file);
+                 OutputStream out = response.getOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error serving file");
         }
     }
 }

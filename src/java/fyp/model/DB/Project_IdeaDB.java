@@ -321,4 +321,125 @@ public class Project_IdeaDB {
             return false;
         }
     }
+    
+    // Add these methods to your Project_IdeaDB class
+
+    /**
+     * Get a single proposal by its ID
+     * @param proposalId
+     * @return 
+     */
+    public static Project_Idea getProposalById(int proposalId) {
+        String sql = "SELECT * FROM project_idea WHERE projectIdea_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, proposalId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Project_Idea proposal = new Project_Idea();
+                proposal.setProjectIdea_id(rs.getInt("projectIdea_id"));
+                proposal.setTitle(rs.getString("title"));
+                proposal.setDescription(rs.getString("description"));
+                proposal.setStatus(rs.getString("status"));
+                proposal.setStudent_id(rs.getInt("student_id"));
+                proposal.setSupervisor_id(rs.getInt("supervisor_id"));
+                proposal.setScope(rs.getString("scope"));
+                return proposal;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get the filename of a proposal by its ID
+     * @param proposalId
+     * @return 
+     */
+    public static String getProposalFileName(int proposalId) {
+        String sql = "SELECT description FROM project_idea WHERE projectIdea_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, proposalId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("description");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get all proposals with optional status filter and search query
+     * (This appears to already exist in your class as getAllProposals)
+     */
+    // Your existing getAllProposals method is fine
+
+    /**
+     * Update proposal status and supervisor assignment
+     * @param proposalId
+     * @param status
+     * @param supervisorId
+     * @return 
+     */
+    public static boolean updateProposalStatusAndSupervisor(int proposalId, String status, int supervisorId) {
+        String sql = "UPDATE project_idea SET status = ?, supervisor_id = ? WHERE projectIdea_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, status);
+            stmt.setInt(2, supervisorId);
+            stmt.setInt(3, proposalId);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Check if a proposal exists for a given student
+     * @param studentId
+     * @return 
+     */
+    public static boolean proposalExistsForStudent(int studentId) {
+        String sql = "SELECT COUNT(*) FROM project_idea WHERE student_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, studentId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean rejectProposal(int proposalId) {
+        String sql = "UPDATE project_idea SET status = 'Rejected', supervisor_id = NULL WHERE projectIdea_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, proposalId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
