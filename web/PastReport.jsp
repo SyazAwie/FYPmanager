@@ -73,7 +73,7 @@
         }
 
         .main-content {
-            padding: 20px;
+            padding: 170px 40px 40px; /* ⬅️ padding-top ditambah */
             background-color: var(--light);
         }
 

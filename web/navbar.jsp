@@ -107,7 +107,7 @@
             <div class="menu-text">Forms</div>
         </a>
 
-        <a href="ProgressReport.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ProgressReport.jsp") ? "active" : "" %>"">
+        <a href="ProgressReportSubmission.jsp" class="menu-item <%= currentURI.toLowerCase().endsWith("/ProgressReportSubmission.jsp") ? "active" : "" %>"">
             <div class="menu-icon"><i class="fas fa-tasks"></i></div>
             <div class="menu-text">Progress Report</div>
         </a>

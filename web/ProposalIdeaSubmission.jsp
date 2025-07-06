@@ -196,21 +196,21 @@ if (student != null) {
     }
 
     .form-group input[type="text"] {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--accent);
-      border-radius: var(--border-radius);
-      font-size: 0.95rem;
-      box-sizing: border-box;
-      transition: var(--transition);
-      background-color: white;
-    }
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  font-size: 0.55rem; /* kecilkan font */
+  box-sizing: border-box;
+  transition: var(--transition);
+  background-color: white;
+}
 
-    .form-group input[type="text"]:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(107, 77, 188, 0.15);
-      outline: none;
-    }
+.form-group input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(107, 77, 188, 0.15);
+  outline: none;
+}
 
     .form-group input[readonly] {
       background-color: rgba(179, 153, 212, 0.1);
