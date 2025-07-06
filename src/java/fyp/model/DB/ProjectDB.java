@@ -90,4 +90,25 @@ public class ProjectDB {
             e.printStackTrace();
         }
     }
+    
+     public static boolean createProjectFromProposal(int projectIdeaId, int supervisorId, int studentId, String title) {
+        String sql = "INSERT INTO project (projectTitle, project_type, projectIdea_id, supervisor_id, student_id) " +
+                     "VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, title);
+            stmt.setString(2, "FYP"); // Assuming all are FYP projects
+            stmt.setInt(3, projectIdeaId);
+            stmt.setInt(4, supervisorId);
+            stmt.setInt(5, studentId);
+            
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
 }
