@@ -7,13 +7,24 @@ public class Supervisor {
     private String pastProject;
     private int admin_id;
 
+    // NEW FIELDS
+    private String name;
+    private String email;
+    private String phone;
+    private String photo;
+
     // Constructor with all parameters
-    public Supervisor(int supervisor_id, int quota, String roleOfInterest, String pastProject, int admin_id) {
+    public Supervisor(int supervisor_id, int quota, String roleOfInterest, String pastProject, int admin_id,
+                      String name, String email, String phone, String photo) {
         this.supervisor_id = supervisor_id;
         this.quota = quota;
         this.roleOfInterest = roleOfInterest;
         this.pastProject = pastProject;
         this.admin_id = admin_id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.photo = photo;
     }
 
     // Default constructor
@@ -23,6 +34,10 @@ public class Supervisor {
         this.roleOfInterest = "";
         this.pastProject = "";
         this.admin_id = 0;
+        this.name = "";
+        this.email = "";
+        this.phone = "";
+        this.photo = "";
     }
 
     // Getters and setters
@@ -64,5 +79,37 @@ public class Supervisor {
 
     public void setAdmin_id(int admin_id) {
         this.admin_id = admin_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

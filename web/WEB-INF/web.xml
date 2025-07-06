@@ -32,6 +32,10 @@
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>fyp.controller.LoginServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProgressReport</servlet-name>
+        <servlet-class>fyp.controller.ProgressReportServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProjectServlet</servlet-name>
         <url-pattern>/ProjectServlet</url-pattern>
@@ -63,6 +67,10 @@
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProgressReport</servlet-name>
+        <url-pattern>/ProgressReport</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

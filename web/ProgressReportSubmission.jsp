@@ -3,22 +3,19 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page errorPage="error.jsp" %>
 <%
-    // Retrieve user information from session
     String userId = String.valueOf(session.getAttribute("userId"));
     String userRole = (String) session.getAttribute("role");
     String userName = (String) session.getAttribute("userName");
     String userAvatar = (String) session.getAttribute("avatar");
-    
-    // Set default values if null
+
     if(userName == null || "null".equals(userName)) {
         userName = "User";
     }
-    // Check login/session
     if (userId == null || userRole == null || "null".equals(userId) || "null".equals(userRole)) {
         response.sendRedirect("Login.jsp?error=sessionExpired");
         return;
     }
-    
+
     Map<String, String> roleNames = new HashMap<String, String>();
     roleNames.put("supervisor", "Supervisor");
     roleNames.put("student", "Student");
@@ -40,185 +37,172 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="sidebarStyle.css">
-  <style>
-  .card {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    padding: 2.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-  }
+    <style>
+      .card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        padding: 2.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
 
-  h2 {
-    color: var(--dark);
-    font-size: 1.8rem;
-    margin-bottom: 2rem;
-    font-weight: 700;
-    position: relative;
-    padding-bottom: 0.5rem;
-  }
+      h2 {
+        color: var(--dark);
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        position: relative;
+        padding-bottom: 0.5rem;
+      }
 
-  h2:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    height: 4px;
-    background: var(--primary);
-    border-radius: 2px;
-  }
+      h2:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+      }
 
-  .form-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
+      .form-row {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
 
-  .form-group {
-    margin-bottom: 1.75rem;
-    flex: 1;
-  }
+      .form-group {
+        margin-bottom: 1.75rem;
+        flex: 1;
+      }
 
-  .form-group label {
-    display: block;
-    margin-bottom: 0.75rem;
-    color: var(--dark);
-    font-weight: 600;
-    font-size: 1rem;
-  }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.75rem;
+        color: var(--dark);
+        font-weight: 600;
+        font-size: 1rem;
+      }
 
-  .form-group input[type="text"] {
-    width: 100%;
-    padding: 1rem;
-    border: 2px solid var(--accent);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: var(--transition);
-  }
+      .form-group input[type="text"],
+      .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: white;
+      }
 
-  .form-group input[type="text"]:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(75, 46, 131, 0.1);
-    outline: none;
-  }
-  
-  .form-group input[readonly] {
-      background-color: rgba(179, 153, 212, 0.1);
-      border-color: var(--accent);
-      color: var(--dark);
-      cursor: not-allowed;
-    }
+      .form-group input[type="text"]:focus,
+      .form-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(75, 46, 131, 0.1);
+        outline: none;
+      }
 
-  .upload-section {
-    border: 2px dashed var(--accent);
-    border-radius: 12px;
-    padding: 2.5rem;
-    text-align: center;
-    background-color: var(--light);
-    transition: var(--transition);
-    margin-top: 0.5rem;
-  }
+      .form-group input[readonly] {
+        background-color: rgba(179, 153, 212, 0.1);
+        border-color: var(--accent);
+        color: var(--dark);
+        cursor: not-allowed;
+      }
 
-  .upload-section:hover {
-    border-color: var(--primary);
-    background-color: rgba(179, 153, 212, 0.1);
-  }
+      .upload-section {
+        border: 2px dashed var(--accent);
+        border-radius: 12px;
+        padding: 2.5rem;
+        text-align: center;
+        background-color: var(--light);
+        transition: var(--transition);
+        margin-top: 0.5rem;
+      }
 
-  .upload-icon {
-    font-size: 2.5rem;
-    color: var(--primary);
-    margin-bottom: 1rem;
-  }
+      .upload-section:hover {
+        border-color: var(--primary);
+        background-color: rgba(179, 153, 212, 0.1);
+      }
 
-  .upload-section h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: var(--dark);
-  }
+      .upload-icon {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
 
-  .upload-section p {
-    color: var(--gray);
-    font-size: 0.9rem;
-  }
+      .upload-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+      }
 
-  .file-info {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid var(--accent);
-    display: none;
-  }
+      .upload-section p {
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
 
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2.5rem;
-    gap: 1rem;
-  }
+      .file-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid var(--accent);
+        display: none;
+      }
 
-  .action-buttons {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .readonly-field {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--light);
-    border: 2px solid var(--accent);
-    border-radius: 8px;
-    color: var(--dark);
-    font-weight: 500;
-    min-height: 52px; /* Match input field height */
-  }
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2.5rem;
+        gap: 1rem;
+      }
 
-  .readonly-field i {
-    margin-right: 12px;
-    color: var(--primary);
-    font-size: 1.1rem;
-  }
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+      }
 
-  .readonly-field span {
-    flex: 1;
-  }
+      .readonly-field {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background-color: var(--light);
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        color: var(--dark);
+        font-weight: 500;
+        min-height: 52px;
+      }
 
-  /* Make it visually distinct from editable fields */
-  .form-group input[type="text"] {
-    background-color: white;
-    border: 2px solid var(--accent);
-  }
+      .readonly-field i {
+        margin-right: 12px;
+        color: var(--primary);
+        font-size: 1.1rem;
+      }
 
-  .form-group input[type="text"]:focus {
-    background-color: white;
-    border-color: var(--primary);
-  }
-  
-</style>
+      .readonly-field span {
+        flex: 1;
+      }
+    </style>
 </head>
 <body>
-    
-    <!-- Topbar -->
-    <header id="topbar">
-        <jsp:include page="topbar.jsp" />
-    </header>
-    
-    <!-- Sidebar -->
-    <aside id="sidebar">
-        <jsp:include page="navbar.jsp" />
-    </aside>
-    
-    <!-- Overlay -->
-    <div id="sidebarOverlay"></div>
 
-  <!-- Main Content -->
+  <header id="topbar">
+      <jsp:include page="topbar.jsp" />
+  </header>
+
+  <aside id="sidebar">
+      <jsp:include page="navbar.jsp" />
+  </aside>
+
+  <div id="sidebarOverlay"></div>
+
   <div class="main-content">
     <div class="card">
       <h2>Write your progress report here:</h2>
       <form action="#" method="post" enctype="multipart/form-data">
-        <!-- Auto-filled Name and ID in one row -->
+        <!-- Name & ID -->
         <div class="form-row">
           <div class="form-group">
             <label>Full Name:</label>
@@ -235,7 +219,7 @@
             </div>
           </div>
         </div>
-            
+
         <div class="form-row">
           <div class="form-group">
             <label>Semester:</label>
@@ -253,13 +237,18 @@
           </div>
         </div>
 
-        <!-- Editable form fields -->
+        <!-- Scope dropdown -->
         <div class="form-group">
           <label for="scope">Scope:</label>
-          <input type="text" id="scope" name="scope" required>
+          <select id="scope" name="scope" required>
+            <option value="">-- Select Chapter --</option>
+            <option value="Chapter 1">Chapter 1</option>
+            <option value="Chapter 2">Chapter 2</option>
+            <option value="Chapter 3">Chapter 3</option>
+          </select>
         </div>
 
-        <!-- Upload section -->
+        <!-- File Upload -->
         <div class="form-group">
           <label for="upload">Upload File:</label>
           <div class="upload-section">
@@ -278,7 +267,7 @@
           </div>
         </div>
 
-        <!-- Form buttons -->
+        <!-- Buttons -->
         <div class="buttons">
           <button type="button" class="btn btn-back" onclick="showBackAlert()">
             <i class="fas fa-arrow-left"></i> Back
@@ -298,22 +287,23 @@
       </form>
     </div>
   </div>
-<jsp:include page="sidebarScript.jsp" />
-<script>
-  // File upload display logic
-  document.getElementById('upload').addEventListener('change', function(e) {
-    const fileInfo = document.querySelector('.file-info');
-    const fileName = document.querySelector('.file-name span');
-    const file = e.target.files[0];
-    
-    if (file) {
-      fileInfo.style.display = 'block';
-      fileName.textContent = file.name;
-      // You could add file size here too if needed
-    } else {
-      fileInfo.style.display = 'none';
-    }
-  });
-</script>
+
+  <jsp:include page="sidebarScript.jsp" />
+
+  <script>
+    document.getElementById('upload').addEventListener('change', function(e) {
+      const fileInfo = document.querySelector('.file-info');
+      const fileName = document.querySelector('.file-name span');
+      const file = e.target.files[0];
+      
+      if (file) {
+        fileInfo.style.display = 'block';
+        fileName.textContent = file.name;
+      } else {
+        fileInfo.style.display = 'none';
+      }
+    });
+  </script>
+
 </body>
 </html>
